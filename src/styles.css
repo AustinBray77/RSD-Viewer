@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind componenets;
+@tailwind utilities;
+
+:root {
+	font: "Trebuchet MS", "sans-serif";
+}
