@@ -13,6 +13,14 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "process": {
+        "all": false,
+        "exit": true
+      },
+      "dialog": {
+        "all": false,
+        "open": true
+      },
       "shell": {
         "all": false,
         "open": true

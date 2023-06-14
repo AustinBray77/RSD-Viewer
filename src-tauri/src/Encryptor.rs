@@ -1,41 +1,27 @@
-extern crate sha2;
+extern crate magic_crypt;
 
-use sha2::{Digest, Sha256};
-use std::str;
-
-const Salt: &str = "100191480193847518309";
-
-fn gen_salt(offset: u8) -> String {
-    let mut i: u8 = 1;
-    let mut output = String::new();
-
-    while i < offset {
-        output += (((offset << i) * offset / i) as char).to_string().as_str();
-        i += 1;
-    }
-
-    return output;
-}
-
-fn encrypt_raw(data: &[u8]) -> Vec<u8> {
-    let mut hasher = Sha256::new();
-    hasher.update(data);
-
-    return Vec::new();
-}
+use magic_crypt::{new_magic_crypt, MagicCryptTrait};
+use std::io::Error;
 
 pub fn encrypt(data: String, pk: String) -> String {
-    let data = encrypt_raw((pk + &data).as_bytes());
-    let s = str::from_utf8(&data).unwrap();
-    return s.to_string();
+    let encryptor = new_magic_crypt!(pk, 256);
+    let res = encryptor.encrypt_str_to_base64(data);
+    return res;
 }
 
-fn decrypt_raw(data: &[u8], pk: String) -> Vec<u8> {
-    return Vec::new();
-}
+pub fn decrypt(data: String, pk: String) -> Result<String, Error> {
+    if data.is_empty() {
+        return Ok(String::new());
+    }
 
-pub fn decrypt(data: String, pk: String) -> String {
-    let data = decrypt_raw(data.as_bytes(), pk);
-    let s = str::from_utf8(&data).unwrap();
-    return s.to_string();
+    let decryptor = new_magic_crypt!(pk, 256);
+    let result = decryptor.decrypt_base64_to_string(data);
+
+    return match result {
+        Ok(x) => Ok(x),
+        Err(e) => Err(Error::new(
+            std::io::ErrorKind::Other,
+            e.to_string() + " ENC-16",
+        )),
+    };
 }

@@ -5,3 +5,27 @@
 :root {
 	font: "Trebuchet MS", "sans-serif";
 }
+
+::-webkit-scrollbar-track {
+	background: rgb(63 63 70) !important;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgb(82 82 91) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: rgb(113 113 122) !important;
+}
+
+::-ms-thumb {
+	background: rgb(82 82 91) !important;
+}
+
+::-ms-track {
+	background: rgb(63 63 70) !important;
+}
+
+::-ms-thumb:hover {
+	background: rgb(113 113 122) !important;
+}
