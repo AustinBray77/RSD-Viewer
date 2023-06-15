@@ -93,13 +93,13 @@ fn open_file(truncate: bool) -> Result<File, Error> {
             .write(true)
             .read(true)
             .open(file_str);
-    } else {
-        return fs::OpenOptions::new()
-            .truncate(truncate)
-            .write(true)
-            .read(true)
-            .open(file_str);
     }
+
+    return fs::OpenOptions::new()
+        .truncate(truncate)
+        .write(true)
+        .read(true)
+        .open(file_str);
 }
 
 fn read_all_content(mut file: File) -> Result<String, Error> {
