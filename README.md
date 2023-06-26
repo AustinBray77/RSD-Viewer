@@ -1,7 +1,3 @@
-# Tauri + React + Typescript
+Second Generation of Password Manager created to securely store your passwords without you ever needing to know them
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
-
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+Made using Rust 🦀 and React ⚛

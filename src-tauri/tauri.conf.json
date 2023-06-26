@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "RSD-Viewer",
-    "version": "0.1.1"
+    "version": "0.2.0"
   },
   "tauri": {
     "allowlist": {
@@ -35,7 +35,10 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.rsdviewer.dev",
+      "resources": [
+        "resources/*"
+      ],
+      "identifier": "com.SBG.rsd-viewer",
       "targets": "all"
     },
     "security": {
@@ -49,8 +52,8 @@
         "fullscreen": false,
         "resizable": true,
         "title": "RSD-Viewer",
-        "width": 800,
-        "height": 600
+        "width": 1200,
+        "height": 800
       }
     ]
   }
