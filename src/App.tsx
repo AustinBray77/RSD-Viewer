@@ -103,7 +103,7 @@ function App() {
 	};
 
 	return (
-		<div className="bg-slate-900 text-slate-100 min-h-screen">
+		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden">
 			<Toolbar data={data} setData={sendSetData} />
 			<Home data={data} setData={sendSetData} />
 			<Dialog

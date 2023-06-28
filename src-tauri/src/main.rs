@@ -3,7 +3,6 @@
 
 fn main() {
     tauri::Builder::default()
-        //.setup(|app| setup(app))
         .invoke_handler(tauri::generate_handler![get_data, save_data, get_file_path])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -17,21 +16,6 @@ use std::io::Error;
 mod encryptor;
 use encryptor::decrypt;
 use encryptor::encrypt;
-
-//use json;
-
-/*fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    println!("{}", env!("OUT_DIR"));
-
-    let manifest_path = app
-        .path_resolver()
-        .resolve_resource("resource/rsd-viewer-manifest.rc")
-        .expect("failed to resolve manifest resource");
-
-    //embed_resource::compile(manifest_path, embed_resource::NONE);
-
-    Ok(())
-}*/
 
 #[tauri::command]
 fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String> {
