@@ -4,6 +4,7 @@ import AccountData from "./AccountData";
 import { DialogButton } from "./Buttons";
 import { open } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api";
+import { type } from "os";
 
 const ToolBarDialog = (props: {
 	open: boolean;
@@ -24,6 +25,9 @@ const ToolBarDialog = (props: {
 export default function Toolbar(props: {
 	data: AccountData[];
 	setData: (val: AccountData[]) => void;
+	setError: React.Dispatch<React.SetStateAction<string>>;
+	getData: (password: string) => void;
+	stablePassword: string;
 }): JSX.Element {
 	const [shouldAddAccount, setShouldAddAccount] = useState(false);
 	const [shouldGenerate, setShouldGenerate] = useState(false);
@@ -205,6 +209,32 @@ export default function Toolbar(props: {
 					}}
 				>
 					Grab Save File
+				</button>
+			</div>
+			<div className="inline-flex border-1 border-slate-700">
+				<button
+					className="text-2xl p-3"
+					onClick={() => {
+						Promise.resolve(
+							open({
+								defaultPath: "C:\\",
+							})
+						).then((res: string | string[] | null) => {
+							if (typeof res == typeof [""] || typeof res == typeof null) {
+								return;
+							}
+
+							Promise.resolve(invoke("set_save_data", { path: res }))
+								.then(() => {
+									props.getData(props.stablePassword);
+								})
+								.catch((err) => {
+									props.setError(err);
+								});
+						});
+					}}
+				>
+					Import Save File
 				</button>
 			</div>
 			<ToolBarDialog

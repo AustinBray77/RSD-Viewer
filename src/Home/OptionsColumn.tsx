@@ -151,7 +151,51 @@ function RemovePasswordButton(props: {
 	setData: (val: AccountData[]) => void;
 	setDialog: React.Dispatch<React.SetStateAction<JSX.Element>>;
 }): JSX.Element {
-	const onClick = () => {};
+	const [confirmation, setConfirmation] = useState(0);
+
+	const RemovePasswordDialog = (): JSX.Element => {
+		return (
+			<Dialog
+				open={true}
+				onClose={() => {
+					props.setDialog(<div></div>);
+				}}
+				className="backdrop-blur"
+			>
+				<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
+					<h3 className="text-3xl">
+						Are you sure you want to remove the password for{" "}
+						{props.data[props.accountIndex].Name}?
+					</h3>
+					<DialogButton
+						onClick={() => {
+							let newData = [...props.data];
+							newData.splice(props.accountIndex, 1);
+
+							props.setData(newData);
+							props.setDialog(<div></div>);
+						}}
+					>
+						<div className="text-slate-100 text-xl py-2 px-7">Ok</div>
+					</DialogButton>
+					<DialogButton
+						onClick={() => {
+							props.setDialog(<div></div>);
+						}}
+					>
+						<div className="text-slate-100 text-xl py-2 px-7">Cancel</div>
+					</DialogButton>
+				</div>
+			</Dialog>
+		);
+	};
+
+	const onClick = () => {
+		console.log(
+			`Remove Clicked for account: ${props.data[props.accountIndex].Name}`
+		);
+		props.setDialog(<RemovePasswordDialog />);
+	};
 
 	return (
 		<OptionsButton className="inline-flex" onClick={onClick}>

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "RSD-Viewer",
-    "version": "0.2.1"
+    "version": "0.3.0"
   },
   "tauri": {
     "allowlist": {
@@ -52,7 +52,7 @@
         "fullscreen": false,
         "resizable": true,
         "title": "RSD-Viewer",
-        "width": 1200,
+        "width": 1300,
         "height": 800
       }
     ]

@@ -2218,7 +2218,7 @@ dependencies = [
 
 [[package]]
 name = "rsd_password_manager"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "embed-resource",
  "json",

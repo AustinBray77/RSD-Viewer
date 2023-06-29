@@ -3,7 +3,12 @@
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![get_data, save_data, get_file_path])
+        .invoke_handler(tauri::generate_handler![
+            get_data,
+            save_data,
+            get_file_path,
+            set_save_data
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -67,6 +72,37 @@ fn get_file_path(handle: tauri::AppHandle) -> String {
     path.pop();
 
     path.into_os_string().into_string().unwrap()
+}
+
+#[tauri::command]
+fn set_save_data(handle: tauri::AppHandle, path: String) -> Result<(), String> {
+    let main_file = open_file(handle, true);
+
+    let main_file = match main_file {
+        Ok(file) => file,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    let new_data_file = fs::OpenOptions::new().read(true).open(path);
+
+    let new_data_file = match new_data_file {
+        Ok(file) => file,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    let content = read_all_content(new_data_file);
+
+    let content = match content {
+        Ok(content) => content,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    let write_result = write_all_content(main_file, content.as_str());
+
+    match write_result {
+        Ok(_) => Ok(()),
+        Err(error) => Err(error.to_string()),
+    }
 }
 
 fn file_error(error: Error) -> String {

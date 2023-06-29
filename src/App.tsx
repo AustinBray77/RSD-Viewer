@@ -104,7 +104,13 @@ function App() {
 
 	return (
 		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden">
-			<Toolbar data={data} setData={sendSetData} />
+			<Toolbar
+				data={data}
+				setData={sendSetData}
+				setError={setError}
+				getData={getData}
+				stablePassword={password}
+			/>
 			<Home data={data} setData={sendSetData} />
 			<Dialog
 				id="Error Dialog"
