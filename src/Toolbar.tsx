@@ -5,6 +5,7 @@ import { DialogButton } from "./Buttons";
 import { open } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api";
 import { type } from "os";
+import { error } from "console";
 
 const ToolBarDialog = (props: {
 	open: boolean;
@@ -201,14 +202,41 @@ export default function Toolbar(props: {
 					onClick={() => {
 						Promise.resolve(invoke<string>("get_file_path")).then(
 							(res: string) => {
-								open({
-									defaultPath: res,
-								});
+								Promise.resolve(
+									open({
+										defaultPath: res,
+										directory: true,
+										multiple: false,
+									})
+								)
+									.then((res: string | string[] | null) => {
+										if (
+											typeof res == typeof [""] ||
+											typeof res == typeof null
+										) {
+											throw "Invalid Location";
+										}
+
+										Promise.resolve(
+											invoke<string>("copy_save_data", { path: res })
+										)
+											.then((res: string) => {
+												props.setError(
+													`File was successfully saved at "${res}"`
+												);
+											})
+											.catch((error) => {
+												props.setError(error);
+											});
+									})
+									.catch((error) => {
+										props.setError(error);
+									});
 							}
 						);
 					}}
 				>
-					Grab Save File
+					Export Save File
 				</button>
 			</div>
 			<div className="inline-flex border-1 border-slate-700">
@@ -218,6 +246,18 @@ export default function Toolbar(props: {
 						Promise.resolve(
 							open({
 								defaultPath: "C:\\",
+								multiple: false,
+								directory: false,
+								filters: [
+									{
+										name: "Binary Files (*.bin)",
+										extensions: ["bin"],
+									},
+									{
+										name: "All Files",
+										extensions: ["*"],
+									},
+								],
 							})
 						).then((res: string | string[] | null) => {
 							if (typeof res == typeof [""] || typeof res == typeof null) {
