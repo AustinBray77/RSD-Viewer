@@ -4,8 +4,6 @@ import AccountData from "./AccountData";
 import { DialogButton } from "./Buttons";
 import { open } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api";
-import { type } from "os";
-import { error } from "console";
 
 const ToolBarDialog = (props: {
 	open: boolean;
