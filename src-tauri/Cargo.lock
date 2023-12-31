@@ -2217,12 +2217,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsd_encrypt"
+version = "0.1.0"
+dependencies = [
+ "magic-crypt",
+]
+
+[[package]]
 name = "rsd_password_manager"
 version = "0.3.0"
 dependencies = [
  "embed-resource",
  "json",
- "magic-crypt",
+ "rsd_encrypt",
  "tauri",
  "tauri-build",
 ]

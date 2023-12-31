@@ -18,9 +18,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
 
-mod encryptor;
-use encryptor::decrypt;
-use encryptor::encrypt;
+extern crate rsd_encrypt;
+
+use rsd_encrypt::decrypt;
+use rsd_encrypt::encrypt;
 
 #[tauri::command]
 fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String> {
