@@ -7,7 +7,8 @@ fn main() {
             get_data,
             save_data,
             get_file_path,
-            set_save_data
+            set_save_data,
+            copy_save_data
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -17,6 +18,7 @@ use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
+use std::time::SystemTime;
 
 extern crate rsd_encrypt;
 
@@ -102,6 +104,50 @@ fn set_save_data(handle: tauri::AppHandle, path: String) -> Result<(), String> {
 
     match write_result {
         Ok(_) => Ok(()),
+        Err(error) => Err(error.to_string()),
+    }
+}
+
+#[tauri::command]
+fn copy_save_data(handle: tauri::AppHandle, mut path: String) -> Result<String, String> {
+    let main_file = open_file(handle, false);
+
+    let main_file = match main_file {
+        Ok(file) => file,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    let content = read_all_content(main_file);
+
+    let content = match content {
+        Ok(content) => content,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    let unique_file_name = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH);
+
+    let unique_file_name = match unique_file_name {
+        Ok(duration) => format!("{}{}{}", "\\psd-", duration.as_secs(), ".bin"),
+        Err(error) => return Err(error.to_string()),
+    };
+
+    path += unique_file_name.as_str();
+
+    let new_data_file = fs::OpenOptions::new()
+        .truncate(true)
+        .write(true)
+        .create_new(true)
+        .open(path.clone());
+
+    let new_data_file = match new_data_file {
+        Ok(file) => file,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    let write_result = write_all_content(new_data_file, content.as_str());
+
+    match write_result {
+        Ok(_) => Ok(path),
         Err(error) => Err(error.to_string()),
     }
 }

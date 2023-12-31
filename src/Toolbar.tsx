@@ -1,26 +1,94 @@
 import React, { useEffect, useState } from "react";
-import { Dialog } from "@mui/material";
 import AccountData from "./AccountData";
-import { DialogButton } from "./Buttons";
 import { open } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api";
-import { type } from "os";
+import {
+	AddAccountDialog,
+	AddPhoneNumberDialog,
+	GeneratePasswordDialog,
+	Verify2FADialog,
+} from "./Dialogs";
+import { ArrayRange, CollapsableRandomArray } from "./Math";
 
-const ToolBarDialog = (props: {
-	open: boolean;
-	onClose?: (e: {}, r: "backdropClick" | "escapeKeyDown") => void;
-	children?: JSX.Element | JSX.Element[];
-	title?: string;
-}): JSX.Element => {
+function HeaderButton(props: {
+	onClick: () => void;
+	title: string;
+}): JSX.Element {
 	return (
-		<Dialog open={props.open} onClose={props.onClose} className="backdrop-blur">
-			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-				<h2 className="text-3xl px-10 text-slate-100">{props.title}</h2>
-				{props.children}
-			</div>
-		</Dialog>
+		<div className="inline-flex border-1 border-slate-700">
+			<button className="text-xl p-3" onClick={props.onClick}>
+				{props.title}
+			</button>
+		</div>
 	);
-};
+}
+
+function ExportFile(
+	setError: React.Dispatch<React.SetStateAction<string>>
+): void {
+	Promise.resolve(invoke<string>("get_file_path"))
+		.then((res: string) => {
+			return Promise.resolve(
+				open({
+					defaultPath: res,
+					directory: true,
+					multiple: false,
+				})
+			);
+		})
+		.then((res: string | string[] | null) => {
+			if (typeof res == typeof [""] || typeof res == typeof null) {
+				throw "Invalid Location";
+			}
+
+			return Promise.resolve(invoke<string>("copy_save_data", { path: res }));
+		})
+		.then((res: string) => {
+			setError(`File was successfully saved at "${res}"`);
+		})
+		.catch((error) => {
+			setError(error);
+		});
+}
+
+function ImportFile(
+	setError: React.Dispatch<React.SetStateAction<string>>,
+	getData: (password: string) => void,
+	stablePassword: string
+): void {
+	let options = {
+		defaultPath: "C:\\",
+		multiple: false,
+		directory: false,
+		filters: [
+			{
+				name: "Binary Files (*.bin)",
+				extensions: ["bin"],
+			},
+			{
+				name: "All Files",
+				extensions: ["*"],
+			},
+		],
+	};
+
+	Promise.resolve(open(options))
+		.then((res: string | string[] | null) => {
+			if (typeof res == typeof [""] || typeof res == typeof null) {
+				throw "Invalid Location";
+			}
+
+			return Promise.resolve(invoke("set_save_data", { path: res }));
+		})
+		.then(() => {
+			getData(stablePassword);
+		})
+		.catch((err) => {
+			setError(err);
+		});
+}
+
+function Add2FA(): void {}
 
 export default function Toolbar(props: {
 	data: AccountData[];
@@ -33,49 +101,13 @@ export default function Toolbar(props: {
 	const [shouldGenerate, setShouldGenerate] = useState(false);
 	const [accountName, setAccountName] = useState("");
 	const [accountPassword, setAccountPassword] = useState("");
+	const [phoneNumber, setPhoneNumber] = useState("");
+	const [shouldAddPhoneNumber, setShouldAddPhoneNumber] = useState(false);
+	const [code, setCode] = useState("");
+	const [shouldVerify2FA, setShouldVerify2FA] = useState(false);
 	const [passwordParams, setPasswordParams] = useState([true, true, true]);
 	const [passwordLength, setPasswordLength] = useState(16);
 	const [genPassFlag, setGenPassFlag] = useState(false);
-
-	const CollapsableRandomArray = (
-		min: number,
-		max: number,
-		exclude: Set<number>,
-		numberOfResults: number = 1
-	): number[] => {
-		let possibleResults: number[] = [];
-
-		for (let i = min; i <= max; i++) {
-			if (!exclude.has(i)) {
-				possibleResults.push(i);
-			}
-		}
-
-		console.log(possibleResults);
-
-		let output: number[] = [];
-
-		for (let i = 0; i < numberOfResults; i++) {
-			let rawResult: number = Math.floor(
-				Math.random() * (possibleResults.length - 1)
-			);
-			output.push(possibleResults[rawResult]);
-		}
-
-		console.log(output);
-
-		return output;
-	};
-
-	const ArrayRange = (min: number, max: number): number[] => {
-		let output: number[] = [];
-
-		for (let i = min; i <= max; i++) {
-			output.push(i);
-		}
-
-		return output;
-	};
 
 	const FlipPasswordParam = (param: number) => {
 		let newParams = [...passwordParams];
@@ -162,6 +194,10 @@ export default function Toolbar(props: {
 		setGenPassFlag(true);
 	};
 
+	const VerifyNumber = (phoneNumber: string) => {};
+
+	const VerifyCode = (code: string) => {};
+
 	useEffect(() => {
 		if (genPassFlag) {
 			OnAddAccount();
@@ -172,230 +208,73 @@ export default function Toolbar(props: {
 
 	return (
 		<div id="Toolbar" className="p-8 bg-slate-700">
-			<h1 className="p-3 text-4xl inline-flex" id="Title">
+			<h1 className="p-3 text-2xl inline-flex" id="Title">
 				RSD Password Manager
 			</h1>
-			<div className="inline-flex border-1 border-slate-700">
-				<button
-					className="text-2xl p-3"
-					onClick={() => {
-						setShouldAddAccount(true);
-					}}
-				>
-					Add Account
-				</button>
-			</div>
-			<div className="inline-flex border-1 border-slate-700">
-				<button
-					className="text-2xl p-3"
-					onClick={() => {
-						setShouldGenerate(true);
-					}}
-				>
-					Generate Password
-				</button>
-			</div>
-			<div className="inline-flex border-1 border-slate-700">
-				<button
-					className="text-2xl p-3"
-					onClick={() => {
-						Promise.resolve(invoke<string>("get_file_path")).then(
-							(res: string) => {
-								open({
-									defaultPath: res,
-								});
-							}
-						);
-					}}
-				>
-					Grab Save File
-				</button>
-			</div>
-			<div className="inline-flex border-1 border-slate-700">
-				<button
-					className="text-2xl p-3"
-					onClick={() => {
-						Promise.resolve(
-							open({
-								defaultPath: "C:\\",
-							})
-						).then((res: string | string[] | null) => {
-							if (typeof res == typeof [""] || typeof res == typeof null) {
-								return;
-							}
-
-							Promise.resolve(invoke("set_save_data", { path: res }))
-								.then(() => {
-									props.getData(props.stablePassword);
-								})
-								.catch((err) => {
-									props.setError(err);
-								});
-						});
-					}}
-				>
-					Import Save File
-				</button>
-			</div>
-			<ToolBarDialog
-				open={shouldAddAccount}
-				onClose={() => {
-					setAccountName("");
-					setAccountPassword("");
-					setShouldAddAccount(false);
+			<HeaderButton
+				onClick={() => {
+					setShouldAddAccount(true);
 				}}
-				title={"Add an Account"}
-			>
-				<div id="input-group" className="px-10">
-					<div className="my-5">
-						<label className="text-xl">Account Name: </label>
-						<input
-							type="text"
-							onChange={(e) => {
-								setAccountName(e.target.value);
-							}}
-							className={
-								"focus:outline-none bg-slate-700 border-2 rounded " +
-								(accountName == ""
-									? "border-rose-500"
-									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-							}
-						/>
-						<br />
-						<label
-							className={
-								accountName == "" ? "text-slate-500" : "text-slate-700"
-							}
-						>
-							This field is required
-						</label>
-					</div>
-					<div className="my-5">
-						<label className="text-xl">Password: </label>
-						<input
-							type="Password"
-							onChange={(e) => {
-								setAccountPassword(e.target.value);
-							}}
-							className={
-								"focus:outline-none bg-slate-700 border-2 rounded " +
-								(accountPassword == ""
-									? "border-rose-500"
-									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-							}
-						/>
-						<br />
-						<label
-							className={
-								accountPassword == "" ? "text-slate-500" : "text-slate-700"
-							}
-						>
-							This field is required
-						</label>
-					</div>
-				</div>
-				<DialogButton
-					className={
-						accountName == "" || accountPassword == ""
-							? " cursor-not-allowed opacity-50"
-							: ""
-					}
-					onClick={OnAddAccount}
-				>
-					<div className="text-slate-100 text-xl py-2 px-7">Add</div>
-				</DialogButton>
-			</ToolBarDialog>
-			<ToolBarDialog
-				open={shouldGenerate}
-				onClose={() => {
-					setShouldGenerate(false);
+				title="Add Account"
+			/>
+			<HeaderButton
+				onClick={() => {
+					setShouldGenerate(true);
 				}}
-				title={"Generate A Password"}
-			>
-				<div id="input-group" className="px-10">
-					<div className="my-5">
-						<label className="text-xl">Account Name: </label>
-						<input
-							type="text"
-							onChange={(e) => {
-								setAccountName(e.target.value);
-							}}
-							className={
-								"focus:outline-none bg-slate-700 border-2 rounded " +
-								(accountName == ""
-									? "border-rose-500"
-									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-							}
-						/>
-						<br />
-						<label
-							className={
-								accountName == "" ? "text-slate-500" : "text-slate-700"
-							}
-						>
-							This field is required
-						</label>
-					</div>
-					<div className="my-5">
-						<label className="text-xl">Password Parameters: </label>
-						<div>
-							<input
-								className="inline-flex  px-3"
-								type="checkbox"
-								title="Upper Case"
-								onClick={() => {
-									FlipPasswordParam(0);
-								}}
-								checked={passwordParams[0]}
-							/>
-							<label> Upper Case </label>
-							<input
-								className="inline-flex  px-3"
-								type="checkbox"
-								title="Numbers"
-								onClick={() => {
-									FlipPasswordParam(1);
-								}}
-								checked={passwordParams[1]}
-							/>
-							<label> Numbers </label>
-							<input
-								className="inline-flex px-3"
-								type="checkbox"
-								title="Special Characters"
-								onClick={() => {
-									FlipPasswordParam(2);
-								}}
-								checked={passwordParams[2]}
-							/>
-							<label> Special Characters </label>
-						</div>
-						<div className="my-5">
-							<label className="text-xl">Password Length:</label>
-							<div>
-								<input
-									type="range"
-									min={8}
-									max={32}
-									value={passwordLength}
-									className="slider"
-									onChange={(e) => {
-										setPasswordLength(parseInt(e.target.value.valueOf()));
-									}}
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
-				<DialogButton
-					className={accountName == "" ? " cursor-not-allowed opacity-50" : ""}
-					onClick={() => {
-						OnGeneratePassword();
-					}}
-				>
-					<div className="text-slate-100 text-xl py-2 px-7">Add</div>
-				</DialogButton>
-			</ToolBarDialog>
+				title="Generate Password"
+			/>
+			<HeaderButton
+				onClick={() => {
+					ExportFile(props.setError);
+				}}
+				title="Export Save File"
+			/>
+			<HeaderButton
+				onClick={() => {
+					ImportFile(props.setError, props.getData, props.stablePassword);
+				}}
+				title="Import Save File"
+			/>
+			<HeaderButton
+				onClick={() => {
+					setShouldAddPhoneNumber(true);
+				}}
+				title="Add 2FA"
+			/>
+			<AddAccountDialog
+				shouldAddAccount={shouldAddAccount}
+				setShouldAddAccount={setShouldAddAccount}
+				accountName={accountName}
+				setAccountName={setAccountName}
+				accountPassword={accountPassword}
+				setAccountPassword={setAccountPassword}
+				OnAddAccount={OnAddAccount}
+			/>
+			<GeneratePasswordDialog
+				shouldGenerate={shouldGenerate}
+				setShouldGenerate={setShouldGenerate}
+				accountName={accountName}
+				setAccountName={setAccountName}
+				passwordParams={passwordParams}
+				passwordLength={passwordLength}
+				setPasswordLength={setPasswordLength}
+				FlipPasswordParam={FlipPasswordParam}
+				OnGeneratePassword={OnGeneratePassword}
+			/>
+			<AddPhoneNumberDialog
+				shouldAddPhoneNumber={shouldAddPhoneNumber}
+				setShouldAddPhoneNumber={setShouldAddPhoneNumber}
+				phoneNumber={phoneNumber}
+				setPhoneNumber={setPhoneNumber}
+				VerifyNumber={VerifyNumber}
+			/>
+			<Verify2FADialog
+				shouldVerify2FA={shouldVerify2FA}
+				setShouldVerify2FA={setShouldVerify2FA}
+				code={code}
+				setCode={setCode}
+				VerifyCode={VerifyCode}
+			/>
 		</div>
 	);
 }

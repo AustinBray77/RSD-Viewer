@@ -5,7 +5,6 @@ import { invoke } from "@tauri-apps/api";
 import AccountData from "./AccountData";
 import { Dialog } from "@mui/material";
 import { DialogButton } from "./Buttons";
-import { exit } from "@tauri-apps/api/process";
 
 function PasswordDialog(props: {
 	password: string;
@@ -70,6 +69,24 @@ function PasswordDialog(props: {
 	);
 }
 
+function ErrorDialog(props: {
+	onClose: () => void;
+	error: String;
+}): JSX.Element {
+	let shouldOpen: boolean = props.error != "";
+
+	return (
+		<Dialog id="Error Dialog" open={shouldOpen} onClose={() => props.onClose()}>
+			<div className="p-10 bg-slate-800">
+				<h2 className="text-3xl text-slate-100 m-5">{props.error}</h2>
+				<DialogButton onClick={() => props.onClose()} className="p-5">
+					Ok
+				</DialogButton>
+			</div>
+		</Dialog>
+	);
+}
+
 function App() {
 	const [data, setData] = useState(new Array<AccountData>());
 	const [error, setError] = useState("");
@@ -102,6 +119,14 @@ function App() {
 			});
 	};
 
+	const onErrorClose = (): void => {
+		if (error.substring(0, 5) == "FATAL") {
+			setPassword("");
+		}
+
+		setError("");
+	};
+
 	return (
 		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden">
 			<Toolbar
@@ -112,33 +137,7 @@ function App() {
 				stablePassword={password}
 			/>
 			<Home data={data} setData={sendSetData} />
-			<Dialog
-				id="Error Dialog"
-				open={error != ""}
-				onClose={() => {
-					if (error.substring(0, 5) == "FATAL") {
-						exit(-1);
-					}
-
-					setError("");
-				}}
-			>
-				<div className="p-10 bg-slate-800">
-					<h2 className="text-3xl text-slate-100 m-5">{error}</h2>
-					<DialogButton
-						onClick={() => {
-							if (error.substring(0, 5) == "FATAL") {
-								exit(-1);
-							}
-
-							setError("");
-						}}
-						className="p-5"
-					>
-						Ok
-					</DialogButton>
-				</div>
-			</Dialog>
+			<ErrorDialog onClose={onErrorClose} error={error} />
 			<PasswordDialog
 				password={password}
 				setPassword={setPassword}
