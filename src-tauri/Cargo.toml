@@ -1,6 +1,6 @@
 [package]
-name = "rsd_password_manager"
-version = "0.3.2"
+name = "rsd-password-manager"
+version = "0.4.0"
 description = "An app made for securely managing passwords offline"
 authors = ["Austin Bray"]
 license = ""
@@ -15,7 +15,7 @@ tauri-build = { version = "=1.3", features = [] }
 
 [dependencies]
 tauri = { version = "1.3", features = ["dialog-open", "process-exit", "shell-open"] }
-rsd_encrypt = { path = "../../RSD-Encrypt/" } 
+rsd-encrypt = { version = "0.1.0", git = "https://github.com/AustinBray77/RSD-Encryptor.git" } 
 json = "0.12.4"
 
 [features]
