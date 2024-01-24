@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog } from "@mui/material";
 import { DialogButton } from "./Buttons";
+import { ToolbarState } from "./Toolbar";
 
 const ToolBarDialog = (props: {
 	open: boolean;
@@ -19,13 +20,7 @@ const ToolBarDialog = (props: {
 };
 
 function GeneratePasswordDialog(props: {
-	shouldGenerate: boolean;
-	setShouldGenerate: React.Dispatch<React.SetStateAction<boolean>>;
-	accountName: string;
-	setAccountName: React.Dispatch<React.SetStateAction<string>>;
-	passwordParams: boolean[];
-	passwordLength: number;
-	setPasswordLength: React.Dispatch<React.SetStateAction<number>>;
+	ToolbarState: ToolbarState;
 	OnGeneratePassword: () => void;
 	FlipPasswordParam: (param: number) => void;
 }): JSX.Element {
@@ -127,12 +122,7 @@ function GeneratePasswordDialog(props: {
 }
 
 function AddAccountDialog(props: {
-	shouldAddAccount: boolean;
-	setShouldAddAccount: React.Dispatch<React.SetStateAction<boolean>>;
-	accountName: string;
-	setAccountName: React.Dispatch<React.SetStateAction<string>>;
-	accountPassword: string;
-	setAccountPassword: React.Dispatch<React.SetStateAction<string>>;
+	ToolbarState: ToolbarState
 	OnAddAccount: () => void;
 }): JSX.Element {
 	return (
@@ -208,10 +198,7 @@ function AddAccountDialog(props: {
 }
 
 function AddPhoneNumberDialog(props: {
-	shouldAddPhoneNumber: boolean;
-	setShouldAddPhoneNumber: React.Dispatch<React.SetStateAction<boolean>>;
-	phoneNumber: string;
-	setPhoneNumber: React.Dispatch<React.SetStateAction<string>>;
+	ToolbarState: ToolbarState
 	VerifyNumber: (phoneNumber: string) => void;
 }): JSX.Element {
 	return (
@@ -262,10 +249,7 @@ function AddPhoneNumberDialog(props: {
 }
 
 function Verify2FADialog(props: {
-	shouldVerify2FA: boolean;
-	setShouldVerify2FA: React.Dispatch<React.SetStateAction<boolean>>;
-	code: string;
-	setCode: React.Dispatch<React.SetStateAction<string>>;
+	ToolbarState: ToolbarState
 	VerifyCode: (code: string) => void;
 }): JSX.Element {
 	return (

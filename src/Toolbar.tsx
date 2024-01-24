@@ -9,6 +9,21 @@ import {
 	Verify2FADialog,
 } from "./Dialogs";
 import { ArrayRange, CollapsableRandomArray } from "./Math";
+import { StatePair, useStatePair } from "./StatePair";
+
+type ToolbarState = {
+	shouldAddAccount: StatePair<boolean>
+	shouldGenerate: StatePair<boolean>
+	accountName: StatePair<string>
+	accountPassword: StatePair<string>
+	phoneNumber: StatePair<string> 
+	shouldAddPhoneNumber: StatePair<boolean>
+	tfaCode: StatePair<string> 
+	shouldVerify2FA: StatePair<boolean>
+	passwordParams: StatePair<boolean[]>
+	passwordLength: StatePair<number>
+	genPassFlag: StatePair<boolean>
+}
 
 function HeaderButton(props: {
 	onClick: () => void;
@@ -97,47 +112,52 @@ export default function Toolbar(props: {
 	getData: (password: string) => void;
 	stablePassword: string;
 }): JSX.Element {
-	const [shouldAddAccount, setShouldAddAccount] = useState(false);
-	const [shouldGenerate, setShouldGenerate] = useState(false);
-	const [accountName, setAccountName] = useState("");
-	const [accountPassword, setAccountPassword] = useState("");
-	const [phoneNumber, setPhoneNumber] = useState("");
-	const [shouldAddPhoneNumber, setShouldAddPhoneNumber] = useState(false);
-	const [code, setCode] = useState("");
-	const [shouldVerify2FA, setShouldVerify2FA] = useState(false);
-	const [passwordParams, setPasswordParams] = useState([true, true, true]);
-	const [passwordLength, setPasswordLength] = useState(16);
-	const [genPassFlag, setGenPassFlag] = useState(false);
+	
+	const state: ToolbarState = {
+		shouldAddAccount: useStatePair<boolean>(false),
+		shouldGenerate: useStatePair<boolean>(false),
+		accountName: useStatePair<string>(""),
+		accountPassword: useStatePair<string>(""),
+		phoneNumber: useStatePair<string>(""),
+		shouldAddPhoneNumber: useStatePair<boolean>(false),
+		tfaCode: useStatePair<string>(""),
+		shouldVerify2FA: useStatePair<boolean>(false),
+		passwordParams: useStatePair<boolean[]>([true, true, true]),
+		passwordLength: useStatePair<number>(16),
+		genPassFlag: useStatePair<boolean>(false)
+	}
 
 	const FlipPasswordParam = (param: number) => {
-		let newParams = [...passwordParams];
+		let newParams = [...state.passwordParams.Value];
 		newParams[param] = !newParams[param];
-		setPasswordParams(newParams);
+		state.passwordParams.Set(newParams);
 	};
 
 	const OnAddAccount = () => {
-		if (accountName == "" || accountPassword == "") {
+		if (state.accountName.Value == "" || state.accountPassword.Value == "") {
 			return;
 		}
 
 		console.log("Adding Account...");
 
 		let newData = [...props.data];
-		let newAccount = new AccountData(accountName, accountPassword);
+		let newAccount = new AccountData(state.accountName.Value, state.accountPassword.Value);
 
 		newData.push(newAccount);
 
 		props.setData(newData);
-		setAccountName("");
-		setAccountPassword("");
+		state.accountName.Set("");
+		state.accountPassword.Set("");
 
-		setShouldAddAccount(false);
+		state.shouldAddAccount.Set(false);
 	};
 
 	const OnGeneratePassword = async () => {
-		if (accountName == "") {
+		if (state.accountName.Value == "") {
 			return;
 		}
+
+		let passwordParams = state.passwordParams.Value;
 
 		console.log("Generating pass");
 
@@ -181,17 +201,17 @@ export default function Toolbar(props: {
 			min,
 			max,
 			new Set(exclusions),
-			passwordLength
+			state.passwordLength.Value
 		);
 
-		for (let i = 0; i < passwordLength; i++) {
+		for (let i = 0; i < state.passwordLength.Value; i++) {
 			newPass += String.fromCharCode(asciiCharacters[i]);
 		}
 
 		console.log(newPass);
 
-		setAccountPassword(newPass);
-		setGenPassFlag(true);
+		state.accountPassword.Set(newPass);
+		state.genPassFlag.Set(true);
 	};
 
 	const VerifyNumber = (phoneNumber: string) => {};
@@ -199,12 +219,12 @@ export default function Toolbar(props: {
 	const VerifyCode = (code: string) => {};
 
 	useEffect(() => {
-		if (genPassFlag) {
+		if (state.genPassFlag.Value) {
 			OnAddAccount();
-			setShouldGenerate(false);
-			setGenPassFlag(false);
+			state.shouldGenerate.Set(false);
+			state.genPassFlag.Set(false);
 		}
-	}, [genPassFlag]);
+	}, [state.genPassFlag]);
 
 	return (
 		<div id="Toolbar" className="p-8 bg-slate-700">
@@ -213,13 +233,13 @@ export default function Toolbar(props: {
 			</h1>
 			<HeaderButton
 				onClick={() => {
-					setShouldAddAccount(true);
+					state.shouldAddAccount.Set(true);
 				}}
 				title="Add Account"
 			/>
 			<HeaderButton
 				onClick={() => {
-					setShouldGenerate(true);
+					state.shouldGenerate.Set(true);
 				}}
 				title="Generate Password"
 			/>
@@ -237,44 +257,30 @@ export default function Toolbar(props: {
 			/>
 			<HeaderButton
 				onClick={() => {
-					setShouldAddPhoneNumber(true);
+					state.shouldAddPhoneNumber.Set(true);
 				}}
 				title="Add 2FA"
 			/>
 			<AddAccountDialog
-				shouldAddAccount={shouldAddAccount}
-				setShouldAddAccount={setShouldAddAccount}
-				accountName={accountName}
-				setAccountName={setAccountName}
-				accountPassword={accountPassword}
-				setAccountPassword={setAccountPassword}
+				ToolbarState={state}
 				OnAddAccount={OnAddAccount}
 			/>
 			<GeneratePasswordDialog
-				shouldGenerate={shouldGenerate}
-				setShouldGenerate={setShouldGenerate}
-				accountName={accountName}
-				setAccountName={setAccountName}
-				passwordParams={passwordParams}
-				passwordLength={passwordLength}
-				setPasswordLength={setPasswordLength}
+				ToolbarState={state}
 				FlipPasswordParam={FlipPasswordParam}
 				OnGeneratePassword={OnGeneratePassword}
 			/>
 			<AddPhoneNumberDialog
-				shouldAddPhoneNumber={shouldAddPhoneNumber}
-				setShouldAddPhoneNumber={setShouldAddPhoneNumber}
-				phoneNumber={phoneNumber}
-				setPhoneNumber={setPhoneNumber}
+				ToolbarState={state}
 				VerifyNumber={VerifyNumber}
 			/>
 			<Verify2FADialog
-				shouldVerify2FA={shouldVerify2FA}
-				setShouldVerify2FA={setShouldVerify2FA}
-				code={code}
-				setCode={setCode}
+				ToolbarState={state}
 				VerifyCode={VerifyCode}
 			/>
 		</div>
 	);
 }
+
+
+export { ToolbarState }
