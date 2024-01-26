@@ -1,23 +1,31 @@
 import Home from "./Home/Home";
-import Toolbar from "./Toolbar";
+import Toolbar from "./Toolbar/Toolbar";
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
-import AccountData from "./AccountData";
 import { Dialog } from "@mui/material";
 import { DialogButton } from "./Buttons";
+import { StatePair, useStatePair } from "./StatePair";
+import { AccountData } from "./Services/AccountData";
+
+type AppState = {
+	password: StatePair<string>,
+	error: StatePair<string>,
+	setData: (val: AccountData[]) => void,
+	data: AccountData[]
+}
 
 function PasswordDialog(props: {
-	password: string;
-	setPassword: React.Dispatch<React.SetStateAction<string>>;
+	password: StatePair<string>;
 	onClose: any;
 }) {
 	const [input, setInput] = useState("");
 
+
 	return (
 		<Dialog
-			open={props.password == ""}
+			open={props.password.Value == ""}
 			onClose={() => {
-				props.setPassword(input);
+				props.password.Set(input);
 				props.onClose(input);
 			}}
 			className="backdrop-blur"
@@ -58,7 +66,7 @@ function PasswordDialog(props: {
 				<DialogButton
 					className={input == "" ? " cursor-not-allowed opacity-50" : ""}
 					onClick={() => {
-						props.setPassword(input);
+						props.password.Set(input);
 						props.onClose(input);
 					}}
 				>
@@ -88,63 +96,62 @@ function ErrorDialog(props: {
 }
 
 function App() {
-	const [data, setData] = useState(new Array<AccountData>());
-	const [error, setError] = useState("");
-	const [password, setPassword] = useState("");
-
+	const [data, setData] = useState<AccountData[]>([]);
+	
 	const getData = (password: string): void => {
 		invoke("get_data", { password: password })
 			.then((res) => {
-				setPassword(password);
+				state.password.Set(password);
 
 				if ((res as string) != "") {
 					setData(AccountData.arrayFromJSON(res as string));
 				}
 			})
 			.catch((err: string) => {
-				setError("FATAL ERROR (password is likely incorrect): " + err);
+				state.error.Set("FATAL ERROR (password is likely incorrect): " + err);
 			});
 	};
 
 	const sendSetData = (val: AccountData[]): void => {
 		invoke("save_data", {
 			data: AccountData.arrayToJSON(val),
-			password: password,
+			password: state.password.Value,
 		})
 			.then((res) => {
 				setData(val);
 			})
 			.catch((err) => {
-				setError(err);
+				state.error.Set(err);
 			});
 	};
 
+	const state: AppState = {
+		error: useStatePair<string>(""),
+		password: useStatePair<string>(""),
+		setData: sendSetData,
+		data: data
+	}
+
+
 	const onErrorClose = (): void => {
-		if (error.substring(0, 5) == "FATAL") {
-			setPassword("");
+		if (state.error.Value.substring(0, 5) == "FATAL") {
+			state.password.Set("");
 		}
 
-		setError("");
+		state.error.Set("");
 	};
 
 	return (
 		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden">
-			<Toolbar
-				data={data}
-				setData={sendSetData}
-				setError={setError}
-				getData={getData}
-				stablePassword={password}
-			/>
-			<Home data={data} setData={sendSetData} />
-			<ErrorDialog onClose={onErrorClose} error={error} />
+			<Toolbar AppState={state} getData={getData} />
+			<Home data={state.data} setData={sendSetData} />
+			<ErrorDialog onClose={onErrorClose} error={state.error.Value} />
 			<PasswordDialog
-				password={password}
-				setPassword={setPassword}
+				password={state.password}
 				onClose={getData}
 			/>
 		</div>
 	);
 }
 
-export default App;
+export { App, AppState };

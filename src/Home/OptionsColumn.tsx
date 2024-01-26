@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AccountData from "../AccountData";
+import { AccountData } from "../Services/AccountData";
 import { DialogButton, OptionsButton } from "../Buttons";
 import { StandardBox } from "./CommonElements";
 import { Dialog } from "@mui/material";
