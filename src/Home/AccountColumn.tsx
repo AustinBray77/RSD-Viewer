@@ -1,4 +1,4 @@
-import AccountData from "../AccountData";
+import { AccountData } from "../Services/AccountData";
 import { StandardBox } from "./CommonElements";
 
 export default function AccountColumn(props: {

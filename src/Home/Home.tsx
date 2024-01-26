@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import AccountData from "../AccountData";
 import OptionsColumn from "./OptionsColumn";
 import AccountColumn from "./AccountColumn";
+import { StatePair } from "../StatePair";
+import { AccountData } from "../Services/AccountData";
 
 function Home(props: {
-	data: AccountData[];
-	setData: (val: AccountData[]) => void;
+	data: AccountData[]
+	setData: (val: AccountData[]) => void
 }): JSX.Element {
 	const [dialog, setDialog] = useState(<div></div>);
 
