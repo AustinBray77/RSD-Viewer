@@ -1,6 +1,7 @@
-import { DialogButton } from "../Buttons";
+import { DialogButton, DialogLabel } from "../Components/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
+import { InputGroup } from "../Components/Forms";
 
 function Verify2FADialog(props: {
 	ToolbarState: ToolbarState
@@ -19,7 +20,7 @@ function Verify2FADialog(props: {
 			}}
 			title={"Generate A Password"}
 		>
-			<div id="input-group" className="px-10">
+			<InputGroup>
 				<div className="my-5">
 					<label className="text-xl">Enter your 2FA code below: </label>
 					<input
@@ -41,14 +42,14 @@ function Verify2FADialog(props: {
 						This field is required
 					</label>
 				</div>
-			</div>
+			</InputGroup>
 			<DialogButton
-				className={tfaCode.Value == "" ? " cursor-not-allowed opacity-50" : ""}
+				enabled={tfaCode.Value != ""}
 				onClick={() => {
 					props.VerifyCode(tfaCode.Value);
 				}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Submit</div>
+				<DialogLabel>Submit</DialogLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);

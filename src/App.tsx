@@ -3,9 +3,10 @@ import Toolbar from "./Toolbar/Toolbar";
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { Dialog } from "@mui/material";
-import { DialogButton } from "./Buttons";
+import { DialogButton, DialogLabel } from "./Components/Buttons";
 import { StatePair, useStatePair } from "./StatePair";
 import { AccountData } from "./Services/AccountData";
+import { InputGroup } from "./Components/Forms";
 
 type AppState = {
 	password: StatePair<string>,
@@ -20,7 +21,6 @@ function PasswordDialog(props: {
 }) {
 	const [input, setInput] = useState("");
 
-
 	return (
 		<Dialog
 			open={props.password.Value == ""}
@@ -32,7 +32,7 @@ function PasswordDialog(props: {
 		>
 			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
 				<h2 className="text-3xl px-10 text-slate-100">Login To RSD</h2>
-				<div id="input-group" className="px-10">
+				<InputGroup>
 					<div className="my-5">
 						<div>
 							<label className="text-xl">
@@ -62,15 +62,15 @@ function PasswordDialog(props: {
 							This field is required
 						</label>
 					</div>
-				</div>
+				</InputGroup>
 				<DialogButton
-					className={input == "" ? " cursor-not-allowed opacity-50" : ""}
+					enabled={input != ""}
 					onClick={() => {
 						props.password.Set(input);
 						props.onClose(input);
 					}}
 				>
-					<div className="text-slate-100 text-xl py-2 px-7">Ok</div>
+					<DialogLabel>Ok</DialogLabel>
 				</DialogButton>
 			</div>
 		</Dialog>

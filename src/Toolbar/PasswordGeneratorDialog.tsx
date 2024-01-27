@@ -1,10 +1,11 @@
-import { DialogButton } from "../Buttons";
+import { DialogButton, DialogLabel } from "../Components/Buttons";
 import { ArrayRange, CollapsableRandomArray } from "../Math";
 import { AccountData } from "../Services/AccountData";
 import { StatePair } from "../StatePair";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { ClearToolbar } from "../Services/ClearToolbar";
+import { Input, InputGroup, CheckBoxRow, Slider } from "../Components/Forms";
 
 const GeneratePassword = (state: ToolbarState) => {
 	if (state.account.Value.Name == "") {
@@ -87,95 +88,65 @@ function GeneratePasswordDialog(props: {
 			open={showDialog.Value == ShowDialog.GeneratePassword}
 			onClose={() => {
 				showDialog.Set(ShowDialog.None)
+				ClearToolbar(props.ToolbarState);
 			}}
 			title={"Generate A Password"}
 		>
-			<div id="input-group" className="px-10">
-				<div className="my-5">
-					<label className="text-xl">Account Name: </label>
-					<input
-						type="text"
-						onChange={(e) => {
-							account.Set(new AccountData(e.target.value, ""));
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(account.Value.Name == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							account.Value.Name == "" ? "text-slate-500" : "text-slate-700"
-						}
-					>
-						This field is required
-					</label>
-				</div>
-				<div className="my-5">
-					<label className="text-xl">Password Parameters: </label>
-					<div>
-						<input
-							className="inline-flex  px-3"
-							type="checkbox"
-							title="Upper Case"
-							onClick={() => {
+			<InputGroup>
+				<Input 
+					title="Account Name: "
+					type="text"
+					onChange={(e) => {
+						account.Set(new AccountData(e.target.value, ""));
+					}}
+					requirement={account.Value.Name != ""}
+				/>
+				<CheckBoxRow 
+					title="Password Parameters: "
+					length={3}
+					checkBoxProps={[
+						{
+							label: "Upper Case",
+							onClick: () => {
 								FlipPasswordParam(0, passwordParams);
-							}}
-							checked={passwordParams.Value[0]}
-						/>
-						<label> Upper Case </label>
-						<input
-							className="inline-flex  px-3"
-							type="checkbox"
-							title="Numbers"
-							onClick={() => {
+							},
+							checked:passwordParams.Value[0]
+						},
+						{
+							label: "Numbers",
+							onClick: () => {
 								FlipPasswordParam(1, passwordParams);
-							}}
-							checked={passwordParams.Value[1]}
-						/>
-						<label> Numbers </label>
-						<input
-							className="inline-flex px-3"
-							type="checkbox"
-							title="Special Characters"
-							onClick={() => {
+							},
+							checked:passwordParams.Value[1]
+						},
+						{
+							label: "Special Characters",
+							onClick: () => {
 								FlipPasswordParam(2, passwordParams);
-							}}
-							checked={passwordParams.Value[2]}
-						/>
-						<label> Special Characters </label>
-					</div>
-					<div className="my-5">
-						<label className="text-xl">Password Length:</label>
-						<div>
-							<input
-								type="range"
-								min={8}
-								max={32}
-								value={passwordLength.Value}
-								className="slider"
-								onChange={(e) => {
-									passwordLength.Set(parseInt(e.target.value.valueOf()));
-								}}
-							/>
-						</div>
-					</div>
-				</div>
-			</div>
+							},
+							checked:passwordParams.Value[2]
+						}
+					]}
+				/>
+				<Slider 
+					title="Password Length: "
+					min={8}
+					max={32}
+					value={passwordLength.Value}
+					onChange={(e) => {
+						passwordLength.Set(parseInt(e.target.value.valueOf()));
+					}}
+				/>
+			</InputGroup>
 			<DialogButton
-				className={
-					account.Value.Name == "" ? " cursor-not-allowed opacity-50" : ""
-				}
+				enabled={account.Value.Name != ""}
 				onClick={() => {
 					GeneratePassword(props.ToolbarState);
 					ClearToolbar(props.ToolbarState);
 					showDialog.Set(ShowDialog.None);
 				}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Add</div>
+				<DialogLabel>Add</DialogLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);

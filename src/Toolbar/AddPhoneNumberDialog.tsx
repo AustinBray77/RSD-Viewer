@@ -1,7 +1,8 @@
-import { DialogButton } from "../Buttons";
+import { DialogButton, DialogLabel } from "../Components/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { ClearToolbar } from "../Services/ClearToolbar";
+import { Input, InputGroup } from "../Components/Forms";
 
 function AddPhoneNumberDialog(props: {
 	ToolbarState: ToolbarState
@@ -21,40 +22,23 @@ function AddPhoneNumberDialog(props: {
 			}}
 			title={"Generate A Password"}
 		>
-			<div id="input-group" className="px-10">
-				<div className="my-5">
-					<label className="text-xl">Phone Number: </label>
-					<input
-						type="text"
-						onChange={(e) => {
-							phoneNumber.Set(e.target.value);
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(phoneNumber.Value == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							phoneNumber.Value == "" ? "text-slate-500" : "text-slate-700"
-						}
-					>
-						This field is required
-					</label>
-				</div>
-			</div>
+			<InputGroup>
+				<Input 
+					title="Phone Number: "
+					type="text"
+					onChange={(e) => {
+						phoneNumber.Set(e.target.value);
+					}}
+					requirement={phoneNumber.Value != ""}
+				/>
+			</InputGroup>
 			<DialogButton
-				className={
-					phoneNumber.Value == "" ? " cursor-not-allowed opacity-50" : ""
-				}
+				enabled={phoneNumber.Value != ""}
 				onClick={() => {
 					props.VerifyNumber(phoneNumber.Value);
 				}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Add</div>
+				<DialogLabel>Add</DialogLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);

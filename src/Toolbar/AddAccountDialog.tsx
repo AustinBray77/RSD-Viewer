@@ -1,9 +1,10 @@
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { DialogButton } from "../Buttons";
+import { DialogButton, DialogLabel } from "../Components/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { AppState } from "../App";
 import { AccountData, AddAccountHandler } from "../Services/AccountData";
 import { ClearToolbar } from "../Services/ClearToolbar";
+import { Input, InputGroup } from "../Components/Forms";
 
 function AddAccountDialog(props: {
 	ToolbarState: ToolbarState,
@@ -23,60 +24,26 @@ function AddAccountDialog(props: {
 			}}
 			title={"Add an Account"}
 		>
-			<div id="input-group" className="px-10">
-				<div className="my-5">
-					<label className="text-xl">Account Name: </label>
-					<input
-						type="text"
-						onChange={(e) => {
-							account.Set(new AccountData(e.target.value, account.Value.Password))
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(account.Value.Name == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							account.Value.Name == "" ? "text-slate-500" : "text-slate-700"
-						}
-					>
-						This field is required
-					</label>
-				</div>
-				<div className="my-5">
-					<label className="text-xl">Password: </label>
-					<input
-						type="Password"
-						onChange={(e) => {
-							account.Set(new AccountData(account.Value.Name, e.target.value));
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(account.Value.Password == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							account.Value.Password == "" ? "text-slate-500" : "text-slate-700"
-						}
-					>
-						This field is required
-					</label>
-				</div>
-			</div>
+			<InputGroup>
+				<Input 
+					type="text"
+					onChange={(e) => {
+						account.Set(new AccountData(e.target.value, account.Value.Password))
+					}}
+					title="Account Name: "
+					requirement={account.Value.Name != ""}
+				/>
+				<Input 
+					type="password"
+					onChange={(e) => {
+						account.Set(new AccountData(account.Value.Name, e.target.value));
+					}}
+					title="Password: "
+					requirement={account.Value.Password != ""}
+				/>
+			</InputGroup>
 			<DialogButton
-				className={
-					account.Value.Name == "" || account.Value.Password == ""
-						? " cursor-not-allowed opacity-50"
-						: ""
-				}
+				enabled={!account.Value.isEmpty()}
 				onClick={
 					() => { 
 						AddAccountHandler(props.ToolbarState, props.AppState);
@@ -84,7 +51,7 @@ function AddAccountDialog(props: {
 						showDialog.Set(ShowDialog.None) 
 					}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Add</div>
+				<DialogLabel>Add</DialogLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);
