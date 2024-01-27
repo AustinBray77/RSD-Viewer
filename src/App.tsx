@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { Dialog } from "@mui/material";
 import { DialogButton, DialogLabel } from "./Components/Buttons";
-import { StatePair, useStatePair } from "./StatePair";
-import { AccountData } from "./Services/AccountData";
+import { StatePair, useStatePair } from "./Utils/StatePair";
+import { AccountData } from "./Utils/AccountData";
 import { InputGroup } from "./Components/Forms";
 
 type AppState = {

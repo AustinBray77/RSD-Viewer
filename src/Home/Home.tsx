@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import OptionsColumn from "./OptionsColumn";
 import AccountColumn from "./AccountColumn";
-import { StatePair } from "../StatePair";
-import { AccountData } from "../Services/AccountData";
+import { StatePair } from "../Utils/StatePair";
+import { AccountData } from "../Utils/AccountData";
 
 function Home(props: {
 	data: AccountData[]

@@ -1,10 +1,10 @@
 import { DialogButton, DialogLabel } from "../Components/Buttons";
-import { ArrayRange, CollapsableRandomArray } from "../Math";
-import { AccountData } from "../Services/AccountData";
-import { StatePair } from "../StatePair";
-import ToolbarDialog from "./ToolbarDialog";
+import { ArrayRange, CollapsableRandomArray } from "../Utils/Math";
+import { AccountData } from "../Utils/AccountData";
+import { StatePair } from "../Utils/StatePair";
+import BasicDialog from "../Components/Dialogs";
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { ClearToolbar } from "../Services/ClearToolbar";
+import { ClearToolbar } from "../Utils/Functions";
 import { Input, InputGroup, CheckBoxRow, Slider } from "../Components/Forms";
 
 const GeneratePassword = (state: ToolbarState) => {
@@ -84,7 +84,7 @@ function GeneratePasswordDialog(props: {
 	} = props.ToolbarState;
 	
 	return (
-		<ToolbarDialog
+		<BasicDialog
 			open={showDialog.Value == ShowDialog.GeneratePassword}
 			onClose={() => {
 				showDialog.Set(ShowDialog.None)
@@ -148,7 +148,7 @@ function GeneratePasswordDialog(props: {
 			>
 				<DialogLabel>Add</DialogLabel>
 			</DialogButton>
-		</ToolbarDialog>
+		</BasicDialog>
 	);
 }
 

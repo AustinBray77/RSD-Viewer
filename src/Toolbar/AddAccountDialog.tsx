@@ -1,9 +1,9 @@
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { DialogButton, DialogLabel } from "../Components/Buttons";
-import ToolbarDialog from "./ToolbarDialog";
+import BasicDialog from "../Components/Dialogs";
 import { AppState } from "../App";
-import { AccountData, AddAccountHandler } from "../Services/AccountData";
-import { ClearToolbar } from "../Services/ClearToolbar";
+import { AccountData, AddAccountHandler } from "../Utils/AccountData";
+import { ClearToolbar } from "../Utils/Functions";
 import { Input, InputGroup } from "../Components/Forms";
 
 function AddAccountDialog(props: {
@@ -16,7 +16,7 @@ function AddAccountDialog(props: {
 	} = props.ToolbarState;
 
 	return (
-		<ToolbarDialog
+		<BasicDialog
 			open={showDialog.Value == ShowDialog.AddAccount}
 			onClose={() => {
 				ClearToolbar(props.ToolbarState);
@@ -53,7 +53,7 @@ function AddAccountDialog(props: {
 			>
 				<DialogLabel>Add</DialogLabel>
 			</DialogButton>
-		</ToolbarDialog>
+		</BasicDialog>
 	);
 }
 

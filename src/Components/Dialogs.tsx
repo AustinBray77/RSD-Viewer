@@ -1,11 +1,11 @@
 import { Dialog } from "@mui/material";
 
-const ToolbarDialog = (props: {
+function BasicDialog (props: {
 	open: boolean;
 	onClose?: (e: {}, r: "backdropClick" | "escapeKeyDown") => void;
 	children?: JSX.Element | JSX.Element[];
 	title?: string;
-}): JSX.Element => {
+}): JSX.Element {
 	return (
 		<Dialog open={props.open} onClose={props.onClose} className="backdrop-blur">
 			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
@@ -16,4 +16,4 @@ const ToolbarDialog = (props: {
 	);
 };
 
-export default ToolbarDialog
+export default BasicDialog

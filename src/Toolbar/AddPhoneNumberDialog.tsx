@@ -1,7 +1,7 @@
 import { DialogButton, DialogLabel } from "../Components/Buttons";
-import ToolbarDialog from "./ToolbarDialog";
+import BasicDialog from "../Components/Dialogs";
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { ClearToolbar } from "../Services/ClearToolbar";
+import { ClearToolbar } from "../Utils/Functions";
 import { Input, InputGroup } from "../Components/Forms";
 
 function AddPhoneNumberDialog(props: {
@@ -14,7 +14,7 @@ function AddPhoneNumberDialog(props: {
 	} = props.ToolbarState
 
 	return (
-		<ToolbarDialog
+		<BasicDialog
 			open={showDialog.Value == ShowDialog.AddPhoneNumber}
 			onClose={() => {
 				ClearToolbar(props.ToolbarState);
@@ -40,7 +40,7 @@ function AddPhoneNumberDialog(props: {
 			>
 				<DialogLabel>Add</DialogLabel>
 			</DialogButton>
-		</ToolbarDialog>
+		</BasicDialog>
 	);
 }
 

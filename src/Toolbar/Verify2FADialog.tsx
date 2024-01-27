@@ -1,5 +1,5 @@
 import { DialogButton, DialogLabel } from "../Components/Buttons";
-import ToolbarDialog from "./ToolbarDialog";
+import BasicDialog from "../Components/Dialogs";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { InputGroup } from "../Components/Forms";
 
@@ -13,7 +13,7 @@ function Verify2FADialog(props: {
 	} = props.ToolbarState;
 	
 	return (
-		<ToolbarDialog
+		<BasicDialog
 			open={showDialog.Value == ShowDialog.Verify2FA}
 			onClose={() => {
 				showDialog.Set(ShowDialog.None)
@@ -51,7 +51,7 @@ function Verify2FADialog(props: {
 			>
 				<DialogLabel>Submit</DialogLabel>
 			</DialogButton>
-		</ToolbarDialog>
+		</BasicDialog>
 	);
 }
 

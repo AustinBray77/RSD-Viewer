@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import { StatePair, useStatePair } from "../StatePair";
+import { StatePair, useStatePair } from "../Utils/StatePair";
 import { AppState } from "../App";
-import { ExportFile, ImportFile } from "../FileHandling";
+import { ExportFile, ImportFile } from "../Utils/FileHandling";
 import GeneratePasswordDialog from "./PasswordGeneratorDialog";
 import AddAccountDialog from "./AddAccountDialog";
 import AddPhoneNumberDialog from "./AddPhoneNumberDialog";
 import Verify2FADialog from "./Verify2FADialog";
-import { AccountData } from "../Services/AccountData";
+import { AccountData } from "../Utils/AccountData";
 
 enum ShowDialog {
 	None,
