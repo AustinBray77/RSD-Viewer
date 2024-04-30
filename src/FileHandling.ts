@@ -57,10 +57,10 @@ function ImportFile(
 				throw "Invalid Location";
 			}
 
-			return Promise.resolve(invoke("set_save_data", { path: res }));
+			return Promise.resolve(invoke("set_save_data", { path: res, isLegacy: isLegacy, password: stablePassword }));
 		})
 		.then(() => {
-			getData(stablePassword, isLegacy);
+			getData(stablePassword);
 		})
 		.catch((err) => {
 			setError(err);

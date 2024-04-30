@@ -25,7 +25,7 @@ extern crate rsd_encrypt;
 use rsd_encrypt::{encrypt, decrypt, legacy_decrypt};
 
 #[tauri::command]
-fn get_data(handle: tauri::AppHandle, password: String, is_legacy: bool) -> Result<String, String> {
+fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String> {
     let file = open_file(&handle, false);
 
     let file: File = match file {
@@ -33,26 +33,10 @@ fn get_data(handle: tauri::AppHandle, password: String, is_legacy: bool) -> Resu
         Err(error) => return Err(file_error(error)),
     };
 
-    let encrypted_content = read_all_content(file);
-
-    let encrypted_content: String = match encrypted_content {
+    let encrypted_content: String = match read_all_content(file) {
         Ok(content) => content,
         Err(error) => return Err(error.to_string()),
     };
-
-    if is_legacy {
-        let decrypted_content: String = match legacy_decrypt(encrypted_content.clone(), password.clone()) {
-            Ok(content) => content,
-            Err(error) => return Err(error.to_string()),
-        };
-
-        match save_data(handle, encrypted_content, password) {
-            Ok(_) => (),
-            Err(error) => return Err(error.to_string()),
-        }
-
-        return Ok(decrypted_content);
-    }
 
     return match decrypt(encrypted_content, password) {
         Ok(content) => Ok(content),
@@ -91,13 +75,13 @@ fn get_file_path(handle: tauri::AppHandle) -> String {
 }
 
 #[tauri::command]
-fn set_save_data(handle: tauri::AppHandle, path: String) -> Result<(), String> {
-    let main_file = open_file(&handle, true);
+fn set_save_data(handle: tauri::AppHandle, path: String, is_legacy: bool, password: String) -> Result<(), String> {
+    /*let main_file = open_file(&handle, true);
 
     let main_file = match main_file {
         Ok(file) => file,
         Err(error) => return Err(error.to_string()),
-    };
+    };*/
 
     let new_data_file = fs::OpenOptions::new().read(true).open(path);
 
@@ -113,12 +97,31 @@ fn set_save_data(handle: tauri::AppHandle, path: String) -> Result<(), String> {
         Err(error) => return Err(error.to_string()),
     };
 
-    let write_result = write_all_content(main_file, content.as_str());
+    let decrypted_content: String;
+
+    if is_legacy {
+        decrypted_content = match legacy_decrypt(content.clone(), password.clone()) {
+            Ok(content) => content,
+            Err(error) => return Err(error.to_string()),
+        };
+    } else {
+        decrypted_content = match decrypt(content.clone(), password.clone()) {
+            Ok(content) => content,
+            Err(error) => return Err(error.to_string()),
+        };
+    }
+
+    match save_data(handle, decrypted_content.clone(), password) {
+        Ok(_) => Ok(()),
+        Err(error) => Err(error.to_string()),
+    }
+
+    /*let write_result = write_all_content(main_file, content.as_str());
 
     match write_result {
         Ok(_) => Ok(()),
         Err(error) => Err(error.to_string()),
-    }
+    }*/
 }
 
 #[tauri::command]
