@@ -25,8 +25,8 @@ extern crate rsd_encrypt;
 use rsd_encrypt::{encrypt, decrypt, legacy_decrypt};
 
 #[tauri::command]
-fn get_data(handle: tauri::AppHandle, password: String, isLegacy: bool) -> Result<String, String> {
-    let file = open_file(handle, false);
+fn get_data(handle: tauri::AppHandle, password: String, is_legacy: bool) -> Result<String, String> {
+    let file = open_file(&handle, false);
 
     let file: File = match file {
         Ok(file) => file,
@@ -40,13 +40,16 @@ fn get_data(handle: tauri::AppHandle, password: String, isLegacy: bool) -> Resul
         Err(error) => return Err(error.to_string()),
     };
 
-    if isLegacy {
-        let decrypted_content: String = match legacy_decrypt(encrypted_content, password) {
-            Ok(content) => Ok(content),
+    if is_legacy {
+        let decrypted_content: String = match legacy_decrypt(encrypted_content.clone(), password.clone()) {
+            Ok(content) => content,
             Err(error) => return Err(error.to_string()),
         };
 
-        save_data(handle, encrypted_content, password);
+        match save_data(handle, encrypted_content, password) {
+            Ok(_) => (),
+            Err(error) => return Err(error.to_string()),
+        }
 
         return Ok(decrypted_content);
     }
@@ -62,7 +65,7 @@ fn save_data(handle: tauri::AppHandle, data: String, password: String) -> Result
     let content: String = data;
 
     let encrypted_content = encrypt(content, password);
-    let file: Result<File, Error> = open_file(handle, true);
+    let file: Result<File, Error> = open_file(&handle, true);
 
     let file: File = match file {
         Ok(file) => file,
@@ -89,7 +92,7 @@ fn get_file_path(handle: tauri::AppHandle) -> String {
 
 #[tauri::command]
 fn set_save_data(handle: tauri::AppHandle, path: String) -> Result<(), String> {
-    let main_file = open_file(handle, true);
+    let main_file = open_file(&handle, true);
 
     let main_file = match main_file {
         Ok(file) => file,
@@ -120,7 +123,7 @@ fn set_save_data(handle: tauri::AppHandle, path: String) -> Result<(), String> {
 
 #[tauri::command]
 fn copy_save_data(handle: tauri::AppHandle, mut path: String) -> Result<String, String> {
-    let main_file = open_file(handle, false);
+    let main_file = open_file(&handle, false);
 
     let main_file = match main_file {
         Ok(file) => file,
@@ -166,7 +169,7 @@ fn file_error(error: Error) -> String {
     "FORCED CLOSURE FILE ERROR ".to_string() + error.to_string().as_str()
 }
 
-fn open_file(handle: tauri::AppHandle, truncate: bool) -> Result<File, Error> {
+fn open_file(handle: &tauri::AppHandle, truncate: bool) -> Result<File, Error> {
     let path = handle
         .path_resolver()
         .resolve_resource("resources/psd.bin")
