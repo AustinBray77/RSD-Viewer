@@ -1,4 +1,4 @@
-import { DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { ClearToolbar } from "../Services/ClearToolbar";
@@ -54,7 +54,7 @@ function AddPhoneNumberDialog(props: {
 					props.VerifyNumber(phoneNumber.Value);
 				}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Add</div>
+				<ButtonLabel>Add</ButtonLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);

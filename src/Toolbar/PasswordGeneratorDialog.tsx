@@ -1,4 +1,4 @@
-import { DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Buttons";
 import { ArrayRange, CollapsableRandomArray } from "../Math";
 import { AccountData } from "../Services/AccountData";
 import { StatePair } from "../StatePair";
@@ -175,7 +175,7 @@ function GeneratePasswordDialog(props: {
 					showDialog.Set(ShowDialog.None);
 				}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Add</div>
+				<ButtonLabel>Add</ButtonLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);

@@ -31,8 +31,9 @@ function ExportFile(
 
 function ImportFile(
 	setError: React.Dispatch<React.SetStateAction<string>>,
-	getData: (password: string) => void,
-	stablePassword: string
+	getData: (password: string, isLegacy?: boolean) => void,
+	stablePassword: string,
+	isLegacy: boolean
 ): void {
 	let options = {
 		defaultPath: "C:\\",
@@ -59,7 +60,7 @@ function ImportFile(
 			return Promise.resolve(invoke("set_save_data", { path: res }));
 		})
 		.then(() => {
-			getData(stablePassword);
+			getData(stablePassword, isLegacy);
 		})
 		.catch((err) => {
 			setError(err);

@@ -1,5 +1,5 @@
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { AppState } from "../App";
 import { AccountData, AddAccountHandler } from "../Services/AccountData";
@@ -84,7 +84,7 @@ function AddAccountDialog(props: {
 						showDialog.Set(ShowDialog.None) 
 					}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Add</div>
+				<ButtonLabel>Add</ButtonLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);

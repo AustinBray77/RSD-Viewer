@@ -3,7 +3,7 @@ import Toolbar from "./Toolbar/Toolbar";
 import React, { useState } from "react";
 import { invoke } from "@tauri-apps/api";
 import { Dialog } from "@mui/material";
-import { DialogButton } from "./Buttons";
+import { ButtonLabel, DialogButton } from "./Buttons";
 import { StatePair, useStatePair } from "./StatePair";
 import { AccountData } from "./Services/AccountData";
 
@@ -70,7 +70,7 @@ function PasswordDialog(props: {
 						props.onClose(input);
 					}}
 				>
-					<div className="text-slate-100 text-xl py-2 px-7">Ok</div>
+					<ButtonLabel>Ok</ButtonLabel>
 				</DialogButton>
 			</div>
 		</Dialog>
@@ -98,8 +98,8 @@ function ErrorDialog(props: {
 function App() {
 	const [data, setData] = useState<AccountData[]>([]);
 	
-	const getData = (password: string): void => {
-		invoke("get_data", { password: password })
+	const getData = (password: string, isLegacy?: boolean): void => {
+		invoke("get_data", { password: password, isLegacy: isLegacy == undefined ? false : isLegacy })
 			.then((res) => {
 				state.password.Set(password);
 

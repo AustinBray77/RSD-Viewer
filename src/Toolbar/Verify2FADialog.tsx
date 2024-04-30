@@ -1,4 +1,4 @@
-import { DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 
@@ -48,7 +48,7 @@ function Verify2FADialog(props: {
 					props.VerifyCode(tfaCode.Value);
 				}}
 			>
-				<div className="text-slate-100 text-xl py-2 px-7">Submit</div>
+				<ButtonLabel>Submit</ButtonLabel>
 			</DialogButton>
 		</ToolbarDialog>
 	);

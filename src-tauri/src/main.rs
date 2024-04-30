@@ -22,11 +22,10 @@ use std::time::SystemTime;
 
 extern crate rsd_encrypt;
 
-use rsd_encrypt::decrypt;
-use rsd_encrypt::encrypt;
+use rsd_encrypt::{encrypt, decrypt, legacy_decrypt};
 
 #[tauri::command]
-fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String> {
+fn get_data(handle: tauri::AppHandle, password: String, isLegacy: bool) -> Result<String, String> {
     let file = open_file(handle, false);
 
     let file: File = match file {
@@ -40,6 +39,17 @@ fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String
         Ok(content) => content,
         Err(error) => return Err(error.to_string()),
     };
+
+    if isLegacy {
+        let decrypted_content: String = match legacy_decrypt(encrypted_content, password) {
+            Ok(content) => Ok(content),
+            Err(error) => return Err(error.to_string()),
+        };
+
+        save_data(handle, encrypted_content, password);
+
+        return Ok(decrypted_content);
+    }
 
     return match decrypt(encrypted_content, password) {
         Ok(content) => Ok(content),

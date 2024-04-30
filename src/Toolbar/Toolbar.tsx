@@ -7,13 +7,15 @@ import AddAccountDialog from "./AddAccountDialog";
 import AddPhoneNumberDialog from "./AddPhoneNumberDialog";
 import Verify2FADialog from "./Verify2FADialog";
 import { AccountData } from "../Services/AccountData";
+import ImportFileDialog from "./ImportFileDialog";
 
 enum ShowDialog {
 	None,
 	AddAccount,
 	GeneratePassword,
 	AddPhoneNumber,
-	Verify2FA
+	Verify2FA,
+	ImportFile
 }
 
 type ToolbarState = {
@@ -47,7 +49,7 @@ function Add2FA(): void {}
 
 export default function Toolbar(props: {
 	AppState: AppState,
-	getData: (password: string) => void
+	getData: (password: string, isLegacy?: boolean) => void
 }): JSX.Element {
 	
 	const {
@@ -91,7 +93,7 @@ export default function Toolbar(props: {
 			/>
 			<HeaderButton
 				onClick={() => {
-					ImportFile(error.Set, props.getData, password.Value);
+					state.showDialog.Set(ShowDialog.ImportFile);
 				}}
 				title="Import Save File"
 			/>
@@ -115,6 +117,15 @@ export default function Toolbar(props: {
 			<Verify2FADialog
 				ToolbarState={state}
 				VerifyCode={VerifyCode}
+			/>
+			<ImportFileDialog
+				ToolbarState={state}
+				importCallback={
+					(isLegacy: boolean): void => {
+						ImportFile(error.Set, props.getData, password.Value, isLegacy);
+						state.showDialog.Set(ShowDialog.None);
+					}
+				}
 			/>
 		</div>
 	);

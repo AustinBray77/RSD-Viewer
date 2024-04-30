@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AccountData } from "../Services/AccountData";
-import { DialogButton, OptionsButton } from "../Buttons";
+import { ButtonLabel, DialogButton, OptionsButton } from "../Buttons";
 import { StandardBox } from "./CommonElements";
 import { Dialog } from "@mui/material";
 
@@ -26,7 +26,7 @@ function CopyPasswordButton(props: {
 						}}
 						className={"my-5"}
 					>
-						<div className="text-slate-100 text-xl py-2 px-7">Ok</div>
+						<ButtonLabel>Ok</ButtonLabel>
 					</DialogButton>
 				</div>
 			</Dialog>
@@ -127,7 +127,7 @@ function ChangePasswordButton(props: {
 							props.setDialog(<div></div>);
 						}}
 					>
-						<div className="text-slate-100 text-xl py-2 px-7">Change</div>
+						<ButtonLabel>Change</ButtonLabel>
 					</DialogButton>
 				</div>
 			</Dialog>
@@ -176,14 +176,14 @@ function RemovePasswordButton(props: {
 							props.setDialog(<div></div>);
 						}}
 					>
-						<div className="text-slate-100 text-xl py-2 px-7">Ok</div>
+						<ButtonLabel>Ok</ButtonLabel>
 					</DialogButton>
 					<DialogButton
 						onClick={() => {
 							props.setDialog(<div></div>);
 						}}
 					>
-						<div className="text-slate-100 text-xl py-2 px-7">Cancel</div>
+						<ButtonLabel>Cancel</ButtonLabel>
 					</DialogButton>
 				</div>
 			</Dialog>
