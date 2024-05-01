@@ -1,51 +1,78 @@
 import { ButtonLabel, DialogButton } from "../Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
+import { AppState } from "../App";
+import { invoke } from "@tauri-apps/api";
+import { useState } from "react";
+
+function VerifyCode (code: string, ToolbarState: ToolbarState, AppState: AppState):void {
+	if(code == ToolbarState.tfaCode.Value) {
+		AddPhoneNumber(ToolbarState.phoneNumber.Value, ToolbarState, AppState);
+	} else {
+		ToolbarState.showDialog.Set(ShowDialog.None);
+		AppState.error.Set("Invalid 2FA code");
+	}
+
+	ToolbarState.tfaCode.Set("");
+}
+
+function AddPhoneNumber (phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState):void {
+	invoke("add_phone_number", { phoneNumber: phoneNumber })
+		.then(() => {
+			AppState.error.Set("Phone number added successfully");
+			ToolbarState.showDialog.Set(ShowDialog.None);
+		})
+		.catch((err) => {
+			AppState.error.Set(err);
+		});
+}
 
 function Verify2FADialog(props: {
-	ToolbarState: ToolbarState
-	VerifyCode: (code: string) => void;
+	ToolbarState: ToolbarState,
+	AppState: AppState
 }): JSX.Element {
 	const {
-		showDialog,
-		tfaCode
+		showDialog
 	} = props.ToolbarState;
 	
+	const [testCode, setTestCode] = useState("");
+
 	return (
 		<ToolbarDialog
 			open={showDialog.Value == ShowDialog.Verify2FA}
 			onClose={() => {
 				showDialog.Set(ShowDialog.None)
 			}}
-			title={"Generate A Password"}
+			title={"Enter The 2FA Code"}
 		>
 			<div id="input-group" className="px-10">
 				<div className="my-5">
-					<label className="text-xl">Enter your 2FA code below: </label>
+					<label className="text-xl">2FA Code: </label>
 					<input
 						type="text"
 						onChange={(e) => {
-							tfaCode.Set(e.target.value);
+							setTestCode(e.target.value);
 						}}
 						className={
 							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(tfaCode.Value == ""
+							(testCode == ""
 								? "border-rose-500"
 								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
 						}
 					/>
 					<br />
 					<label
-						className={tfaCode.Value == "" ? "text-slate-500" : "text-slate-700"}
+						className={testCode == "" ? "text-slate-500" : "text-slate-700"}
 					>
 						This field is required
 					</label>
 				</div>
 			</div>
 			<DialogButton
-				className={tfaCode.Value == "" ? " cursor-not-allowed opacity-50" : ""}
+				className={testCode == "" ? " cursor-not-allowed opacity-50" : ""}
 				onClick={() => {
-					props.VerifyCode(tfaCode.Value);
+					VerifyCode(testCode, props.ToolbarState, props.AppState);
+					setTestCode("");
 				}}
 			>
 				<ButtonLabel>Submit</ButtonLabel>

@@ -8,7 +8,9 @@ fn main() {
             save_data,
             get_file_path,
             set_save_data,
-            copy_save_data
+            copy_save_data,
+            send_code,
+            add_phone_number
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -194,4 +196,18 @@ fn read_all_content(mut file: File) -> Result<String, Error> {
 
 fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
     file.write_all(content.as_bytes())
+}
+
+
+#[tauri::command]
+fn send_code(handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
+    
+    
+    Ok("123456".to_string())    
+}
+
+#[tauri::command]
+fn add_phone_number(handle: tauri::AppHandle, phone_number:String) -> Result<(), String> {
+    
+    Ok(())    
 }

@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { StatePair, useStatePair } from "../StatePair";
 import { AppState } from "../App";
 import { ExportFile, ImportFile } from "../FileHandling";
@@ -40,12 +39,6 @@ function HeaderButton(props: {
 		</div>
 	);
 }
-
-const VerifyNumber = (phoneNumber: string) => {};
-
-const VerifyCode = (code: string) => {};
-
-function Add2FA(): void {}
 
 export default function Toolbar(props: {
 	AppState: AppState,
@@ -112,11 +105,11 @@ export default function Toolbar(props: {
 			/>
 			<AddPhoneNumberDialog
 				ToolbarState={state}
-				VerifyNumber={VerifyNumber}
+				AppState={props.AppState}
 			/>
 			<Verify2FADialog
 				ToolbarState={state}
-				VerifyCode={VerifyCode}
+				AppState={props.AppState}
 			/>
 			<ImportFileDialog
 				ToolbarState={state}

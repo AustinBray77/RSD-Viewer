@@ -2,10 +2,27 @@ import { ButtonLabel, DialogButton } from "../Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { ClearToolbar } from "../Services/ClearToolbar";
+import { invoke } from "@tauri-apps/api";
+import { AppState } from "../App";
+
+function VerifyNumber(phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState): void {
+	invoke("send_code", { phoneNumber: phoneNumber })
+		.then((res) => {
+			ToolbarState.tfaCode.Set(res as string);
+			ToolbarState.showDialog.Set(ShowDialog.Verify2FA);
+		})
+		.catch((err) => {
+			ToolbarState.tfaCode.Set("");
+			ToolbarState.showDialog.Set(ShowDialog.None);
+			AppState.error.Set(err);
+		});
+
+	ToolbarState.phoneNumber.Set("");
+}
 
 function AddPhoneNumberDialog(props: {
 	ToolbarState: ToolbarState
-	VerifyNumber: (phoneNumber: string) => void;
+	AppState: AppState
 }): JSX.Element {
 	const {
 		showDialog,
@@ -19,7 +36,7 @@ function AddPhoneNumberDialog(props: {
 				ClearToolbar(props.ToolbarState);
 				showDialog.Set(ShowDialog.None)
 			}}
-			title={"Generate A Password"}
+			title={"Enter Your Phone Number"}
 		>
 			<div id="input-group" className="px-10">
 				<div className="my-5">
@@ -51,7 +68,7 @@ function AddPhoneNumberDialog(props: {
 					phoneNumber.Value == "" ? " cursor-not-allowed opacity-50" : ""
 				}
 				onClick={() => {
-					props.VerifyNumber(phoneNumber.Value);
+					VerifyNumber(phoneNumber.Value, props.ToolbarState, props.AppState);
 				}}
 			>
 				<ButtonLabel>Add</ButtonLabel>
