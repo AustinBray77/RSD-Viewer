@@ -9,7 +9,7 @@ fn main() {
             get_file_path,
             set_save_data,
             copy_save_data,
-            send_code,
+            send_code_setup,
             add_phone_number
         ])
         .run(tauri::generate_context!())
@@ -24,7 +24,7 @@ use std::time::SystemTime;
 
 extern crate rsd_encrypt;
 
-use rsd_encrypt::{encrypt, decrypt, legacy_decrypt};
+use rsd_encrypt::{decrypt, encrypt, legacy_decrypt};
 
 #[tauri::command]
 fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String> {
@@ -200,10 +200,23 @@ fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
 
 
 #[tauri::command]
-fn send_code(handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
+async fn send_code_setup(handle: tauri::AppHandle, phone_number:String, password: String) -> Result<String, String> {
+    let enc_phone_number = encrypt(phone_number, password.clone());
     
-    
-    Ok("123456".to_string())    
+    let url = format!("http://127.0.0.1:8000/{}/{}", enc_phone_number, password);
+
+    let res = match reqwest::get(url).await {
+        Ok(res) => res.text().await,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    match res {
+        Ok(res) => {
+            println!("{}", res);
+            return Ok(res);
+        },
+        Err(error) => Err(error.to_string()),
+    }
 }
 
 #[tauri::command]
