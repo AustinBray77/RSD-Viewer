@@ -21,6 +21,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::Error;
 use std::time::SystemTime;
+use dotenv::dotenv;
 
 extern crate rsd_encrypt;
 
@@ -200,10 +201,11 @@ fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
 
 
 #[tauri::command]
-async fn send_code_setup(handle: tauri::AppHandle, phone_number:String, password: String) -> Result<String, String> {
+async fn send_code_setup(handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
+    let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
     
-    let url = format!("http://127.0.0.1:8000/{}/{}", enc_phone_number, password);
+    let url = format!("http://127.0.0.1:8000/{}", enc_phone_number);
 
     let res = match reqwest::get(url).await {
         Ok(res) => res.text().await,
@@ -212,8 +214,8 @@ async fn send_code_setup(handle: tauri::AppHandle, phone_number:String, password
 
     match res {
         Ok(res) => {
-            println!("{}", res);
-            return Ok(res);
+            println!("{}", decrypt(res.clone(), password.clone()).unwrap());
+            return Ok(decrypt(res.clone(), password).unwrap());
         },
         Err(error) => Err(error.to_string()),
     }

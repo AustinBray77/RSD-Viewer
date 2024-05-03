@@ -6,7 +6,7 @@ import { invoke } from "@tauri-apps/api";
 import { AppState } from "../App";
 
 function VerifyNumber(phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState): void {
-	invoke("send_code_setup", { phoneNumber: phoneNumber, password: AppState.password.Value })
+	invoke("send_code_setup", { phoneNumber: phoneNumber })
 		.then((res) => {
 			ToolbarState.tfaCode.Set(res as string);
 			ToolbarState.showDialog.Set(ShowDialog.Verify2FA);
