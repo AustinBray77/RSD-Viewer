@@ -205,7 +205,7 @@ async fn send_code_setup(handle: tauri::AppHandle, phone_number:String) -> Resul
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
     
-    let url = format!("http://127.0.0.1:8000/{}", enc_phone_number);
+    let url = format!("http://127.0.0.1:8000/{}", enc_phone_number.replace('/', "%2F"));
 
     let res = match reqwest::get(url).await {
         Ok(res) => res.text().await,
