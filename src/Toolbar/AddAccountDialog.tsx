@@ -79,6 +79,8 @@ function AddAccountDialog(props: {
 				}
 				onClick={
 					() => { 
+						if(account.Value.Name == "" || account.Value.Password == "") return;
+
 						AddAccountHandler(props.ToolbarState, props.AppState);
 						ClearToolbar(props.ToolbarState);
 						showDialog.Set(ShowDialog.None) 

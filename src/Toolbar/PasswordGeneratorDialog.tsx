@@ -170,6 +170,8 @@ function GeneratePasswordDialog(props: {
 					account.Value.Name == "" ? " cursor-not-allowed opacity-50" : ""
 				}
 				onClick={() => {
+					if (account.Value.Name == "") return;
+
 					GeneratePassword(props.ToolbarState);
 					ClearToolbar(props.ToolbarState);
 					showDialog.Set(ShowDialog.None);

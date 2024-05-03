@@ -71,6 +71,8 @@ function Verify2FADialog(props: {
 			<DialogButton
 				className={testCode == "" ? " cursor-not-allowed opacity-50" : ""}
 				onClick={() => {
+					if (testCode =="") return;
+
 					VerifyCode(testCode, props.ToolbarState, props.AppState);
 					setTestCode("");
 				}}

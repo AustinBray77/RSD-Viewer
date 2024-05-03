@@ -4,6 +4,7 @@ import { ShowDialog, ToolbarState } from "./Toolbar";
 import { ClearToolbar } from "../Services/ClearToolbar";
 import { invoke } from "@tauri-apps/api";
 import { AppState } from "../App";
+import { DropdownFromList } from "../Home/CommonElements";
 
 function VerifyNumber(phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState): void {
 	invoke("send_code_setup", { phoneNumber: phoneNumber })
@@ -39,20 +40,25 @@ function AddPhoneNumberDialog(props: {
 			title={"Enter Your Phone Number"}
 		>
 			<div id="input-group" className="px-10">
-				<div className="my-5">
+				<div className="my-5 col">
 					<label className="text-xl">Phone Number: </label>
-					<input
-						type="text"
-						onChange={(e) => {
-							phoneNumber.Set(e.target.value);
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(phoneNumber.Value == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
+					<br />
+					<div className="flex">
+						<DropdownFromList items={["+1"]} icons={["canada.jpg"]} startingIndex={0} onChange={() => {}} />
+						&nbsp;
+						<input
+							type="text"
+							onChange={(e) => {
+								phoneNumber.Set(e.target.value);
+							}}
+							className={
+								"focus:outline-none bg-slate-700 border-2 rounded " +
+								(phoneNumber.Value == ""
+									? "border-rose-500"
+									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
+							}
+						/>
+					</div>
 					<br />
 					<label
 						className={
@@ -68,6 +74,8 @@ function AddPhoneNumberDialog(props: {
 					phoneNumber.Value == "" ? " cursor-not-allowed opacity-50" : ""
 				}
 				onClick={() => {
+					if (phoneNumber.Value == "") return;
+
 					VerifyNumber(phoneNumber.Value, props.ToolbarState, props.AppState);
 				}}
 			>
