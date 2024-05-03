@@ -7,6 +7,7 @@ import { DialogButton, DialogLabel } from "./Components/Buttons";
 import { StatePair, useStatePair } from "./Utils/StatePair";
 import { AccountData } from "./Utils/AccountData";
 import { InputGroup } from "./Components/Forms";
+import BasicDialog from "./Components/Dialogs";
 
 type AppState = {
 	password: StatePair<string>,
@@ -22,58 +23,55 @@ function PasswordDialog(props: {
 	const [input, setInput] = useState("");
 
 	return (
-		<Dialog
+		<BasicDialog
 			open={props.password.Value == ""}
 			onClose={() => {
 				props.password.Set(input);
 				props.onClose(input);
 			}}
-			className="backdrop-blur"
 		>
-			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-				<h2 className="text-3xl px-10 text-slate-100">Login To RSD</h2>
-				<InputGroup>
-					<div className="my-5">
-						<div>
-							<label className="text-xl">
-								Enter Master Password: <br />
-							</label>
-							<label className="text-m text-slate-500">
-								If you haven't logged in before, set a password here
-								<br />
-							</label>
-						</div>
-						<input
-							type="password"
-							onChange={(e) => {
-								setInput(e.target.value);
-							}}
-							className={
-								"focus:outline-none bg-slate-700 border-2 rounded " +
-								(input == ""
-									? "border-rose-500"
-									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-							}
-						/>
-						<br />
-						<label
-							className={input == "" ? "text-slate-500" : "text-slate-700"}
-						>
-							This field is required
+			<h2 className="text-3xl px-10 text-slate-100">Login To RSD</h2>
+			<InputGroup>
+				<div className="my-5">
+					<div>
+						<label className="text-xl">
+							Enter Master Password: <br />
+						</label>
+						<label className="text-m text-slate-500">
+							If you haven't logged in before, set a password here
+							<br />
 						</label>
 					</div>
-				</InputGroup>
-				<DialogButton
-					enabled={input != ""}
-					onClick={() => {
-						props.password.Set(input);
-						props.onClose(input);
-					}}
-				>
-					<DialogLabel>Ok</DialogLabel>
-				</DialogButton>
-			</div>
-		</Dialog>
+					<input
+						type="password"
+						onChange={(e) => {
+							setInput(e.target.value);
+						}}
+						className={
+							"focus:outline-none bg-slate-700 border-2 rounded " +
+							(input == ""
+								? "border-rose-500"
+								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
+						}
+					/>
+					<br />
+					<label
+						className={input == "" ? "text-slate-500" : "text-slate-700"}
+					>
+						This field is required
+					</label>
+				</div>
+			</InputGroup>
+			<DialogButton
+				enabled={input != ""}
+				onClick={() => {
+					props.password.Set(input);
+					props.onClose(input);
+				}}
+			>
+				<DialogLabel>Ok</DialogLabel>
+			</DialogButton>
+		</BasicDialog>
 	);
 }
 

@@ -1,4 +1,6 @@
 import { Dialog } from "@mui/material";
+import { DialogButton } from "./Buttons";
+import { useState } from "react";
 
 function BasicDialog (props: {
 	open: boolean;
@@ -15,5 +17,21 @@ function BasicDialog (props: {
 		</Dialog>
 	);
 };
+
+function MessageDialog(props: {
+	open: boolean;
+	message: string;
+	onClose?: (e: {}, r: "backdropClick" | "escapeKeyDown") => void;
+}) {
+	const [ open, setOpen ] = useState(props.open);
+
+	return (
+		<BasicDialog open={open} onClose={() => setOpen(false)} title={props.message}>
+			<DialogButton onClick={() => setOpen(false)}>
+				Ok
+			</DialogButton>
+		</BasicDialog>
+	)
+}
 
 export default BasicDialog
