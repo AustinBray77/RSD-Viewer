@@ -5,7 +5,7 @@ import GeneratePasswordDialog from "./PasswordGeneratorDialog";
 import AddAccountDialog from "./AddAccountDialog";
 import AddPhoneNumberDialog from "./AddPhoneNumberDialog";
 import Verify2FADialog from "./Verify2FADialog";
-import { AccountData } from "../Services/AccountData";
+import { AccountData, AddPhoneNumber, GetPhoneNumberFromData } from "../Services/AccountData";
 import ImportFileDialog from "./ImportFileDialog";
 
 enum ShowDialog {
@@ -30,9 +30,10 @@ type ToolbarState = {
 function HeaderButton(props: {
 	onClick: () => void;
 	title: string;
+	className?: string;
 }): JSX.Element {
 	return (
-		<div className="inline-flex border-1 border-slate-700">
+		<div className={"inline-flex border-1 border-slate-700 " + props.className!}>
 			<button className="text-xl p-3" onClick={props.onClick}>
 				{props.title}
 			</button>
@@ -50,6 +51,8 @@ export default function Toolbar(props: {
 		password,
 		error
 	} = props.AppState
+
+	const has2FA = GetPhoneNumberFromData(data) != "";
 
 	const state: ToolbarState = {
 		showDialog: useStatePair<ShowDialog>(ShowDialog.None),
@@ -92,9 +95,12 @@ export default function Toolbar(props: {
 			/>
 			<HeaderButton
 				onClick={() => {
+					if(has2FA) return;
+
 					state.showDialog.Set(ShowDialog.AddPhoneNumber);
 				}}
 				title="Add 2FA"
+				className={has2FA ? " cursor-not-allowed opacity-50" : ""}
 			/>
 			<AddAccountDialog
 				ToolbarState={state}

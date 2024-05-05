@@ -9,7 +9,7 @@ fn main() {
             get_file_path,
             set_save_data,
             copy_save_data,
-            send_code_setup
+            send_2FA_code
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -200,7 +200,7 @@ fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
 
 
 #[tauri::command]
-async fn send_code_setup(handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
+async fn send_2FA_code(handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
     
@@ -213,7 +213,7 @@ async fn send_code_setup(handle: tauri::AppHandle, phone_number:String) -> Resul
 
     match res {
         Ok(res) => {
-            println!("{}", decrypt(res.clone(), password.clone()).unwrap());
+            //println!("{}", decrypt(res.clone(), password.clone()).unwrap());
             return Ok(decrypt(res.clone(), password).unwrap());
         },
         Err(error) => Err(error.to_string()),

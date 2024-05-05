@@ -8,18 +8,17 @@ import { DropdownFromList } from "../Home/CommonElements";
 import { useState } from "react";
 
 function VerifyNumber(phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState): void {
-	invoke("send_code_setup", { phoneNumber: phoneNumber })
+	invoke("send_2FA_code", { phoneNumber: phoneNumber })
 		.then((res) => {
 			ToolbarState.tfaCode.Set(res as string);
 			ToolbarState.showDialog.Set(ShowDialog.Verify2FA);
 		})
 		.catch((err) => {
 			ToolbarState.tfaCode.Set("");
+			ToolbarState.phoneNumber.Set("");
 			ToolbarState.showDialog.Set(ShowDialog.None);
 			AppState.error.Set(err);
 		});
-
-	ToolbarState.phoneNumber.Set("");
 }
 
 function AddPhoneNumberDialog(props: {
@@ -88,7 +87,8 @@ function AddPhoneNumberDialog(props: {
 					if (phoneNumber.Value == "") return;
 
 					if (countryCode != "NA") {
-						VerifyNumber(countryCode + phoneNumber.Value, props.ToolbarState, props.AppState);
+						phoneNumber.Set(countryCode + phoneNumber.Value);
+						VerifyNumber(phoneNumber.Value, props.ToolbarState, props.AppState);
 					} else {
 						VerifyNumber(phoneNumber.Value, props.ToolbarState, props.AppState);
 					

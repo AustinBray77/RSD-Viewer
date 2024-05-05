@@ -4,25 +4,18 @@ import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
-import { AccountData } from "../Services/AccountData";
+import { AccountData, AddPhoneNumber } from "../Services/AccountData";
 
 function VerifyCode (code: string, ToolbarState: ToolbarState, AppState: AppState):void {
 	if(code == ToolbarState.tfaCode.Value) {
-		AddPhoneNumber(ToolbarState.phoneNumber.Value, ToolbarState, AppState);
+		AddPhoneNumber(ToolbarState.phoneNumber.Value, AppState);
 	} else {
-		ToolbarState.showDialog.Set(ShowDialog.None);
 		AppState.error.Set("Invalid 2FA code");
 	}
 
-	ToolbarState.tfaCode.Set("");
-}
-
-function AddPhoneNumber (phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState):void {
-	let phoneNumberAccount = new AccountData("Phone_Number", phoneNumber);
-	phoneNumberAccount.IsSpecial = true;
-	AppState.data.push(phoneNumberAccount);
-	AppState.error.Set("Phone number added successfully");
 	ToolbarState.showDialog.Set(ShowDialog.None);
+	ToolbarState.tfaCode.Set("");
+	ToolbarState.phoneNumber.Set("");
 }
 
 function Verify2FADialog(props: {

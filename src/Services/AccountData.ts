@@ -1,5 +1,5 @@
 import { AppState } from "../App";
-import { ToolbarState } from "../Toolbar/Toolbar";
+import { ShowDialog, ToolbarState } from "../Toolbar/Toolbar";
 
 class AccountData {
 	Name: string;
@@ -49,5 +49,13 @@ const GetPhoneNumberFromData = (data: AccountData[]): string => {
 	return "";
 }
 
-export { AccountData, AddAccountHandler, GetPhoneNumberFromData };
+function AddPhoneNumber (phoneNumber: string,  AppState: AppState):void {
+	let phoneNumberAccount = new AccountData("Phone_Number", phoneNumber);
+	phoneNumberAccount.IsSpecial = true;
+	AppState.data.push(phoneNumberAccount);
+	AppState.setData(AppState.data);
+	AppState.error.Set("Phone number added successfully");
+}
+
+export { AccountData, AddAccountHandler, GetPhoneNumberFromData, AddPhoneNumber };
 
