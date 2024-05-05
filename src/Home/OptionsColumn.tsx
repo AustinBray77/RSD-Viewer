@@ -213,6 +213,9 @@ export default function OptionsColumn(props: {
 
 	for (let i = 0; i < props.data.length; i++) {
 		let account = props.data[i];
+		
+		if(account.IsSpecial) continue;
+		
 		let x = i;
 
 		buttonList.push(

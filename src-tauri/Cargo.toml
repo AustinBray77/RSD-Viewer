@@ -1,7 +1,7 @@
 [package]
 name = "rsd-password-manager"
 version = "0.4.0"
-description = "An app made for securely managing passwords offline"
+description = "RSD-Viewer: An app made for securely managing passwords offline"
 authors = ["Austin Bray"]
 license = ""
 repository = ""

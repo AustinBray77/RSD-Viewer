@@ -5,7 +5,7 @@ import { invoke } from "@tauri-apps/api";
 import { Dialog } from "@mui/material";
 import { ButtonLabel, DialogButton } from "./Buttons";
 import { StatePair, useStatePair } from "./StatePair";
-import { AccountData } from "./Services/AccountData";
+import { AccountData, GetPhoneNumberFromData } from "./Services/AccountData";
 
 type AppState = {
 	password: StatePair<string>,
@@ -104,7 +104,13 @@ function App() {
 				state.password.Set(password);
 
 				if ((res as string) != "") {
-					setData(AccountData.arrayFromJSON(res as string));
+					let formattedData = AccountData.arrayFromJSON(res as string);
+
+					if(GetPhoneNumberFromData(formattedData) != "") {
+						
+					} else {
+						setData(formattedData);
+					}
 				}
 			})
 			.catch((err: string) => {

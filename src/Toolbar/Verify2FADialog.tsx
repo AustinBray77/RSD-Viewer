@@ -4,6 +4,7 @@ import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
 import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
+import { AccountData } from "../Services/AccountData";
 
 function VerifyCode (code: string, ToolbarState: ToolbarState, AppState: AppState):void {
 	if(code == ToolbarState.tfaCode.Value) {
@@ -17,14 +18,11 @@ function VerifyCode (code: string, ToolbarState: ToolbarState, AppState: AppStat
 }
 
 function AddPhoneNumber (phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState):void {
-	invoke("add_phone_number", { phoneNumber: phoneNumber })
-		.then(() => {
-			AppState.error.Set("Phone number added successfully");
-			ToolbarState.showDialog.Set(ShowDialog.None);
-		})
-		.catch((err) => {
-			AppState.error.Set(err);
-		});
+	let phoneNumberAccount = new AccountData("Phone_Number", phoneNumber);
+	phoneNumberAccount.IsSpecial = true;
+	AppState.data.push(phoneNumberAccount);
+	AppState.error.Set("Phone number added successfully");
+	ToolbarState.showDialog.Set(ShowDialog.None);
 }
 
 function Verify2FADialog(props: {

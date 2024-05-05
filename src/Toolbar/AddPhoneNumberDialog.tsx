@@ -55,6 +55,7 @@ function AddPhoneNumberDialog(props: {
 							icons={countryIcons} 
 							startingIndex={1} 
 							onChange={(index: number) => { setCountryCode(countryCodes[index]) }} 
+							className="w-20"
 						/>
 						&nbsp;
 						<input
@@ -70,7 +71,6 @@ function AddPhoneNumberDialog(props: {
 							}
 						/>
 					</div>
-					<br />
 					<label
 						className={
 							phoneNumber.Value == "" ? "text-slate-500" : "text-slate-700"

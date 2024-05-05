@@ -19,6 +19,7 @@ function DropdownFromList(props: {
 	icons: string[];
 	startingIndex: number;
 	onChange: (index: number) => void;
+	className: string;
 }): JSX.Element {
 	const [isOpen, setIsOpen] = useState(false);
 	const [currentIndex, setCurrentIndex] = useState(props.startingIndex);
@@ -59,7 +60,7 @@ function DropdownFromList(props: {
 	}
 
 	return (
-		<div>
+		<div className={props.className}>
 			<div className="flex focus:outline-none bg-slate-700 border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700 items-center" onClick={() => { setIsOpen(!isOpen) }}>
 				&nbsp;
 				<SmallIcon src="/arrow-down.png" />

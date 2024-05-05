@@ -4,10 +4,12 @@ import { ToolbarState } from "../Toolbar/Toolbar";
 class AccountData {
 	Name: string;
 	Password: string;
+	IsSpecial: boolean;
 
 	constructor(name: string, password: string) {
 		this.Name = name;
 		this.Password = password;
+		this.IsSpecial = false;
 	}
 
 	isEmpty(): boolean {
@@ -37,5 +39,15 @@ const AddAccountHandler = (state: ToolbarState, app: AppState) => {
 	app.setData(newData);
 }
 
-export { AccountData, AddAccountHandler };
+const GetPhoneNumberFromData = (data: AccountData[]): string => {
+	for(let i = 0; i < data.length; i++) {
+		if(data[i].IsSpecial && data[i].Name == "Phone_Number") {
+			return data[i].Password;
+		}
+	}
+
+	return "";
+}
+
+export { AccountData, AddAccountHandler, GetPhoneNumberFromData };
 

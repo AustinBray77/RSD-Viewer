@@ -9,8 +9,7 @@ fn main() {
             get_file_path,
             set_save_data,
             copy_save_data,
-            send_code_setup,
-            add_phone_number
+            send_code_setup
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -221,8 +220,8 @@ async fn send_code_setup(handle: tauri::AppHandle, phone_number:String) -> Resul
     }
 }
 
-#[tauri::command]
+/*#[tauri::command]
 fn add_phone_number(handle: tauri::AppHandle, phone_number:String) -> Result<(), String> {
     
     Ok(())    
-}
+}*/

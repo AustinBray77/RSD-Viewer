@@ -10,14 +10,16 @@ function Home(props: {
 }): JSX.Element {
 	const [dialog, setDialog] = useState(<div></div>);
 
+	let filteredData = props.data.filter(account => !account.IsSpecial);
+
 	return (
 		<div className="p-8 text-slate-100 overflow-y-auto max-h-[85vh]">
 			<div
 				className={
-					"grid grid-rows-" + Math.max(props.data.length, 1) + " grid-flow-col"
+					"grid grid-rows-" + Math.max(filteredData.length, 1) + " grid-flow-col"
 				}
 			>
-				<AccountColumn data={props.data} />
+				<AccountColumn data={filteredData} />
 				<OptionsColumn
 					data={props.data}
 					setData={props.setData}
