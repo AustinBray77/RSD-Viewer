@@ -6,19 +6,24 @@ import { invoke } from "@tauri-apps/api";
 import { AppState } from "../App";
 import { DropdownFromList } from "../Home/CommonElements";
 import { useState } from "react";
+import { StatePair } from "../StatePair";
 
-function VerifyNumber(phoneNumber: string, ToolbarState: ToolbarState, AppState: AppState): void {
+function Get2FACode(phoneNumber: string): Promise<string> {
 	invoke("send_2FA_code", { phoneNumber: phoneNumber })
 		.then((res) => {
-			ToolbarState.tfaCode.Set(res as string);
-			ToolbarState.showDialog.Set(ShowDialog.Verify2FA);
+			return res as string;
 		})
 		.catch((err) => {
-			ToolbarState.tfaCode.Set("");
-			ToolbarState.phoneNumber.Set("");
-			ToolbarState.showDialog.Set(ShowDialog.None);
-			AppState.error.Set(err);
+			throw err as string;
 		});
+
+	return Promise.resolve("This is never reached but required :(");
+}
+
+function UpdatePhoneNumberWithCountryCode(countryCode: string, phoneNumber: StatePair<string>): void { 
+	if (countryCode != "NA") {
+		phoneNumber.Set(countryCode + phoneNumber.Value);
+	}
 }
 
 function AddPhoneNumberDialog(props: {
@@ -27,13 +32,35 @@ function AddPhoneNumberDialog(props: {
 }): JSX.Element {
 	const {
 		showDialog,
-		phoneNumber
+		phoneNumber,
+		tfaCode
 	} = props.ToolbarState
 
 	const [countryCode, setCountryCode] = useState("+1");
-
 	const countryCodes = ["+61", "+1", "+64", "+27", "+44", "+1", "NA"];
 	const countryIcons = ["aus.jpg", "canada.jpg", "nzl.jpg", "saf.jpg", "uk.png", "usa.png", "..."];
+
+	const ClearUsedValues = () => {
+		tfaCode.Set("");
+		phoneNumber.Set("");
+		showDialog.Set(ShowDialog.None);
+	}
+
+	const TryAddInputtedPhoneNumber = () => {
+		if (phoneNumber.Value == "") return;
+
+		UpdatePhoneNumberWithCountryCode(countryCode, phoneNumber);
+					
+		Get2FACode(phoneNumber.Value)
+			.then((res: string) => {
+				tfaCode.Set(res);
+				showDialog.Set(ShowDialog.Verify2FA);
+			})
+			.catch((err: string) => {
+				ClearUsedValues();
+				props.AppState.error.Set(err);
+			})
+	}
 
 	return (
 		<ToolbarDialog
@@ -71,29 +98,15 @@ function AddPhoneNumberDialog(props: {
 						/>
 					</div>
 					<label
-						className={
-							phoneNumber.Value == "" ? "text-slate-500" : "text-slate-700"
-						}
+						className={phoneNumber.Value == "" ? "text-slate-500" : "text-slate-700"}
 					>
 						This field is required
 					</label>
 				</div>
 			</div>
 			<DialogButton
-				className={
-					phoneNumber.Value == "" ? " cursor-not-allowed opacity-50" : ""
-				}
-				onClick={() => {
-					if (phoneNumber.Value == "") return;
-
-					if (countryCode != "NA") {
-						phoneNumber.Set(countryCode + phoneNumber.Value);
-						VerifyNumber(phoneNumber.Value, props.ToolbarState, props.AppState);
-					} else {
-						VerifyNumber(phoneNumber.Value, props.ToolbarState, props.AppState);
-					
-					}
-				}}
+				className={phoneNumber.Value == "" ? " cursor-not-allowed opacity-50" : ""}
+				onClick={TryAddInputtedPhoneNumber}
 			>
 				<ButtonLabel>Add</ButtonLabel>
 			</DialogButton>

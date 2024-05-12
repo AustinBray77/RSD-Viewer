@@ -2,31 +2,39 @@ import { ButtonLabel, DialogButton } from "../Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
-import { invoke } from "@tauri-apps/api";
 import { useState } from "react";
-import { AccountData, AddPhoneNumber } from "../Services/AccountData";
-
-function VerifyCode (code: string, ToolbarState: ToolbarState, AppState: AppState):void {
-	if(code == ToolbarState.tfaCode.Value) {
-		AddPhoneNumber(ToolbarState.phoneNumber.Value, AppState);
-	} else {
-		AppState.error.Set("Invalid 2FA code");
-	}
-
-	ToolbarState.showDialog.Set(ShowDialog.None);
-	ToolbarState.tfaCode.Set("");
-	ToolbarState.phoneNumber.Set("");
-}
+import { AddPhoneNumber } from "../Services/AccountData";
 
 function Verify2FADialog(props: {
 	ToolbarState: ToolbarState,
 	AppState: AppState
 }): JSX.Element {
 	const {
-		showDialog
+		showDialog,
+		tfaCode,
+		phoneNumber
 	} = props.ToolbarState;
 	
 	const [testCode, setTestCode] = useState("");
+
+	const ClearUsedValues = () => {
+		showDialog.Set(ShowDialog.None);
+		tfaCode.Set("");
+		phoneNumber.Set("");
+		setTestCode("");
+	}
+
+	const VerifyInputtedCode = () => {
+		if (testCode =="") return;
+
+		if(testCode == tfaCode.Value) {
+			AddPhoneNumber(phoneNumber.Value, props.AppState);
+		} else {
+			props.AppState.error.Set("Invalid 2FA code");
+		}
+
+		ClearUsedValues();
+	}
 
 	return (
 		<ToolbarDialog
@@ -61,12 +69,7 @@ function Verify2FADialog(props: {
 			</div>
 			<DialogButton
 				className={testCode == "" ? " cursor-not-allowed opacity-50" : ""}
-				onClick={() => {
-					if (testCode =="") return;
-
-					VerifyCode(testCode, props.ToolbarState, props.AppState);
-					setTestCode("");
-				}}
+				onClick={VerifyInputtedCode}
 			>
 				<ButtonLabel>Submit</ButtonLabel>
 			</DialogButton>
