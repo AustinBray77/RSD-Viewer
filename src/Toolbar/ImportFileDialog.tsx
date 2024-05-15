@@ -1,4 +1,4 @@
-import { ButtonLabel, DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import ToolbarDialog from "./ToolbarDialog";
 
@@ -14,11 +14,8 @@ function ImportFileDialog(
 
     return (
         <ToolbarDialog 
-            open={showDialog.Value == ShowDialog.ImportFile}
-            //title="Choose Import Type"
-            onClose={() => {
-                showDialog.Set(ShowDialog.None);
-            }}
+            dialogTag={ShowDialog.ImportFile}
+			showDialog={showDialog}
         >
             <div className="flex">
                 <DialogButton 

@@ -5,7 +5,7 @@ import GeneratePasswordDialog from "./PasswordGeneratorDialog";
 import AddAccountDialog from "./AddAccountDialog";
 import AddPhoneNumberDialog from "./AddPhoneNumberDialog";
 import Verify2FADialog from "./Verify2FADialog";
-import { AccountData, AddPhoneNumber, GetPhoneNumberFromData } from "../Services/AccountData";
+import { AccountData, GetPhoneNumberFromData } from "../Services/AccountData";
 import ImportFileDialog from "./ImportFileDialog";
 
 enum ShowDialog {

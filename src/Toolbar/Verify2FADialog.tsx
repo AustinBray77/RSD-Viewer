@@ -1,4 +1,4 @@
-import { ButtonLabel, DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
@@ -38,10 +38,8 @@ function Verify2FADialog(props: {
 
 	return (
 		<ToolbarDialog
-			open={showDialog.Value == ShowDialog.Verify2FA}
-			onClose={() => {
-				showDialog.Set(ShowDialog.None)
-			}}
+			dialogTag={ShowDialog.Verify2FA}
+			showDialog={showDialog}
 			title={"Enter The 2FA Code"}
 		>
 			<div id="input-group" className="px-10">

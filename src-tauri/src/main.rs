@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
+    dotenv().ok();
+    
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_data,
@@ -9,7 +11,7 @@ fn main() {
             get_file_path,
             set_save_data,
             copy_save_data,
-            send_2FA_code
+            send_2fa_code
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -200,7 +202,7 @@ fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
 
 
 #[tauri::command]
-async fn send_2FA_code(handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
+async fn send_2fa_code(_handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
     

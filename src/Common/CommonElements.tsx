@@ -1,6 +1,7 @@
+import Dialog from "@mui/material/Dialog";
 import { useState } from "react";
 
-function StandardBox(props: {
+function StandardHomeBox(props: {
 	children: JSX.Element[] | JSX.Element | string;
 }): JSX.Element {
 	return (
@@ -79,4 +80,4 @@ function DropdownFromList(props: {
 	);
 }
 
-export { StandardBox, DropdownFromList };
+export { StandardHomeBox, DropdownFromList };

@@ -21,11 +21,7 @@ function DialogButton(props: ButtonProps): JSX.Element {
 	);
 }
 
-function OptionsButton(props: {
-	children: string;
-	onClick: React.MouseEventHandler<HTMLButtonElement>;
-	className?: string;
-}): JSX.Element {
+function OptionsButton(props: ButtonProps): JSX.Element {
 	return (
 		<button
 			className={

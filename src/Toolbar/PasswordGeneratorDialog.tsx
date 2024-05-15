@@ -1,4 +1,4 @@
-import { ButtonLabel, DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import { ArrayRange, CollapsableRandomArray } from "../Math";
 import { AccountData } from "../Services/AccountData";
 import { StatePair } from "../StatePair";
@@ -84,10 +84,8 @@ function GeneratePasswordDialog(props: {
 	
 	return (
 		<ToolbarDialog
-			open={showDialog.Value == ShowDialog.GeneratePassword}
-			onClose={() => {
-				showDialog.Set(ShowDialog.None)
-			}}
+			dialogTag={ShowDialog.GeneratePassword}
+			showDialog={showDialog}
 			title={"Generate A Password"}
 		>
 			<div id="input-group" className="px-10">

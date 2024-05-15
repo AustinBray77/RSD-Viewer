@@ -1,5 +1,5 @@
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { ButtonLabel, DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { AppState } from "../App";
 import { AccountData, AddAccountHandler } from "../Services/AccountData";
@@ -16,10 +16,10 @@ function AddAccountDialog(props: {
 
 	return (
 		<ToolbarDialog
-			open={showDialog.Value == ShowDialog.AddAccount}
+			dialogTag={ShowDialog.AddAccount}
+			showDialog={showDialog}
 			onClose={() => {
 				ClearToolbar(props.ToolbarState);
-				showDialog.Set(ShowDialog.None)
 			}}
 			title={"Add an Account"}
 		>

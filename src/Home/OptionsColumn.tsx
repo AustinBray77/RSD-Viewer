@@ -1,36 +1,46 @@
 import React, { useState } from "react";
 import { AccountData } from "../Services/AccountData";
-import { ButtonLabel, DialogButton, OptionsButton } from "../Buttons";
-import { StandardBox } from "./CommonElements";
+import { ButtonLabel, DialogButton, OptionsButton } from "../Common/Buttons";
+import { StandardHomeBox } from "../Common/CommonElements";
 import { Dialog } from "@mui/material";
+import { StatePair } from "../StatePair";
+import { HomeState, ShowHomeDialog } from "./Home";
+import { GeneralDialog } from "../Common/Dialogs";
+import { dialog } from "@tauri-apps/api";
+
+function CopyPasswordDialog(props: { state: HomeState }): JSX.Element {
+	let {
+		dialog
+	} = props.state;
+	
+	return (<Dialog
+		open={dialog.Value == ShowHomeDialog.CopyPassword}
+		onClose={() => {
+			dialog.Set(ShowHomeDialog.None);
+		}}
+		className="backdrop-blur"
+	>
+		<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
+			<h3 className="text-3xl">Password has been copied to clipboard.</h3>
+			<DialogButton
+				onClick={() => {
+					dialog.Set(ShowHomeDialog.None);
+				}}
+				className={"my-5"}
+			>
+				<ButtonLabel>Ok</ButtonLabel>
+			</DialogButton>
+		</div>
+	</Dialog>);
+}
 
 function CopyPasswordButton(props: {
 	text: string;
-	setDialog: React.Dispatch<React.SetStateAction<JSX.Element>>;
+	dialog: StatePair<ShowHomeDialog>;
 }): JSX.Element {
 	const onClick = () => {
 		navigator.clipboard.writeText(props.text);
-		props.setDialog(
-			<Dialog
-				open={true}
-				onClose={() => {
-					props.setDialog(<div></div>);
-				}}
-				className="backdrop-blur"
-			>
-				<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-					<h3 className="text-3xl">Password has been copied to clipboard.</h3>
-					<DialogButton
-						onClick={() => {
-							props.setDialog(<div></div>);
-						}}
-						className={"my-5"}
-					>
-						<ButtonLabel>Ok</ButtonLabel>
-					</DialogButton>
-				</div>
-			</Dialog>
-		);
+		props.dialog.Set(ShowHomeDialog.CopyPassword);
 	};
 
 	return (
@@ -40,102 +50,115 @@ function CopyPasswordButton(props: {
 	);
 }
 
-function ChangePasswordButton(props: {
-	accountIndex: number;
-	data: AccountData[];
-	setData: (val: AccountData[]) => void;
-	setDialog: React.Dispatch<React.SetStateAction<JSX.Element>>;
+function ChangePasswordDialog (props: {
+	state: HomeState
 }): JSX.Element {
-	const ChangePasswordDialog = (): JSX.Element => {
-		const [password, setPassword] = useState("");
-		const [confPassword, setConfPassword] = useState("");
+	let {
+		data,
+		setData,
+		dialog,
+		selectedAccount
+	} = props.state
+	
+	const [password, setPassword] = useState("");
+	const [confPassword, setConfPassword] = useState("");
 
-		return (
-			<Dialog
-				open={true}
-				onClose={() => {
-					setPassword("");
-					props.setDialog(<div></div>);
-				}}
-				className="backdrop-blur"
-			>
-				<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-					<h3 className="text-3xl">
-						Change Password for {props.data[props.accountIndex].Name}
-					</h3>
-					<div className="my-5">
-						<label className="text-xl">New Password: </label>
-						<input
-							type="password"
-							onChange={(e) => {
-								setPassword(e.target.value);
-							}}
-							className={
-								"focus:outline-none bg-slate-700 border-2 rounded " +
-								(password == ""
-									? "border-rose-500"
-									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-							}
-						/>
-						<br />
-						<label
-							className={password == "" ? "text-slate-500" : "text-slate-700"}
-						>
-							This field is required
-						</label>
-					</div>
-					<div className="my-5">
-						<label className="text-xl">Confirm Password: </label>
-						<input
-							type="password"
-							onChange={(e) => {
-								setConfPassword(e.target.value);
-							}}
-							className={
-								"focus:outline-none bg-slate-700 border-2 rounded " +
-								(confPassword == "" || confPassword != password
-									? "border-rose-500"
-									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-							}
-						/>
-						<br />
-						<label
-							className={
-								confPassword == "" || confPassword != password
-									? "text-slate-500"
-									: "text-slate-700"
-							}
-						>
-							{confPassword == ""
-								? "This field is required"
-								: "Passwords must match"}
-						</label>
-					</div>
-					<DialogButton
-						className={password == "" ? " cursor-not-allowed opacity-50" : ""}
-						onClick={() => {
-							if (password == "") {
-								return;
-							}
-
-							let newData = [...props.data];
-							newData[props.accountIndex].Password = password;
-
-							props.setData(newData);
-							setPassword("");
-							setConfPassword("");
-							props.setDialog(<div></div>);
+	return (
+		<Dialog
+			open={dialog.Value == ShowHomeDialog.ChangePassword}
+			onClose={() => {
+				setPassword("");
+				dialog.Set(ShowHomeDialog.None);
+			}}
+			className="backdrop-blur"
+		>
+			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
+				<h3 className="text-3xl">
+					Change Password for {data[selectedAccount.Value].Name}
+				</h3>
+				<div className="my-5">
+					<label className="text-xl">New Password: </label>
+					<input
+						type="password"
+						onChange={(e) => {
+							setPassword(e.target.value);
 						}}
+						className={
+							"focus:outline-none bg-slate-700 border-2 rounded " +
+							(password == ""
+								? "border-rose-500"
+								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
+						}
+					/>
+					<br />
+					<label
+						className={password == "" ? "text-slate-500" : "text-slate-700"}
 					>
-						<ButtonLabel>Change</ButtonLabel>
-					</DialogButton>
+						This field is required
+					</label>
 				</div>
-			</Dialog>
-		);
-	};
+				<div className="my-5">
+					<label className="text-xl">Confirm Password: </label>
+					<input
+						type="password"
+						onChange={(e) => {
+							setConfPassword(e.target.value);
+						}}
+						className={
+							"focus:outline-none bg-slate-700 border-2 rounded " +
+							(confPassword == "" || confPassword != password
+								? "border-rose-500"
+								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
+						}
+					/>
+					<br />
+					<label
+						className={
+							confPassword == "" || confPassword != password
+								? "text-slate-500"
+								: "text-slate-700"
+						}
+					>
+						{confPassword == ""
+							? "This field is required"
+							: "Passwords must match"}
+					</label>
+				</div>
+				<DialogButton
+					className={password == "" ? " cursor-not-allowed opacity-50" : ""}
+					onClick={() => {
+						if (password == "") {
+							return;
+						}
+
+						let newData = [...data];
+						newData[selectedAccount.Value].Password = password;
+
+						setData(newData);
+						setPassword("");
+						setConfPassword("");
+						dialog.Set(ShowHomeDialog.None);
+					}}
+				>
+					<ButtonLabel>Change</ButtonLabel>
+				</DialogButton>
+			</div>
+		</Dialog>
+	);
+};
+
+function ChangePasswordButton(props: {
+	state: HomeState
+	accountIndex: number
+}): JSX.Element {
+	let {
+		dialog,
+		selectedAccount
+	} = props.state;
 
 	const onClick = () => {
-		props.setDialog(<ChangePasswordDialog />);
+		selectedAccount.Set(props.accountIndex);
+		dialog.Set(ShowHomeDialog.ChangePassword);
 	};
 
 	return (
@@ -145,56 +168,68 @@ function ChangePasswordButton(props: {
 	);
 }
 
-function RemovePasswordButton(props: {
-	accountIndex: number;
-	data: AccountData[];
-	setData: (val: AccountData[]) => void;
-	setDialog: React.Dispatch<React.SetStateAction<JSX.Element>>;
+function RemovePasswordDialog(props: {
+	state: HomeState
 }): JSX.Element {
-	const [confirmation, setConfirmation] = useState(0);
+	let {
+		data,
+		dialog,
+		selectedAccount,
+		setData
+	} = props.state;
+	
+	return (
+		<Dialog
+			open={dialog.Value == ShowHomeDialog.RemovePassword}
+			onClose={() => {
+				dialog.Set(ShowHomeDialog.None);
+			}}
+			className="backdrop-blur"
+		>
+			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
+				<h3 className="text-3xl">
+					Are you sure you want to remove the password for{" "}
+					{data[selectedAccount.Value].Name}?
+				</h3>
+				<DialogButton
+					onClick={() => {
+						let newData = [...data];
+						newData.splice(selectedAccount.Value, 1);
 
-	const RemovePasswordDialog = (): JSX.Element => {
-		return (
-			<Dialog
-				open={true}
-				onClose={() => {
-					props.setDialog(<div></div>);
-				}}
-				className="backdrop-blur"
-			>
-				<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-					<h3 className="text-3xl">
-						Are you sure you want to remove the password for{" "}
-						{props.data[props.accountIndex].Name}?
-					</h3>
-					<DialogButton
-						onClick={() => {
-							let newData = [...props.data];
-							newData.splice(props.accountIndex, 1);
+						setData(newData);
+						dialog.Set(ShowHomeDialog.None);
+					}}
+				>
+					<ButtonLabel>Ok</ButtonLabel>
+				</DialogButton>
+				<DialogButton
+					onClick={() => {
+						dialog.Set(ShowHomeDialog.None);
+					}}
+				>
+					<ButtonLabel>Cancel</ButtonLabel>
+				</DialogButton>
+			</div>
+		</Dialog>
+	);
+};
 
-							props.setData(newData);
-							props.setDialog(<div></div>);
-						}}
-					>
-						<ButtonLabel>Ok</ButtonLabel>
-					</DialogButton>
-					<DialogButton
-						onClick={() => {
-							props.setDialog(<div></div>);
-						}}
-					>
-						<ButtonLabel>Cancel</ButtonLabel>
-					</DialogButton>
-				</div>
-			</Dialog>
-		);
-	};
+function RemovePasswordButton(props: {
+	state: HomeState,
+	accountIndex: number
+}): JSX.Element {
+	let {
+		data,
+		dialog,
+		selectedAccount
+	} = props.state;
 
 	const onClick = () => {
+		selectedAccount.Set(props.accountIndex);
 		console.log(
-			`Remove Clicked for account: ${props.data[props.accountIndex].Name}`
+			`Remove Clicked for account: ${data[selectedAccount.Value].Name}`
 		);
-		props.setDialog(<RemovePasswordDialog />);
+		dialog.Set(ShowHomeDialog.RemovePassword);
 	};
 
 	return (
@@ -204,15 +239,18 @@ function RemovePasswordButton(props: {
 	);
 }
 
-export default function OptionsColumn(props: {
-	data: AccountData[];
-	setData: (val: AccountData[]) => void;
-	setDialog: React.Dispatch<React.SetStateAction<JSX.Element>>;
+function OptionsColumn(props: {
+	state: HomeState;
 }): JSX.Element {
+	let {
+		data,
+		dialog,
+	} = props.state;
+
 	let buttonList: JSX.Element[] = [];
 
-	for (let i = 0; i < props.data.length; i++) {
-		let account = props.data[i];
+	for (let i = 0; i < data.length; i++) {
+		let account = data[i];
 		
 		if(account.IsSpecial) continue;
 		
@@ -220,24 +258,14 @@ export default function OptionsColumn(props: {
 
 		buttonList.push(
 			<li>
-				<StandardBox>
+				<StandardHomeBox>
 					<CopyPasswordButton
 						text={account.Password}
-						setDialog={props.setDialog}
+						dialog={dialog}
 					/>
-					<ChangePasswordButton
-						accountIndex={x}
-						data={props.data}
-						setData={props.setData}
-						setDialog={props.setDialog}
-					/>
-					<RemovePasswordButton
-						accountIndex={x}
-						data={props.data}
-						setData={props.setData}
-						setDialog={props.setDialog}
-					/>
-				</StandardBox>
+					<ChangePasswordButton state={props.state} accountIndex={x} />
+					<RemovePasswordButton state={props.state} accountIndex={x} />
+				</StandardHomeBox>
 			</li>
 		);
 	}
@@ -251,3 +279,5 @@ export default function OptionsColumn(props: {
 		</div>
 	);
 }
+
+export { OptionsColumn, CopyPasswordDialog, ChangePasswordDialog, RemovePasswordDialog };

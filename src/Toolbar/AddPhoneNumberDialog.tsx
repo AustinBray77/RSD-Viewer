@@ -1,10 +1,10 @@
-import { ButtonLabel, DialogButton } from "../Buttons";
+import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { ClearToolbar } from "../Services/ClearToolbar";
 import { invoke } from "@tauri-apps/api";
 import { AppState } from "../App";
-import { DropdownFromList } from "../Home/CommonElements";
+import { DropdownFromList } from "../Common/CommonElements";
 import { useState } from "react";
 import { StatePair } from "../StatePair";
 
@@ -64,10 +64,10 @@ function AddPhoneNumberDialog(props: {
 
 	return (
 		<ToolbarDialog
-			open={showDialog.Value == ShowDialog.AddPhoneNumber}
+			dialogTag={ShowDialog.AddPhoneNumber}
+			showDialog={showDialog}
 			onClose={() => {
 				ClearToolbar(props.ToolbarState);
-				showDialog.Set(ShowDialog.None)
 			}}
 			title={"Enter Your Phone Number"}
 		>
