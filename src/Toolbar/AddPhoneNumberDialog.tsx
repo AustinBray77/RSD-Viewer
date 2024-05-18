@@ -1,7 +1,6 @@
 import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { ClearToolbar } from "../Services/ClearToolbar";
 import { invoke } from "@tauri-apps/api";
 import { AppState } from "../App";
 import { DropdownFromList } from "../Common/CommonElements";
@@ -66,9 +65,6 @@ function AddPhoneNumberDialog(props: {
 		<ToolbarDialog
 			dialogTag={ShowDialog.AddPhoneNumber}
 			showDialog={showDialog}
-			onClose={() => {
-				ClearToolbar(props.ToolbarState);
-			}}
 			title={"Enter Your Phone Number"}
 		>
 			<div id="input-group" className="px-10">

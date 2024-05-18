@@ -1,15 +1,17 @@
 import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import { ArrayRange, CollapsableRandomArray } from "../Math";
-import { AccountData } from "../Services/AccountData";
-import { StatePair } from "../StatePair";
+import { AccountData, AddAccountHandler } from "../Services/AccountData";
+import { StatePair, useStatePair } from "../StatePair";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { ClearToolbar } from "../Services/ClearToolbar";
+import { DialogInput } from "../Common/Inputs";
+import { AppState } from "../App";
+import useMousePosition from "../Services/MousePosition";
 
-const GeneratePassword = (state: ToolbarState) => {
-	if (state.account.Value.Name == "") {
+const GeneratePassword = (state: ToolbarState): string => {
+	/*if (state.account.Value.Name == "") {
 		return;
-	}
+	}*/
 
 	let passwordParams = state.passwordParams.Value;
 
@@ -62,7 +64,7 @@ const GeneratePassword = (state: ToolbarState) => {
 		newPass += String.fromCharCode(asciiCharacters[i]);
 	}
 
-	state.account.Set(new AccountData(state.account.Value.Name, newPass));
+	return newPass;
 };
 
 const FlipPasswordParam = (param: number, passwordParams: StatePair<boolean[]>) => {
@@ -74,44 +76,34 @@ const FlipPasswordParam = (param: number, passwordParams: StatePair<boolean[]>) 
 
 function GeneratePasswordDialog(props: {
 	ToolbarState: ToolbarState;
+	AppState: AppState;
 }): JSX.Element {
 	const {
 		showDialog,
-		account,
 		passwordParams,
 		passwordLength
 	} = props.ToolbarState;
 	
+	const inputName = useStatePair("");
+	const mousePos = useMousePosition();
+	const sliding = useStatePair(false);
+
+	const translationString = "translate(" + mousePos.Value.x + "px," + mousePos.Value.y + "px)";
+
 	return (
 		<ToolbarDialog
 			dialogTag={ShowDialog.GeneratePassword}
 			showDialog={showDialog}
 			title={"Generate A Password"}
+			onClose={() => { inputName.Set(""); }}
 		>
+			{ sliding.Value ? 
+				<label className="fixed z-50 bg-slate-700 z-10 border-2 rounded border-slate-800/[0.50] px-1 py-1" style={{transform: translationString}}>
+					{passwordLength.Value}
+				</label> : <></>
+			}
 			<div id="input-group" className="px-10">
-				<div className="my-5">
-					<label className="text-xl">Account Name: </label>
-					<input
-						type="text"
-						onChange={(e) => {
-							account.Set(new AccountData(e.target.value, ""));
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(account.Value.Name == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							account.Value.Name == "" ? "text-slate-500" : "text-slate-700"
-						}
-					>
-						This field is required
-					</label>
-				</div>
+				<DialogInput label="Account Name: " value={inputName} required={true} className="my-5" />
 				<div className="my-5">
 					<label className="text-xl">Password Parameters: </label>
 					<div>
@@ -158,6 +150,8 @@ function GeneratePasswordDialog(props: {
 								onChange={(e) => {
 									passwordLength.Set(parseInt(e.target.value.valueOf()));
 								}}
+								onMouseEnter={() => { sliding.Set(true); }}
+								onMouseLeave={() => { sliding.Set(false); }}
 							/>
 						</div>
 					</div>
@@ -165,13 +159,16 @@ function GeneratePasswordDialog(props: {
 			</div>
 			<DialogButton
 				className={
-					account.Value.Name == "" ? " cursor-not-allowed opacity-50" : ""
+					inputName.Value == "" ? " cursor-not-allowed opacity-50" : ""
 				}
 				onClick={() => {
-					if (account.Value.Name == "") return;
+					if (inputName.Value == "") return;
 
-					GeneratePassword(props.ToolbarState);
-					ClearToolbar(props.ToolbarState);
+					let pass = GeneratePassword(props.ToolbarState);
+					
+					AddAccountHandler(new AccountData(inputName.Value, pass), props.AppState);
+					
+					inputName.Set("");
 					showDialog.Set(ShowDialog.None);
 				}}
 			>

@@ -25,8 +25,8 @@ class AccountData {
 	}
 }
 
-const AddAccountHandler = (state: ToolbarState, app: AppState) => {
-	if (state.account.Value.isEmpty()) {
+const AddAccountHandler = (account: AccountData, app: AppState) => {
+	if (account.isEmpty()) {
 		return;
 	}
 
@@ -34,7 +34,7 @@ const AddAccountHandler = (state: ToolbarState, app: AppState) => {
 
 	let newData = [...app.data];
 
-	newData.push(state.account.Value);
+	newData.push(account);
 
 	app.setData(newData);
 }

@@ -14,7 +14,8 @@ function HomeDialog(props: {
         open={props.dialogTag == props.showDialog.Value} 
         title={props.title} 
         onClose={(e: {}, r: "backdropClick" | "escapeKeyDown") => {
-            props.onClose!(e, r); props.showDialog.Set(ShowHomeDialog.None)
+            if(props.onClose != undefined) props.onClose!(e, r); 
+            props.showDialog.Set(ShowHomeDialog.None)
         }}
         >
             {props.children}

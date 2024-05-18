@@ -1,4 +1,3 @@
-import { Dialog } from "@mui/material";
 import { StatePair } from "../StatePair";
 import { ShowDialog } from "./Toolbar";
 import { GeneralDialog } from "../Common/Dialogs";
@@ -13,7 +12,10 @@ const ToolbarDialog = (props: {
 	return (
 		<GeneralDialog
 			open={props.showDialog.Value == props.dialogTag} 
-			onClose={(e : {}, r: "backdropClick" | "escapeKeyDown") => { props.onClose!(e, r); props.showDialog.Set(ShowDialog.None) }} 
+			onClose={(e : {}, r: "backdropClick" | "escapeKeyDown") => { 
+				if(props.onClose != undefined) { props.onClose(e,r); } 
+				props.showDialog.Set(ShowDialog.None) 
+			}} 
 			title={props.title}
 		>
 			{props.children}

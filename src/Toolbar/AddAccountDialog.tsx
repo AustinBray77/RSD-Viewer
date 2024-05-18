@@ -3,87 +3,49 @@ import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { AppState } from "../App";
 import { AccountData, AddAccountHandler } from "../Services/AccountData";
-import { ClearToolbar } from "../Services/ClearToolbar";
+import { useStatePair } from "../StatePair";
+import { DialogInput } from "../Common/Inputs";
 
 function AddAccountDialog(props: {
 	ToolbarState: ToolbarState,
     AppState: AppState
 }): JSX.Element {
 	const {
-		showDialog,
-		account
+		showDialog
 	} = props.ToolbarState;
+
+	const inputName = useStatePair("");
+	const inputPassword = useStatePair("");
 
 	return (
 		<ToolbarDialog
 			dialogTag={ShowDialog.AddAccount}
 			showDialog={showDialog}
 			onClose={() => {
-				ClearToolbar(props.ToolbarState);
+				inputName.Set("");
+				inputPassword.Set("");
 			}}
 			title={"Add an Account"}
 		>
 			<div id="input-group" className="px-10">
-				<div className="my-5">
-					<label className="text-xl">Account Name: </label>
-					<input
-						type="text"
-						onChange={(e) => {
-							account.Set(new AccountData(e.target.value, account.Value.Password))
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(account.Value.Name == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							account.Value.Name == "" ? "text-slate-500" : "text-slate-700"
-						}
-					>
-						This field is required
-					</label>
-				</div>
-				<div className="my-5">
-					<label className="text-xl">Password: </label>
-					<input
-						type="Password"
-						onChange={(e) => {
-							account.Set(new AccountData(account.Value.Name, e.target.value));
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(account.Value.Password == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							account.Value.Password == "" ? "text-slate-500" : "text-slate-700"
-						}
-					>
-						This field is required
-					</label>
-				</div>
+				<DialogInput label="Account Name: " value={inputName} required={true} className="my-5" />
+				<DialogInput label="Password: " value={inputPassword} required={true} className="my-5" type="password" />
 			</div>
 			<DialogButton
 				className={
-					account.Value.Name == "" || account.Value.Password == ""
+					inputName.Value == "" || inputPassword.Value == ""
 						? " cursor-not-allowed opacity-50"
 						: ""
 				}
 				onClick={
 					() => { 
-						if(account.Value.Name == "" || account.Value.Password == "") return;
+						if(inputName.Value == "" || inputPassword.Value == "") return;
 
-						AddAccountHandler(props.ToolbarState, props.AppState);
-						ClearToolbar(props.ToolbarState);
-						showDialog.Set(ShowDialog.None) 
+						AddAccountHandler(new AccountData(inputName.Value, inputPassword.Value), props.AppState);
+
+						inputName.Set("");
+						inputPassword.Set("");
+						showDialog.Set(ShowDialog.None);
 					}}
 			>
 				<ButtonLabel>Add</ButtonLabel>

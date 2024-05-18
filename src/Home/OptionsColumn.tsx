@@ -3,35 +3,32 @@ import { AccountData } from "../Services/AccountData";
 import { ButtonLabel, DialogButton, OptionsButton } from "../Common/Buttons";
 import { StandardHomeBox } from "../Common/CommonElements";
 import { Dialog } from "@mui/material";
-import { StatePair } from "../StatePair";
+import { StatePair, useStatePair } from "../StatePair";
 import { HomeState, ShowHomeDialog } from "./Home";
 import { GeneralDialog } from "../Common/Dialogs";
 import { dialog } from "@tauri-apps/api";
+import HomeDialog from "./HomeDialog";
+import { DialogInput } from "../Common/Inputs";
 
 function CopyPasswordDialog(props: { state: HomeState }): JSX.Element {
 	let {
 		dialog
 	} = props.state;
 	
-	return (<Dialog
-		open={dialog.Value == ShowHomeDialog.CopyPassword}
-		onClose={() => {
-			dialog.Set(ShowHomeDialog.None);
-		}}
-		className="backdrop-blur"
+	return <HomeDialog
+		dialogTag={ShowHomeDialog.CopyPassword}
+		showDialog={dialog}
+		title="Password has been copied to clipboard."
 	>
-		<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-			<h3 className="text-3xl">Password has been copied to clipboard.</h3>
-			<DialogButton
-				onClick={() => {
-					dialog.Set(ShowHomeDialog.None);
-				}}
-				className={"my-5"}
-			>
-				<ButtonLabel>Ok</ButtonLabel>
-			</DialogButton>
-		</div>
-	</Dialog>);
+		<DialogButton
+			onClick={() => {
+				dialog.Set(ShowHomeDialog.None);
+			}}
+			className={"my-5"}
+		>
+			<ButtonLabel>Ok</ButtonLabel>
+		</DialogButton>
+	</HomeDialog>
 }
 
 function CopyPasswordButton(props: {
@@ -60,90 +57,46 @@ function ChangePasswordDialog (props: {
 		selectedAccount
 	} = props.state
 	
-	const [password, setPassword] = useState("");
-	const [confPassword, setConfPassword] = useState("");
+	const password = useStatePair("");
+	const confPassword = useStatePair("");
+
+	if(selectedAccount.Value == -1 || data.length == 0) {
+		return <></>
+	}
 
 	return (
-		<Dialog
-			open={dialog.Value == ShowHomeDialog.ChangePassword}
+		<HomeDialog
+			dialogTag={ShowHomeDialog.ChangePassword}
+			showDialog={dialog}
 			onClose={() => {
-				setPassword("");
-				dialog.Set(ShowHomeDialog.None);
+				password.Set("");
+				confPassword.Set("");
 			}}
-			className="backdrop-blur"
+			title={"Change Password for " + data[selectedAccount.Value].Name}
 		>
-			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-				<h3 className="text-3xl">
-					Change Password for {data[selectedAccount.Value].Name}
-				</h3>
-				<div className="my-5">
-					<label className="text-xl">New Password: </label>
-					<input
-						type="password"
-						onChange={(e) => {
-							setPassword(e.target.value);
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(password == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={password == "" ? "text-slate-500" : "text-slate-700"}
-					>
-						This field is required
-					</label>
-				</div>
-				<div className="my-5">
-					<label className="text-xl">Confirm Password: </label>
-					<input
-						type="password"
-						onChange={(e) => {
-							setConfPassword(e.target.value);
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(confPassword == "" || confPassword != password
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={
-							confPassword == "" || confPassword != password
-								? "text-slate-500"
-								: "text-slate-700"
-						}
-					>
-						{confPassword == ""
-							? "This field is required"
-							: "Passwords must match"}
-					</label>
-				</div>
-				<DialogButton
-					className={password == "" ? " cursor-not-allowed opacity-50" : ""}
-					onClick={() => {
-						if (password == "") {
-							return;
-						}
-
-						let newData = [...data];
-						newData[selectedAccount.Value].Password = password;
-
-						setData(newData);
-						setPassword("");
-						setConfPassword("");
-						dialog.Set(ShowHomeDialog.None);
-					}}
-				>
-					<ButtonLabel>Change</ButtonLabel>
-				</DialogButton>
+			<div id="input-group" className="px-10">
+				<DialogInput label="New Password: " value={password} className="my-5" required={true} type="password" />
+				<DialogInput label="Confirm Password: " value={confPassword} className="my-5" required={true} type="password" />
 			</div>
-		</Dialog>
+			<DialogButton
+				className={password.Value == "" || confPassword.Value == "" ? " cursor-not-allowed opacity-50" : ""}
+				onClick={() => {
+					if (password.Value == "" || confPassword.Value == "" || password.Value != confPassword.Value) {
+						return;
+					}
+
+					let newData = [...data];
+					newData[selectedAccount.Value].Password = password.Value;
+
+					setData(newData);
+					password.Set("");
+					confPassword.Set("");
+					dialog.Set(ShowHomeDialog.None);
+				}}
+			>
+				<ButtonLabel>Change</ButtonLabel>
+			</DialogButton>
+		</HomeDialog>
 	);
 };
 
@@ -178,39 +131,40 @@ function RemovePasswordDialog(props: {
 		setData
 	} = props.state;
 	
+	if(selectedAccount.Value == -1 || data.length == 0) {
+		return <></>
+	}
+
+
 	return (
-		<Dialog
-			open={dialog.Value == ShowHomeDialog.RemovePassword}
+		<HomeDialog
+			dialogTag={ShowHomeDialog.RemovePassword}
 			onClose={() => {
 				dialog.Set(ShowHomeDialog.None);
 			}}
-			className="backdrop-blur"
+			showDialog={dialog}
+			title={"Are you sure you want to remove the password for " + data[selectedAccount.Value].Name + "?"}
 		>
-			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
-				<h3 className="text-3xl">
-					Are you sure you want to remove the password for{" "}
-					{data[selectedAccount.Value].Name}?
-				</h3>
-				<DialogButton
-					onClick={() => {
-						let newData = [...data];
-						newData.splice(selectedAccount.Value, 1);
+			<div className="my-5"/>
+			<DialogButton
+				onClick={() => {
+					let newData = [...data];
+					newData.splice(selectedAccount.Value, 1);
 
-						setData(newData);
-						dialog.Set(ShowHomeDialog.None);
-					}}
-				>
-					<ButtonLabel>Ok</ButtonLabel>
-				</DialogButton>
-				<DialogButton
-					onClick={() => {
-						dialog.Set(ShowHomeDialog.None);
-					}}
-				>
-					<ButtonLabel>Cancel</ButtonLabel>
-				</DialogButton>
-			</div>
-		</Dialog>
+					setData(newData);
+					dialog.Set(ShowHomeDialog.None);
+				}}
+			>
+				<ButtonLabel>Ok</ButtonLabel>
+			</DialogButton>
+			<DialogButton
+				onClick={() => {
+					dialog.Set(ShowHomeDialog.None);
+				}}
+			>
+				<ButtonLabel>Cancel</ButtonLabel>
+			</DialogButton>
+		</HomeDialog>
 	);
 };
 

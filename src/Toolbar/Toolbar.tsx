@@ -19,7 +19,6 @@ enum ShowDialog {
 
 type ToolbarState = {
 	showDialog: StatePair<ShowDialog>
-	account: StatePair<AccountData>
 	phoneNumber: StatePair<string> 
 	tfaCode: StatePair<string> 
 	passwordParams: StatePair<boolean[]>
@@ -56,7 +55,6 @@ export default function Toolbar(props: {
 
 	const state: ToolbarState = {
 		showDialog: useStatePair<ShowDialog>(ShowDialog.None),
-		account: useStatePair<AccountData>(new AccountData("", "")),
 		phoneNumber: useStatePair<string>(""),
 		tfaCode: useStatePair<string>(""),
 		passwordParams: useStatePair<boolean[]>([true, true, true]),
@@ -108,6 +106,7 @@ export default function Toolbar(props: {
 			/>
 			<GeneratePasswordDialog
 				ToolbarState={state}
+				AppState={props.AppState}
 			/>
 			<AddPhoneNumberDialog
 				ToolbarState={state}
