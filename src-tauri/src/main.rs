@@ -203,6 +203,8 @@ fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
 
 #[tauri::command]
 async fn send_2fa_code(_handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
+    println!("{}", phone_number);
+    
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
     
@@ -215,7 +217,7 @@ async fn send_2fa_code(_handle: tauri::AppHandle, phone_number:String) -> Result
 
     match res {
         Ok(res) => {
-            //println!("{}", decrypt(res.clone(), password.clone()).unwrap());
+            println!("Code: {}", decrypt(res.clone(), password.clone()).unwrap());
             return Ok(decrypt(res.clone(), password).unwrap());
         },
         Err(error) => Err(error.to_string()),

@@ -7,16 +7,18 @@ import { DropdownFromList } from "../Common/CommonElements";
 import { useState } from "react";
 import { StatePair } from "../StatePair";
 
-function Get2FACode(phoneNumber: string): Promise<string> {
-	invoke("send_2FA_code", { phoneNumber: phoneNumber })
+function Get2FACode(phoneNumber: string, state: AppState): Promise<string> {
+	state.isLoading.Set(true);
+	
+	return invoke("send_2fa_code", { phoneNumber: phoneNumber })
 		.then((res) => {
+			state.isLoading.Set(false);
 			return res as string;
 		})
 		.catch((err) => {
+			state.isLoading.Set(false);
 			throw err as string;
 		});
-
-	return Promise.resolve("This is never reached but required :(");
 }
 
 function UpdatePhoneNumberWithCountryCode(countryCode: string, phoneNumber: StatePair<string>): void { 
@@ -50,9 +52,10 @@ function AddPhoneNumberDialog(props: {
 
 		UpdatePhoneNumberWithCountryCode(countryCode, phoneNumber);
 					
-		Get2FACode(phoneNumber.Value)
+		Get2FACode(phoneNumber.Value, props.AppState)
 			.then((res: string) => {
 				tfaCode.Set(res);
+				phoneNumber.Set("");
 				showDialog.Set(ShowDialog.Verify2FA);
 			})
 			.catch((err: string) => {
@@ -66,6 +69,7 @@ function AddPhoneNumberDialog(props: {
 			dialogTag={ShowDialog.AddPhoneNumber}
 			showDialog={showDialog}
 			title={"Enter Your Phone Number"}
+			onClose={() => { ClearUsedValues() }}
 		>
 			<div id="input-group" className="px-10">
 				<div className="my-5 col">

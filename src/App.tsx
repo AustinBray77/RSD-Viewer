@@ -6,14 +6,15 @@ import { Dialog } from "@mui/material";
 import { ButtonLabel, DialogButton } from "./Common/Buttons";
 import { StatePair, useStatePair } from "./StatePair";
 import { AccountData, GetPhoneNumberFromData } from "./Services/AccountData";
-import { ErrorDialog, GeneralDialog } from "./Common/Dialogs";
+import { ErrorDialog, GeneralDialog, LoadingDialog } from "./Common/Dialogs";
 
 type AppState = {
 	password: StatePair<string>,
 	error: StatePair<string>,
 	tfaCode: StatePair<string>,
 	setData: (val: AccountData[]) => void,
-	data: AccountData[]
+	data: AccountData[],
+	isLoading: StatePair<boolean>
 }
 
 function PasswordDialog(props: {
@@ -184,7 +185,8 @@ function App() {
 		password: useStatePair<string>(""),
 		tfaCode: useStatePair<string>(""),
 		setData: sendSetData,
-		data: data
+		data: data, 
+		isLoading: useStatePair<boolean>(false)
 	}
 
 
@@ -203,6 +205,7 @@ function App() {
 
 	return (
 		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden">
+			<LoadingDialog state={state} />
 			<Toolbar AppState={state} getData={getData} />
 			<Home data={state.data} setData={sendSetData} />
 			<ErrorDialog onClose={onErrorClose} error={state.error.Value} />

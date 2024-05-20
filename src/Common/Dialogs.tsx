@@ -1,5 +1,6 @@
 import { Dialog } from "@mui/material";
 import { DialogButton } from "./Buttons";
+import { AppState } from "../App";
 
 function GeneralDialog(props: {
 	open: boolean;
@@ -39,4 +40,14 @@ function ErrorDialog(props: {
 	);
 }
 
-export {GeneralDialog, ErrorDialog}
+function LoadingDialog(props: {state: AppState}) {
+	return (
+		<Dialog id="Loading Dialog" open={props.state.isLoading.Value}>
+			<div className="p-10 bg-slate-800">
+				<h2 className="text-3xl text-slate-100 m-5">Loading...</h2>
+			</div>
+		</Dialog>
+	)
+}
+
+export { GeneralDialog, ErrorDialog, LoadingDialog }
