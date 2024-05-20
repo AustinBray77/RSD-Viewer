@@ -17,7 +17,7 @@ function Get2FACode(phoneNumber: string, state: AppState): Promise<string> {
 		})
 		.catch((err) => {
 			state.isLoading.Set(false);
-			throw err as string;
+			throw err;
 		});
 }
 
@@ -58,9 +58,9 @@ function AddPhoneNumberDialog(props: {
 				phoneNumber.Set("");
 				showDialog.Set(ShowDialog.Verify2FA);
 			})
-			.catch((err: string) => {
+			.catch((err: any) => {
 				ClearUsedValues();
-				props.AppState.error.Set(err);
+				props.AppState.error.Set(err as string);
 			})
 	}
 
