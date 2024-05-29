@@ -144,13 +144,20 @@ function App() {
 			.then((res) => {
 				state.password.Set(password);
 
+				console.log("1")
+
 				if ((res as string) != "") {
 					let formattedData = AccountData.arrayFromJSON(res as string);
 					let phoneNumber = GetPhoneNumberFromData(formattedData);
 
+					console.log(formattedData);
+					
 					if(phoneNumber != "") {
-						invoke("send_2FA_code", { phoneNumber: phoneNumber })
+						console.log("3")
+
+						invoke("send_2fa_code", { phoneNumber: phoneNumber })
 							.then((res) => {
+								console.log("4")
 								state.tfaCode.Set(res as string);
 							})
 							.catch((err) => {

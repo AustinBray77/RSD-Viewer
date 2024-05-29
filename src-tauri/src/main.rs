@@ -208,18 +208,20 @@ async fn send_2fa_code(_handle: tauri::AppHandle, phone_number:String) -> Result
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
     
-    let url = format!("http://127.0.0.1:8000/{}", enc_phone_number.replace('/', "%2F"));
+    let url = format!("http://127.0.0.1:8000/api/{}", enc_phone_number.replace('/', "%2F"));
 
     let res = match reqwest::get(url).await {
         Ok(res) => res.text().await,
         Err(error) => return Err(error.to_string()),
     };
 
-    match res {
-        Ok(res) => {
-            println!("Code: {}", decrypt(res.clone(), password.clone()).unwrap());
-            return Ok(decrypt(res.clone(), password).unwrap());
-        },
+    let enc_code = match res {
+        Ok(res) => res,
+        Err(error) => return Err(error.to_string()),
+    };
+
+    match decrypt(enc_code, password) {
+        Ok(code) => Ok(code),
         Err(error) => Err(error.to_string()),
     }
 }

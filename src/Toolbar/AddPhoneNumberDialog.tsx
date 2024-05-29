@@ -21,12 +21,6 @@ function Get2FACode(phoneNumber: string, state: AppState): Promise<string> {
 		});
 }
 
-function UpdatePhoneNumberWithCountryCode(countryCode: string, phoneNumber: StatePair<string>): void { 
-	if (countryCode != "NA") {
-		phoneNumber.Set(countryCode + phoneNumber.Value);
-	}
-}
-
 function AddPhoneNumberDialog(props: {
 	ToolbarState: ToolbarState
 	AppState: AppState
@@ -49,13 +43,13 @@ function AddPhoneNumberDialog(props: {
 
 	const TryAddInputtedPhoneNumber = () => {
 		if (phoneNumber.Value == "") return;
+		
+		let updatedNumber = countryCode != 'NA' ? countryCode + phoneNumber.Value : phoneNumber.Value;
 
-		UpdatePhoneNumberWithCountryCode(countryCode, phoneNumber);
-					
-		Get2FACode(phoneNumber.Value, props.AppState)
+		Get2FACode(updatedNumber, props.AppState)
 			.then((res: string) => {
+				phoneNumber.Set(updatedNumber);
 				tfaCode.Set(res);
-				phoneNumber.Set("");
 				showDialog.Set(ShowDialog.Verify2FA);
 			})
 			.catch((err: any) => {
@@ -80,7 +74,7 @@ function AddPhoneNumberDialog(props: {
 							items={countryCodes} 
 							icons={countryIcons} 
 							startingIndex={1} 
-							onChange={(index: number) => { setCountryCode(countryCodes[index]) }} 
+							onChange={(index: number) => { setCountryCode(countryCodes[index]); }} 
 							className="w-20"
 						/>
 						&nbsp;
