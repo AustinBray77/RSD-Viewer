@@ -26,7 +26,7 @@ use dotenv::dotenv;
 
 extern crate rsd_encrypt;
 
-use rsd_encrypt::{decrypt, encrypt, legacy_decrypt};
+use rsd_encrypt::{decrypt, encrypt, hashify, legacy_decrypt};
 
 #[tauri::command]
 fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String> {
@@ -207,8 +207,10 @@ async fn send_2fa_code(_handle: tauri::AppHandle, phone_number:String) -> Result
     
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
+
+    let hashified_number = hashify(enc_phone_number);
     
-    let url = format!("http://127.0.0.1:8000/api/{}", enc_phone_number.replace('/', "%2F"));
+    let url = format!("http://127.0.0.1:8000/api/{}", hashified_number);
 
     let res = match reqwest::get(url).await {
         Ok(res) => res.text().await,
