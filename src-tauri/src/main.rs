@@ -4,6 +4,8 @@
 fn main() {
     dotenv().ok();
     
+    let debug_mode = dotenv::var("DEBUG_MODE").unwrap() == "TRUE";
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_data,
@@ -13,6 +15,7 @@ fn main() {
             copy_save_data,
             send_2fa_code
         ])
+        .manage(debug_mode)
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -202,15 +205,21 @@ fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
 
 
 #[tauri::command]
-async fn send_2fa_code(_handle: tauri::AppHandle, phone_number:String) -> Result<String, String> {
-    println!("{}", phone_number);
-    
+async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, bool>, phone_number:String) -> Result<String, String> {
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
 
     let hashified_number = hashify(enc_phone_number);
-    
-    let url = format!("http://127.0.0.1:8000/api/{}", hashified_number);
+
+    let address: String;
+
+    if *debug_mode { 
+        address = String::from("http://127.0.0.1:8000");
+    } else {
+        address = dotenv::var("SERVER_ADDRESS").unwrap();
+    }
+
+    let url = format!("{}/api/{}", address, hashified_number);
 
     let res = match reqwest::get(url).await {
         Ok(res) => res.text().await,
