@@ -3,7 +3,7 @@ import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
 import { useState } from "react";
-import { AddPhoneNumber } from "../Services/AccountData";
+import { AddPhoneNumber, RemovePhoneNumber } from "../Services/AccountData";
 import { DialogInput } from "../Common/Inputs";
 import { useStatePair } from "../StatePair";
 
@@ -29,10 +29,17 @@ function Verify2FADialog(props: {
 	const VerifyInputtedCode = () => {
 		if (testCode.Value =="") return;
 
-		if(testCode.Value == tfaCode.Value) {
+		if(testCode.Value != tfaCode.Value) {
+			props.AppState.error.Set("Invalid 2FA code");
+			ClearUsedValues();
+			return;
+		}
+
+		if(phoneNumber.Value != "") 
+		{
 			AddPhoneNumber(phoneNumber.Value, props.AppState);
 		} else {
-			props.AppState.error.Set("Invalid 2FA code");
+			RemovePhoneNumber(props.AppState);
 		}
 
 		ClearUsedValues();

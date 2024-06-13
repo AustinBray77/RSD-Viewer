@@ -1,12 +1,13 @@
 import { StatePair, useStatePair } from "../StatePair";
 import { AppState } from "../App";
-import { ExportFile, ImportFile } from "../FileHandling";
+import { ExportFile, ImportFile } from "../Services/FileHandling";
 import GeneratePasswordDialog from "./PasswordGeneratorDialog";
 import AddAccountDialog from "./AddAccountDialog";
 import AddPhoneNumberDialog from "./AddPhoneNumberDialog";
 import Verify2FADialog from "./Verify2FADialog";
-import { AccountData, GetPhoneNumberFromData } from "../Services/AccountData";
+import { GetPhoneNumberFromData } from "../Services/AccountData";
 import ImportFileDialog from "./ImportFileDialog";
+import { Get2FACode } from "../Services/TwoFactorAuth";
 
 enum ShowDialog {
 	None,
@@ -48,10 +49,12 @@ export default function Toolbar(props: {
 	const {
 		data,
 		password,
-		error
+		error,
+		isLoading
 	} = props.AppState
 
-	const has2FA = GetPhoneNumberFromData(data) != "";
+	const phoneNumber = GetPhoneNumberFromData(data);
+	const has2FA = phoneNumber != "";
 
 	const state: ToolbarState = {
 		showDialog: useStatePair<ShowDialog>(ShowDialog.None),
@@ -93,12 +96,20 @@ export default function Toolbar(props: {
 			/>
 			<HeaderButton
 				onClick={() => {
-					if(has2FA) return;
-
-					state.showDialog.Set(ShowDialog.AddPhoneNumber);
+					if(has2FA) {
+						Get2FACode(phoneNumber, isLoading)
+							.then((res: string) => {
+								state.tfaCode.Set(res);
+								state.showDialog.Set(ShowDialog.Verify2FA);
+							})
+							.catch((err: any) => {
+								error.Set("2FA Error: " + err as string);
+							});
+					} else {
+						state.showDialog.Set(ShowDialog.AddPhoneNumber);
+					}
 				}}
-				title="Add 2FA"
-				className={has2FA ? " cursor-not-allowed opacity-50" : ""}
+				title={has2FA ? "Remove 2FA" : "Add 2FA"}
 			/>
 			<AddAccountDialog
 				ToolbarState={state}

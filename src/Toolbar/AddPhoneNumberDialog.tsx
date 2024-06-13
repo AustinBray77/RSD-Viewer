@@ -1,25 +1,10 @@
 import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
-import { invoke } from "@tauri-apps/api";
 import { AppState } from "../App";
 import { DropdownFromList } from "../Common/CommonElements";
 import { useState } from "react";
-import { StatePair } from "../StatePair";
-
-function Get2FACode(phoneNumber: string, isLoading: StatePair<boolean>): Promise<string> {
-	isLoading.Set(true);
-	
-	return invoke("send_2fa_code", { phoneNumber: phoneNumber })
-		.then((res) => {
-			isLoading.Set(false);
-			return res as string;
-		})
-		.catch((err) => {
-			isLoading.Set(false);
-			throw err;
-		});
-}
+import { Get2FACode } from "../Services/TwoFactorAuth";
 
 function AddPhoneNumberDialog(props: {
 	ToolbarState: ToolbarState
@@ -54,7 +39,7 @@ function AddPhoneNumberDialog(props: {
 			})
 			.catch((err: any) => {
 				ClearUsedValues();
-				props.AppState.error.Set(err as string);
+				props.AppState.error.Set("2FA Error: " + err as string);
 			})
 	}
 

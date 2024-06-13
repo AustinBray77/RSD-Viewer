@@ -57,5 +57,14 @@ function AddPhoneNumber (phoneNumber: string,  AppState: AppState):void {
 	AppState.error.Set("Phone number added successfully");
 }
 
-export { AccountData, AddAccountHandler, GetPhoneNumberFromData, AddPhoneNumber };
+function RemovePhoneNumber (AppState: AppState):void {
+	let newData = AppState.data.filter((account) => {
+		return !(account.IsSpecial && account.Name == "Phone_Number");
+	});
+
+	AppState.setData(newData);
+	AppState.error.Set("Phone number removed successfully");
+}
+
+export { AccountData, AddAccountHandler, GetPhoneNumberFromData, AddPhoneNumber, RemovePhoneNumber };
 

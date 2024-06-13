@@ -230,18 +230,33 @@ async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, b
         .send()
         .await
     {
-        Ok(res) => res.text().await,
-        Err(error) => return Err(error.to_string()),
+        Ok(res) => {
+            println!("Res: {}", res.status());
+            res.text().await
+        },
+        Err(error) => { 
+            println!("Reqwest Error?");
+            return Err(error.to_string()) 
+        },
     };
 
     let enc_code = match res {
-        Ok(res) => res,
-        Err(error) => return Err(error.to_string()),
+        Ok(res) => {
+            println!("Res Text: {}", res);
+            res
+        },
+        Err(error) => { 
+            println!("Enc_code Error?");
+            return Err(error.to_string()) 
+        },
     };
 
     match decrypt(enc_code, password) {
         Ok(code) => Ok(code),
-        Err(error) => Err(error.to_string()),
+        Err(error) => { 
+            println!("Decrypt Error?");
+            Err(error.to_string()) 
+        },
     }
 }
 

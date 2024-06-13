@@ -7,6 +7,7 @@ import { ButtonLabel, DialogButton } from "./Common/Buttons";
 import { StatePair, useStatePair } from "./StatePair";
 import { AccountData, GetPhoneNumberFromData } from "./Services/AccountData";
 import { ErrorDialog, GeneralDialog, LoadingDialog } from "./Common/Dialogs";
+import { Get2FACode } from "./Services/TwoFactorAuth";
 
 type AppState = {
 	password: StatePair<string>,
@@ -141,36 +142,38 @@ function App() {
 	
 	const getData = (password: string, isLegacy?: boolean): void => {
 		invoke("get_data", { password: password, isLegacy: isLegacy == undefined ? false : isLegacy })
-			.then((res) => {
+			.then(async (res): Promise<[AccountData[], string]> => {
 				state.password.Set(password);
-
-				console.log("1")
 
 				if ((res as string) != "") {
 					let formattedData = AccountData.arrayFromJSON(res as string);
 					let phoneNumber = GetPhoneNumberFromData(formattedData);
+					let code = "";
 
 					console.log(formattedData);
 					
 					if(phoneNumber != "") {
-						console.log("3")
-
-						invoke("send_2fa_code", { phoneNumber: phoneNumber })
-							.then((res) => {
-								console.log("4")
-								state.tfaCode.Set(res as string);
-							})
-							.catch((err) => {
-								state.error.Set(err as string);
-							});
-						setTempData(formattedData);
-					} else {
-						setData(formattedData);
+						code = await Get2FACode(phoneNumber, state.isLoading);
 					}
+					
+					return [ formattedData, code ];
+				}
+
+				return [ [], "" ];
+			})
+			.then((res: [AccountData[], string]) => {
+				if (res[1] != "") {
+					state.tfaCode.Set(res[1]);
+					setTempData(res[0]);
+				} else {
+					setData(res[0]);
 				}
 			})
 			.catch((err: string) => {
 				state.error.Set("FATAL ERROR (password is likely incorrect): " + err);
+			})
+			.catch((err: any) => {
+				state.error.Set(err as string);
 			});
 	};
 

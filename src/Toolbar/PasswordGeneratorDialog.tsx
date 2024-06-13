@@ -1,5 +1,5 @@
 import { ButtonLabel, DialogButton } from "../Common/Buttons";
-import { ArrayRange, CollapsableRandomArray } from "../Math";
+import { ArrayRange, CollapsableRandomArray } from "../Services/Math";
 import { AccountData, AddAccountHandler } from "../Services/AccountData";
 import { StatePair, useStatePair } from "../StatePair";
 import ToolbarDialog from "./ToolbarDialog";
