@@ -2,7 +2,6 @@ import { Home } from "./Home/Home";
 import Toolbar from "./Toolbar/Toolbar";
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api";
-import { Dialog } from "@mui/material";
 import { ButtonLabel, DialogButton } from "./Common/Buttons";
 import { StatePair, useStatePair } from "./StatePair";
 import { AccountData, GetPhoneNumberFromData } from "./Services/AccountData";
@@ -169,11 +168,8 @@ function App() {
 					setData(res[0]);
 				}
 			})
-			.catch((err: string) => {
-				state.error.Set("FATAL ERROR (password is likely incorrect): " + err);
-			})
 			.catch((err: any) => {
-				state.error.Set(err as string);
+				state.error.Set("FATAL - " + err as string);
 			});
 	};
 
@@ -182,7 +178,7 @@ function App() {
 			data: AccountData.arrayToJSON(val),
 			password: state.password.Value,
 		})
-			.then((res) => {
+			.then((_) => {
 				setData(val);
 			})
 			.catch((err) => {

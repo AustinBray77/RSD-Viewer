@@ -47,7 +47,7 @@ fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String
 
     return match decrypt(encrypted_content, password) {
         Ok(content) => Ok(content),
-        Err(error) => Err(error.to_string()),
+        Err(error) => Err(format!("Password is likely incorrect: {}", error.to_string())),
     };
 }
 
@@ -109,12 +109,12 @@ fn set_save_data(handle: tauri::AppHandle, path: String, is_legacy: bool, passwo
     if is_legacy {
         decrypted_content = match legacy_decrypt(content.clone(), password.clone()) {
             Ok(content) => content,
-            Err(error) => return Err(error.to_string()),
+            Err(error) => return Err(format!("Passwords likely do not match: {}", error.to_string())),
         };
     } else {
         decrypted_content = match decrypt(content.clone(), password.clone()) {
             Ok(content) => content,
-            Err(error) => return Err(error.to_string()),
+            Err(error) => return Err(format!("Passwords likely do not match: {}", error.to_string())),
         };
     }
 
