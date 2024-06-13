@@ -221,7 +221,15 @@ async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, b
 
     let url = format!("{}/api/{}", address, hashified_number);
 
-    let res = match reqwest::get(url).await {
+    let res = 
+        match reqwest::Client::builder()
+        .danger_accept_invalid_certs(true)
+        .build()
+        .unwrap()
+        .get(&url)
+        .send()
+        .await
+    {
         Ok(res) => res.text().await,
         Err(error) => return Err(error.to_string()),
     };

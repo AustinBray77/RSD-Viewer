@@ -7,16 +7,16 @@ import { DropdownFromList } from "../Common/CommonElements";
 import { useState } from "react";
 import { StatePair } from "../StatePair";
 
-function Get2FACode(phoneNumber: string, state: AppState): Promise<string> {
-	state.isLoading.Set(true);
+function Get2FACode(phoneNumber: string, isLoading: StatePair<boolean>): Promise<string> {
+	isLoading.Set(true);
 	
 	return invoke("send_2fa_code", { phoneNumber: phoneNumber })
 		.then((res) => {
-			state.isLoading.Set(false);
+			isLoading.Set(false);
 			return res as string;
 		})
 		.catch((err) => {
-			state.isLoading.Set(false);
+			isLoading.Set(false);
 			throw err;
 		});
 }
@@ -46,7 +46,7 @@ function AddPhoneNumberDialog(props: {
 		
 		let updatedNumber = countryCode != 'NA' ? countryCode + phoneNumber.Value : phoneNumber.Value;
 
-		Get2FACode(updatedNumber, props.AppState)
+		Get2FACode(updatedNumber, props.AppState.isLoading)
 			.then((res: string) => {
 				phoneNumber.Set(updatedNumber);
 				tfaCode.Set(res);
