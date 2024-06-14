@@ -37,7 +37,7 @@ function Home(props: {
 		<div className="p-8 text-slate-100 overflow-y-auto max-h-[85vh]">
 			<div
 				className={
-					"flex columns-2"
+					"flex columns-2 border-2 border-slate-600/[.1] min-w-fit"
 				}
 			>
 				<AccountColumn data={filteredData} />
