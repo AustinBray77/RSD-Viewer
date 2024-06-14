@@ -7,12 +7,14 @@ function GeneralDialog(props: {
 	onClose?: (e : {}, r: "backdropClick" | "escapeKeyDown") => void;
 	children?: JSX.Element | JSX.Element[];
 	title?: string;
+	ref?: React.RefObject<HTMLDivElement>;
 }): JSX.Element {
 	return (
 		<Dialog 
 			open={props.open} 
 			onClose={props.onClose}
 			className="backdrop-blur"
+			ref={props.ref}
 		>
 			<div id="DialogContainer" className="p-10 bg-slate-700 text-slate-300">
 				<h2 className="text-3xl px-10 text-slate-100">{props.title}</h2>

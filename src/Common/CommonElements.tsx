@@ -1,5 +1,6 @@
 import Dialog from "@mui/material/Dialog";
 import { useState } from "react";
+import useMousePosition from "../Services/WindowData";
 
 function StandardHomeBox(props: {
 	children: JSX.Element[] | JSX.Element | string;
@@ -87,4 +88,17 @@ function Title(props: { children: string }): JSX.Element {
 		</StandardHomeBox>
 }
 
-export { StandardHomeBox, DropdownFromList, Title };
+function ToolTip(props: { children: string, offset?: [number, number] }): JSX.Element {
+	const mousePos = useMousePosition();
+
+	//console.log("Width %d, Height %d", width, height);
+	//console.log("Mouse Pos: %d, %d", mousePos.Value.x, mousePos.Value.y);
+
+	const translationString = "translate(" + (mousePos.Value.x - props.offset![0] + 10) + "px," + (mousePos.Value.y- props.offset![1] + 30) + "px)";
+	
+	return <label className="fixed z-50 bg-slate-700 z-10 border-2 rounded border-slate-800/[0.50] px-1 py-1" style={{transform: translationString, zIndex: 1000 }}>
+		{props.children}
+	</label>
+}
+
+export { StandardHomeBox, DropdownFromList, Title, ToolTip };

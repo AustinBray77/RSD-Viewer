@@ -22,13 +22,9 @@ export default function AccountColumn(props: {
 		<div id="AccountColumn" className="w-2/3 min-w-1/2">
 			<Title>Accounts</Title>
 			<div className="text-xl">
-				{accountList.length > 0 ? (
-					<ul>
-						{accountList}
-					</ul>
-				) : (
-					<h4>No Accounts Yet</h4>
-				)}
+				<ul>
+					{accountList}
+				</ul>
 			</div>
 		</div>
 	);

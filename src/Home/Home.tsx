@@ -33,6 +33,12 @@ function Home(props: {
 		selectedAccount: useStatePair(-1)
 	}
 
+	if (filteredData.length == 0) {
+		return <div className="p-8 text-slate-100 overflow-y-auto content-center flex justify-center">
+				<h1 className="text-5xl">No Accounts Yet</h1>
+			</div>
+	}
+
 	return (
 		<div className="p-8 text-slate-100 overflow-y-auto max-h-[85vh]">
 			<div

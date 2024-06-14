@@ -6,6 +6,7 @@ const ToolbarDialog = (props: {
 	onClose?: (e: {}, r: "backdropClick" | "escapeKeyDown") => void;
 	children?: JSX.Element | JSX.Element[];
 	title?: string;
+	ref?: React.RefObject<HTMLDivElement>;
 	showDialog: StatePair<ShowDialog>;
 	dialogTag: ShowDialog;
 }): JSX.Element => {
@@ -17,6 +18,7 @@ const ToolbarDialog = (props: {
 				props.showDialog.Set(ShowDialog.None) 
 			}} 
 			title={props.title}
+			ref={props.ref}
 		>
 			{props.children}
 		</GeneralDialog>

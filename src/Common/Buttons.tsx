@@ -25,7 +25,7 @@ function OptionsButton(props: ButtonProps): JSX.Element {
 	return (
 		<button
 			className={
-				"transition-all duration-300 border-2 border-slate-700 bg-slate-600 rounded mx-3 p-3 hover:bg-slate-800 w-[6rem] h-[3.5rem] " +
+				"transition-all duration-300 border-2 border-slate-700 bg-slate-600 rounded mx-3 p-3 hover:bg-slate-800 w-[6.25rem] h-[3.5rem] content-center justify-center " +
 				props.className
 			}
 			onClick={props.onClick}

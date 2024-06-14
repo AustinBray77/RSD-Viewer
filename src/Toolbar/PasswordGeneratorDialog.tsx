@@ -6,7 +6,8 @@ import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { DialogInput } from "../Common/Inputs";
 import { AppState } from "../App";
-import useMousePosition from "../Services/MousePosition";
+import { ToolTip } from "../Common/CommonElements";
+import React from "react";
 
 const GeneratePassword = (state: ToolbarState): string => {
 	/*if (state.account.Value.Name == "") {
@@ -85,10 +86,10 @@ function GeneratePasswordDialog(props: {
 	} = props.ToolbarState;
 	
 	const inputName = useStatePair("");
-	const mousePos = useMousePosition();
-	const sliding = useStatePair(false);
+	const hoveringOnSlider = useStatePair(false);
+	const dialogRef = React.useRef<HTMLDivElement>(null);
 
-	const translationString = "translate(" + mousePos.Value.x + "px," + mousePos.Value.y + "px)";
+	const tooltipOffset: [number, number] = dialogRef.current ? [dialogRef.current.getBoundingClientRect().x,  dialogRef.current.getBoundingClientRect().y] : [0, 0];
 
 	return (
 		<ToolbarDialog
@@ -97,12 +98,12 @@ function GeneratePasswordDialog(props: {
 			title={"Generate A Password"}
 			onClose={() => { inputName.Set(""); }}
 		>
-			{ sliding.Value ? 
-				<label className="fixed z-50 bg-slate-700 z-10 border-2 rounded border-slate-800/[0.50] px-1 py-1" style={{transform: translationString}}>
-					{passwordLength.Value}
-				</label> : <></>
+			{
+				hoveringOnSlider.Value ? (
+					<ToolTip offset={tooltipOffset}>{passwordLength.Value.toString()}</ToolTip>
+				) : <></>
 			}
-			<div id="input-group" className="px-10">
+			<div id="input-group" className="px-10" ref={dialogRef}>
 				<DialogInput label="Account Name: " value={inputName} required={true} className="my-5" />
 				<div className="my-5">
 					<label className="text-xl">Password Parameters: </label>
@@ -149,9 +150,14 @@ function GeneratePasswordDialog(props: {
 								className="slider"
 								onChange={(e) => {
 									passwordLength.Set(parseInt(e.target.value.valueOf()));
+									//props.AppState.tooltip.Set(passwordLength.Value.toString());
 								}}
-								onMouseEnter={() => { sliding.Set(true); }}
-								onMouseLeave={() => { sliding.Set(false); }}
+								onMouseEnter={() => {
+									hoveringOnSlider.Set(true);
+								}}
+								onMouseLeave={() => {
+									hoveringOnSlider.Set(false);
+								}}
 							/>
 						</div>
 					</div>

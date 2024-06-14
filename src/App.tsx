@@ -7,6 +7,9 @@ import { StatePair, useStatePair } from "./StatePair";
 import { AccountData, GetPhoneNumberFromData } from "./Services/AccountData";
 import { ErrorDialog, GeneralDialog, LoadingDialog } from "./Common/Dialogs";
 import { Get2FACode } from "./Services/TwoFactorAuth";
+import { Tooltip } from "@mui/material";
+import { ToolTip } from "./Common/CommonElements";
+import zIndex from "@mui/material/styles/zIndex";
 
 type AppState = {
 	password: StatePair<string>,
@@ -14,7 +17,8 @@ type AppState = {
 	tfaCode: StatePair<string>,
 	setData: (val: AccountData[]) => void,
 	data: AccountData[],
-	isLoading: StatePair<boolean>
+	isLoading: StatePair<boolean>,
+	//tooltip: StatePair<string>
 }
 
 function PasswordDialog(props: {
@@ -192,7 +196,8 @@ function App() {
 		tfaCode: useStatePair<string>(""),
 		setData: sendSetData,
 		data: data, 
-		isLoading: useStatePair<boolean>(false)
+		isLoading: useStatePair<boolean>(false),
+		//tooltip: useStatePair<string>("")
 	}
 
 
