@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AccountData } from "../Services/AccountData";
 import { ButtonLabel, DialogButton, OptionsButton } from "../Common/Buttons";
-import { StandardHomeBox } from "../Common/CommonElements";
+import { StandardHomeBox, Title } from "../Common/CommonElements";
 import { Dialog } from "@mui/material";
 import { StatePair, useStatePair } from "../StatePair";
 import { HomeState, ShowHomeDialog } from "./Home";
@@ -41,7 +41,7 @@ function CopyPasswordButton(props: {
 	};
 
 	return (
-		<OptionsButton className="inline-flex" onClick={onClick}>
+		<OptionsButton onClick={onClick}>
 			Copy
 		</OptionsButton>
 	);
@@ -115,7 +115,7 @@ function ChangePasswordButton(props: {
 	};
 
 	return (
-		<OptionsButton className="inline-flex" onClick={onClick}>
+		<OptionsButton onClick={onClick}>
 			Change
 		</OptionsButton>
 	);
@@ -187,7 +187,7 @@ function RemovePasswordButton(props: {
 	};
 
 	return (
-		<OptionsButton className="inline-flex" onClick={onClick}>
+		<OptionsButton onClick={onClick}>
 			Remove
 		</OptionsButton>
 	);
@@ -212,7 +212,7 @@ function OptionsColumn(props: {
 
 		buttonList.push(
 			<li>
-				<StandardHomeBox>
+				<StandardHomeBox className="flex justify-center">
 					<CopyPasswordButton
 						text={account.Password}
 						dialog={dialog}
@@ -225,9 +225,9 @@ function OptionsColumn(props: {
 	}
 
 	return (
-		<div id="OptionsColumn" className="">
-			<h3 className="text-2xl px-5">Options</h3>
-			<div className="text-xl px-5">
+		<div id="OptionsColumn" className="w-1/3 min-w-fit">
+			<Title>Options</Title>
+			<div className="text-xl">
 				{buttonList.length > 0 ? <ul>{buttonList}</ul> : <div></div>}
 			</div>
 		</div>

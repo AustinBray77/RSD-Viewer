@@ -37,7 +37,7 @@ function Home(props: {
 		<div className="p-8 text-slate-100 overflow-y-auto max-h-[85vh]">
 			<div
 				className={
-					"grid grid-rows-" + Math.max(filteredData.length, 1) + " grid-flow-col"
+					"flex columns-2"
 				}
 			>
 				<AccountColumn data={filteredData} />

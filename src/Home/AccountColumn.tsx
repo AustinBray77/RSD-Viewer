@@ -1,5 +1,5 @@
 import { AccountData } from "../Services/AccountData";
-import { StandardHomeBox } from "../Common/CommonElements";
+import { StandardHomeBox, Title } from "../Common/CommonElements";
 
 export default function AccountColumn(props: {
 	data: AccountData[];
@@ -10,7 +10,7 @@ export default function AccountColumn(props: {
 		accountList.push(
 			<li>
 				<StandardHomeBox>
-					<div className="p-3 border-2 border-slate-700/[.1]">
+					<div className="h-[3.5rem] px-5 content-center">
 						{props.data[i].Name}
 					</div>
 				</StandardHomeBox>
@@ -19,11 +19,13 @@ export default function AccountColumn(props: {
 	}
 
 	return (
-		<div id="AccountColumn" className="">
-			<h3 className="text-2xl px-5">Accounts</h3>
-			<div className="text-xl px-5">
+		<div id="AccountColumn" className="w-2/3 min-w-1/2">
+			<Title>Accounts</Title>
+			<div className="text-xl">
 				{accountList.length > 0 ? (
-					<ul>{accountList}</ul>
+					<ul>
+						{accountList}
+					</ul>
 				) : (
 					<h4>No Accounts Yet</h4>
 				)}

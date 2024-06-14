@@ -3,9 +3,10 @@ import { useState } from "react";
 
 function StandardHomeBox(props: {
 	children: JSX.Element[] | JSX.Element | string;
+	className?: string;
 }): JSX.Element {
 	return (
-		<div className="content-center border-x-slate-600 border-x-2 py-3">
+		<div className={"border-2 border-slate-600/[.1] py-3 content-center " + props.className}>
 			{props.children}
 		</div>
 	);
@@ -80,4 +81,10 @@ function DropdownFromList(props: {
 	);
 }
 
-export { StandardHomeBox, DropdownFromList };
+function Title(props: { children: string }): JSX.Element {
+	return <StandardHomeBox>
+			<h3 className="flex justify-center text-2xl">{props.children}</h3>
+		</StandardHomeBox>
+}
+
+export { StandardHomeBox, DropdownFromList, Title };
