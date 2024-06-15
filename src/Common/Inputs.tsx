@@ -1,4 +1,3 @@
-import { AccountData } from "../Services/AccountData";
 import { StatePair } from "../StatePair";
 
 function DialogInput(props: { label: string, value: StatePair<string>, className?: string, required?: boolean, onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void, type?: string }): JSX.Element {

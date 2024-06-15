@@ -22,13 +22,15 @@ function ImportFileDialog(
                     onClick={() => {
 					    props.importCallback(false);
 				    }}
+                    className="w-[15rem]"
                 >
-                    <ButtonLabel> Non-Legacy Import</ButtonLabel>
+                    <ButtonLabel>Non-Legacy Import</ButtonLabel>
                 </DialogButton>
                 <DialogButton 
                     onClick={() => {
 					    props.importCallback(true);
 				    }}
+                    className="w-[15rem]"
                 >
                     <ButtonLabel>Legacy Import</ButtonLabel>
                 </DialogButton>
