@@ -66,7 +66,7 @@ function DropdownFromList(props: {
 		<div className={props.className}>
 			<div className="flex focus:outline-none bg-slate-700 border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700 items-center" onClick={() => { setIsOpen(!isOpen) }}>
 				&nbsp;
-				<SmallIcon src="/arrow-down.png" />
+				<img className="w-3 h-3" src="/arrow-down-light.png" />
 				&nbsp;
 				{getDropdownFromItem(props.items[currentIndex], props.icons[currentIndex], currentIndex, (index: number) => {}, false, "")}
 				&nbsp;

@@ -29,7 +29,8 @@ type ToolbarState = {
 }
 
 function RetractedHeader(props: { state: StatePair<boolean> }): JSX.Element {
-	return <div></div>
+	return <div className="bg-slate-700 flex h-5" onClick={() => { props.state.Set(false); }}>
+	</div>
 }
 
 export default function Toolbar(props: {
@@ -59,7 +60,7 @@ export default function Toolbar(props: {
 
 	return (
 		<div id="Toolbar">
-			{ !state.retracted ? 
+			{ !state.retracted.Value ? 
 				<ToolbarHeader has2FA={has2FA} state={state} appState={props.AppState} />
 				: <RetractedHeader state={state.retracted} />
 			}

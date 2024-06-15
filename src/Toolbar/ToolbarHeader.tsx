@@ -10,7 +10,7 @@ function HeaderButton(props: {
 	className?: string;
 }): JSX.Element {
 	return (
-		<div className={"inline-flex border-1 border-slate-700 " + props.className!}>
+		<div className={"inline-flex border-1 border-slate-700 content-end " + props.className!}>
 			<button className="text-xl p-3" onClick={props.onClick}>
 				{props.title}
 			</button>
@@ -21,8 +21,8 @@ function HeaderButton(props: {
 function ToolbarHeader(props: { state: ToolbarState, appState: AppState, has2FA: boolean }): JSX.Element {
     const { showDialog, phoneNumber, tfaCode } = props.state; 
     
-    return <div  className="p-8 bg-slate-700">
-        <h1 className="p-3 text-2xl inline-flex" id="Title">
+    return <div className="px-8 py-5 bg-slate-700 flex content-center flex-wrap">
+        <h1 className="inline-flex p-3 text-2xl" id="Title">
             RSD Password Manager
         </h1>
         <HeaderButton
@@ -66,8 +66,13 @@ function ToolbarHeader(props: { state: ToolbarState, appState: AppState, has2FA:
             }}
             title={props.has2FA ? "Remove 2FA" : "Add 2FA"}
         />
-        <div className="inline-flex flex justify-end">
-            <img className="w-6 h-5" src="/arrow-down.png" onClick={() => { props.state.retracted.Set(true); }}/>
+        <div className="inline-flex m-3">
+            <img 
+                className="w-8 h-6 self-center" 
+                src="/arrow-down-light.png" 
+                onClick={() => { props.state.retracted.Set(true); }}
+                style={{rotate: "180deg"}}
+            />
         </div>
     </div>;
 }
