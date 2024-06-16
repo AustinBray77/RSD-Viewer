@@ -65,7 +65,7 @@ export default function Toolbar(props: {
 	return (
 		<div id="Toolbar">
 			<RetractedHeader state={state.retracted} />
-			<div className={"transition-transform duration-1000 ease-in-out z-10 " + animationClass}>
+			<div className={"transition-transform duration-1000 ease-in-out absolute top-0 left-0 right-0 z-10 " + animationClass}>
 				<ToolbarHeader has2FA={has2FA} state={state} appState={props.AppState} />
 				<div className="flex justify-center content-end">
 					<RetractArrow className="-translate-y-3" subClassName="rotate-180" onClick={() => { state.retracted.Set(true); }} />

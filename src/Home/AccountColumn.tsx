@@ -10,7 +10,7 @@ export default function AccountColumn(props: {
 		accountList.push(
 			<li>
 				<StandardHomeBox>
-					<div className="h-[3.5rem] px-5 content-center">
+					<div className="h-[3.5rem] leading-[3.5rem] px-5">
 						{props.data[i].Name}
 					</div>
 				</StandardHomeBox>

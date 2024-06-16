@@ -45,8 +45,9 @@ function ErrorDialog(props: {
 function LoadingDialog(props: {state: AppState}) {
 	return (
 		<Dialog id="Loading Dialog" open={props.state.isLoading.Value}>
-			<div className="p-10 bg-slate-800">
-				<h2 className="text-3xl text-slate-100 m-5">Loading...</h2>
+			<div className="p-10 bg-slate-800 flex">
+				<img src="/loading_icon.png" className="w-10 h-10 animate-spin ease-in-out self-center mx-3" />
+				<h2 className="text-3xl text-slate-100 self-center mx-3">Loading...</h2>
 			</div>
 		</Dialog>
 	)
