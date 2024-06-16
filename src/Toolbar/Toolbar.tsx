@@ -8,6 +8,7 @@ import Verify2FADialog from "./Verify2FADialog";
 import { GetPhoneNumberFromData } from "../Services/AccountData";
 import ImportFileDialog from "./ImportFileDialog";
 import ToolbarHeader from "./ToolbarHeader";
+import { RetractArrow } from "../Common/CommonElements";
 
 enum ShowDialog {
 	None,
@@ -29,7 +30,8 @@ type ToolbarState = {
 }
 
 function RetractedHeader(props: { state: StatePair<boolean> }): JSX.Element {
-	return <div className="bg-slate-700 flex h-5" onClick={() => { props.state.Set(false); }}>
+	return <div className="pb-3 flex justify-center content-end absolute top-0 left-0 right-0">
+		<RetractArrow className="z-0" onClick={() => { props.state.Set(false); }} />
 	</div>
 }
 
@@ -58,12 +60,17 @@ export default function Toolbar(props: {
 		retracted: useStatePair<boolean>(false)
 	}
 
+	let animationClass = state.retracted.Value ? "toolbar-retracted" : "toolbar-normal";
+
 	return (
 		<div id="Toolbar">
-			{ !state.retracted.Value ? 
+			<RetractedHeader state={state.retracted} />
+			<div className={"transition-transform duration-1000 ease-in-out z-10 " + animationClass}>
 				<ToolbarHeader has2FA={has2FA} state={state} appState={props.AppState} />
-				: <RetractedHeader state={state.retracted} />
-			}
+				<div className="flex justify-center content-end">
+					<RetractArrow className="-translate-y-3" subClassName="rotate-180" onClick={() => { state.retracted.Set(true); }} />
+				</div>
+			</div>
 			<AddAccountDialog
 				ToolbarState={state}
 				AppState={props.AppState}

@@ -101,4 +101,13 @@ function ToolTip(props: { children: string, offset?: [number, number] }): JSX.El
 	</label>
 }
 
-export { StandardHomeBox, DropdownFromList, Title, ToolTip };
+function RetractArrow(props: { className?: string, subClassName?:string, onClick: () => void }): JSX.Element {
+	return <div className={"fixed bg-slate-700 py-2 px-3 rounded-b " + props.className} onClick={props.onClick}>
+			<img 
+            	className={"w-4 h-3 " + props.subClassName} 
+            	src="/arrow-down-light.png"
+        	/>
+		</div>
+}
+
+export { StandardHomeBox, DropdownFromList, Title, ToolTip, RetractArrow };

@@ -7,9 +7,6 @@ import { StatePair, useStatePair } from "./StatePair";
 import { AccountData, GetPhoneNumberFromData } from "./Services/AccountData";
 import { ErrorDialog, GeneralDialog, LoadingDialog } from "./Common/Dialogs";
 import { Get2FACode } from "./Services/TwoFactorAuth";
-import { Tooltip } from "@mui/material";
-import { ToolTip } from "./Common/CommonElements";
-import zIndex from "@mui/material/styles/zIndex";
 
 type AppState = {
 	password: StatePair<string>,
@@ -215,7 +212,7 @@ function App() {
 	}
 
 	return (
-		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden">
+		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden transition-all duration-1000">
 			<LoadingDialog state={state} />
 			<Toolbar AppState={state} getData={getData} />
 			<Home data={state.data} setData={sendSetData} />

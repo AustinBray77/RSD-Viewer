@@ -1,0 +1,7 @@
+.toolbar-normal {
+    transform: translateY(0);
+}
+
+.toolbar-retracted {
+    transform: translateY(-120%);
+}

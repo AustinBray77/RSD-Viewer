@@ -1,4 +1,5 @@
 import { AppState } from "../App";
+import { RetractArrow } from "../Common/CommonElements";
 import { ExportFile } from "../Services/FileHandling";
 import { Get2FACode } from "../Services/TwoFactorAuth";
 import { StatePair } from "../StatePair";
@@ -66,14 +67,6 @@ function ToolbarHeader(props: { state: ToolbarState, appState: AppState, has2FA:
             }}
             title={props.has2FA ? "Remove 2FA" : "Add 2FA"}
         />
-        <div className="inline-flex m-3">
-            <img 
-                className="w-8 h-6 self-center" 
-                src="/arrow-down-light.png" 
-                onClick={() => { props.state.retracted.Set(true); }}
-                style={{rotate: "180deg"}}
-            />
-        </div>
     </div>;
 }
 

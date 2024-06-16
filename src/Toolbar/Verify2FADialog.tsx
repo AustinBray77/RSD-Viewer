@@ -2,7 +2,6 @@ import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
-import { useState } from "react";
 import { AddPhoneNumber, RemovePhoneNumber } from "../Services/AccountData";
 import { DialogInput } from "../Common/Inputs";
 import { useStatePair } from "../StatePair";
