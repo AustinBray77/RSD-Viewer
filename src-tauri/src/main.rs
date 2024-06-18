@@ -235,8 +235,8 @@ async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, b
             res.text().await
         },
         Err(error) => { 
-            println!("Reqwest Error?");
-            return Err(error.to_string()) 
+            println!("Reqwest Error? {}", error.to_string());
+            return Err("Error communicating the with server, check your connection and try again.".to_string()) 
         },
     };
 

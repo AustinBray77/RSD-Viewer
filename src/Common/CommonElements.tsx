@@ -32,7 +32,7 @@ function DropdownFromList(props: {
 			<div onClick={() => { onClick(index) }} className={"flex items-center " + style}>
 				{
 					needsSpacing ?
-					<div className="w-4 h-3">&nbsp;</div> :
+					<div className="w-3 h-3">&nbsp;</div> :
 					""
 				}
 				<SmallIcon src={icon} />
@@ -49,18 +49,25 @@ function DropdownFromList(props: {
 
 		for (let i = 0; i < props.items.length; i++) {
 			dropdownItems.push(
-				getDropdownFromItem(props.items[i], props.icons[i], i, 
+				getDropdownFromItem(
+					props.items[i], 
+					props.icons[i], 
+					i, 
 					(index: number) => {
 						setCurrentIndex(index);
 						setIsOpen(false);
 						props.onChange(index);
-					}, true, "border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700"
+					}, 
+					true, 
+					"border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700"
 				)
 			);
 		}
 
 		return dropdownItems;
 	}
+
+	let animationString = isOpen ? "h-20 border-slate-800/[0.50]" : "h-0 border-slate-700";
 
 	return (
 		<div className={props.className}>
@@ -71,13 +78,9 @@ function DropdownFromList(props: {
 				{getDropdownFromItem(props.items[currentIndex], props.icons[currentIndex], currentIndex, (index: number) => {}, false, "")}
 				&nbsp;
 			</div>
-			{
-				isOpen ?
-				<div className="overflow-y-auto h-20 fixed bg-slate-700 z-10 border-2 rounded border-slate-800/[0.50]"> 
-					{generateDropdown()}
-				</div> 
-				: ""
-			}
+			<div className={"transition-all duration-500 overflow-y-auto fixed bg-slate-700 z-10 rounded border-2 " + animationString}> 
+				{generateDropdown()}
+			</div> 
 		</div>
 	);
 }

@@ -7,6 +7,7 @@ import { StatePair, useStatePair } from "./StatePair";
 import { AccountData, GetPhoneNumberFromData } from "./Services/AccountData";
 import { ErrorDialog, GeneralDialog, LoadingDialog } from "./Common/Dialogs";
 import { Get2FACode } from "./Services/TwoFactorAuth";
+import { DialogInput } from "./Common/Inputs";
 
 type AppState = {
 	password: StatePair<string>,
@@ -22,7 +23,7 @@ function PasswordDialog(props: {
 	password: StatePair<string>;
 	onClose: any;
 }) {
-	const [input, setInput] = useState("");
+	const input = useStatePair("");
 
 
 	return (
@@ -38,33 +39,16 @@ function PasswordDialog(props: {
 							<br />
 						</label>
 					</div>
-					<input
-						type="password"
-						onChange={(e) => {
-							setInput(e.target.value);
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(input == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={input == "" ? "text-slate-500" : "text-slate-700"}
-					>
-						This field is required
-					</label>
+					<DialogInput required={true} value={input} type="password" />
 				</div>
 			</div>
 			<DialogButton
-				className={input == "" ? " cursor-not-allowed opacity-50" : ""}
+				className={input.Value == "" ? " cursor-not-allowed opacity-50" : ""}
 				onClick={() => {
-					if (input == "") return;
-					props.password.Set(input);
-					props.onClose(input);
-					setInput("");
+					if (input.Value == "") return;
+					props.password.Set(input.Value);
+					props.onClose(input.Value);
+					input.Set("");
 				}}
 			>
 				<ButtonLabel>Ok</ButtonLabel>

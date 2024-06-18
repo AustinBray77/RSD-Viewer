@@ -5,6 +5,7 @@ import { AppState } from "../App";
 import { DropdownFromList } from "../Common/CommonElements";
 import { useState } from "react";
 import { Get2FACode } from "../Services/TwoFactorAuth";
+import { DialogInput } from "../Common/Inputs";
 
 function AddPhoneNumberDialog(props: {
 	ToolbarState: ToolbarState
@@ -50,37 +51,19 @@ function AddPhoneNumberDialog(props: {
 			title={"Enter Your Phone Number"}
 			onClose={() => { ClearUsedValues() }}
 		>
-			<div id="input-group" className="px-10">
-				<div className="my-5 col">
-					<label className="text-xl">Phone Number: </label>
-					<br />
-					<div className="flex">
-						<DropdownFromList 
-							items={countryCodes} 
-							icons={countryIcons} 
-							startingIndex={1} 
-							onChange={(index: number) => { setCountryCode(countryCodes[index]); }} 
-							className="w-20"
-						/>
-						&nbsp;
-						<input
-							type="text"
-							onChange={(e) => {
-								phoneNumber.Set(e.target.value);
-							}}
-							className={
-								"focus:outline-none bg-slate-700 border-2 rounded h-8 " +
-								(phoneNumber.Value == ""
-									? "border-rose-500"
-									: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-							}
-						/>
-					</div>
-					<label
-						className={phoneNumber.Value == "" ? "text-slate-500" : "text-slate-700"}
-					>
-						This field is required
-					</label>
+			<div id="input-group" className="px-10 my-5">
+				<label className="text-xl">Phone Number: </label>
+				<br />
+				<div className="flex">
+					<DropdownFromList 
+						items={countryCodes} 
+						icons={countryIcons} 
+						startingIndex={1} 
+						onChange={(index: number) => { setCountryCode(countryCodes[index]); }} 
+						className="w-20"
+					/>
+					&nbsp;
+					<DialogInput label="" value={phoneNumber} required={true} />
 				</div>
 			</div>
 			<DialogButton
