@@ -2,7 +2,7 @@ import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
-import { AddPhoneNumber, RemovePhoneNumber } from "../Services/AccountData";
+import { AddPhoneNumber, GetPhoneNumberFromData, RemovePhoneNumber } from "../Services/AccountData";
 import { DialogInput } from "../Common/Inputs";
 import { useStatePair } from "../StatePair";
 
@@ -34,7 +34,9 @@ function Verify2FADialog(props: {
 			return;
 		}
 
-		if(phoneNumber.Value != "") 
+		let hasPhoneNumber = GetPhoneNumberFromData(props.AppState.data) != "";
+
+		if(!hasPhoneNumber && phoneNumber.Value != "") 
 		{
 			AddPhoneNumber(phoneNumber.Value, props.AppState);
 		} else {

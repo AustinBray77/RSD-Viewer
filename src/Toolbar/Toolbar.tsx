@@ -50,15 +50,24 @@ export default function Toolbar(props: {
 	const phoneNumber = GetPhoneNumberFromData(data);
 	const has2FA = phoneNumber != "";
 
+	console.log("Phone Number From Data: " + phoneNumber);
+
 	const state: ToolbarState = {
 		showDialog: useStatePair<ShowDialog>(ShowDialog.None),
-		phoneNumber: useStatePair<string>(phoneNumber),
+		phoneNumber: useStatePair(phoneNumber),
 		tfaCode: useStatePair<string>(""),
 		passwordParams: useStatePair<boolean[]>([true, true, true]),
 		passwordLength: useStatePair<number>(16),
 		genPassFlag: useStatePair<boolean>(false),
 		retracted: useStatePair<boolean>(false)
 	}
+
+	if(state.phoneNumber.Value != phoneNumber) {
+		state.phoneNumber.Set(phoneNumber);
+	}
+
+	console.log("Phone Number In Parent: " + state.phoneNumber.Value);
+	console.log("Password Params: " + state.passwordParams.Value);
 
 	let animationClass = state.retracted.Value ? "toolbar-retracted" : "toolbar-normal";
 

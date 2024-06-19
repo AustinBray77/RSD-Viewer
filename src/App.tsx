@@ -62,7 +62,7 @@ function TFALoginDialog(props: {
 	onFail: () => void;
 	onSuccess: () => void;
 }) {
-	const [testCode, setTestCode] = useState("");
+	const testCode = useStatePair("");
 
 	const {
 		tfaCode,
@@ -75,42 +75,22 @@ function TFALoginDialog(props: {
 			onClose={() => {}}
 			title={"Enter The 2FA Code"}
 		>
-			<div id="input-group" className="px-10">
-				<div className="my-5">
-					<label className="text-xl">2FA Code: </label>
-					<input
-						type="text"
-						onChange={(e) => {
-							setTestCode(e.target.value);
-						}}
-						className={
-							"focus:outline-none bg-slate-700 border-2 rounded " +
-							(testCode == ""
-								? "border-rose-500"
-								: "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
-						}
-					/>
-					<br />
-					<label
-						className={testCode == "" ? "text-slate-500" : "text-slate-700"}
-					>
-						This field is required
-					</label>
-				</div>
+			<div id="input-group" className="px-10 my-5">
+				<DialogInput label="2FA Code: " value={testCode} required={true} />
 			</div>
 			<DialogButton
-				className={testCode == "" ? " cursor-not-allowed opacity-50" : ""}
+				className={testCode.Value == "" ? " cursor-not-allowed opacity-50" : ""}
 				onClick={() => {
-					if (testCode == "") return;
+					if (testCode.Value == "") return;
 
-					if(testCode == tfaCode.Value) {
+					if(testCode.Value == tfaCode.Value) {
 						props.onSuccess();
 					} else {
 						error.Set("FATAL ERROR: Invalid 2FA Code");
 						props.onFail();
 					}
 
-					setTestCode("");
+					testCode.Set("");
 					tfaCode.Set("");
 				}}
 			>
