@@ -13,7 +13,7 @@ function DialogInput(props: { label?: string, value: StatePair<string>, classNam
                 }
             }
             className={
-                "transition-border duration-500 ease-in-out outline-none bg-slate-700 border-2 rounded " +
+                "transition-border duration-500 ease-in-out outline-none bg-slate-700 border-2 rounded h-7 " +
                 (props.value.Value == "" && props.required
                     ? "border-rose-500"
                     : "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")

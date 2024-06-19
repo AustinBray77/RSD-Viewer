@@ -54,16 +54,15 @@ function AddPhoneNumberDialog(props: {
 			<div id="input-group" className="px-10 my-5">
 				<label className="text-xl">Phone Number: </label>
 				<br />
-				<div className="flex">
+				<div className="flex items-start">
 					<DropdownFromList 
 						items={countryCodes} 
 						icons={countryIcons} 
 						startingIndex={1} 
 						onChange={(index: number) => { setCountryCode(countryCodes[index]); }} 
-						className="w-20"
+						className="w-20 mr-4"
 					/>
-					&nbsp;
-					<DialogInput label="" value={phoneNumber} required={true} />
+					<DialogInput value={phoneNumber} required={true} />
 				</div>
 			</div>
 			<DialogButton

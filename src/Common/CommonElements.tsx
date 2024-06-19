@@ -32,7 +32,7 @@ function DropdownFromList(props: {
 			<div onClick={() => { onClick(index) }} className={"flex items-center " + style}>
 				{
 					needsSpacing ?
-					<div className="w-3 h-3">&nbsp;</div> :
+					<div className="w-4 h-3"></div> :
 					""
 				}
 				<SmallIcon src={icon} />
@@ -54,6 +54,8 @@ function DropdownFromList(props: {
 					props.icons[i], 
 					i, 
 					(index: number) => {
+						if(!isOpen) return;
+
 						setCurrentIndex(index);
 						setIsOpen(false);
 						props.onChange(index);
@@ -71,14 +73,14 @@ function DropdownFromList(props: {
 
 	return (
 		<div className={props.className}>
-			<div className="flex focus:outline-none bg-slate-700 border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700 items-center" onClick={() => { setIsOpen(!isOpen) }}>
+			<div className="flex h-7 focus:outline-none bg-slate-700 border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700 items-center" onClick={() => { setIsOpen(!isOpen) }}>
 				&nbsp;
 				<img className="w-3 h-3" src="/arrow-down-light.png" />
 				&nbsp;
 				{getDropdownFromItem(props.items[currentIndex], props.icons[currentIndex], currentIndex, (index: number) => {}, false, "")}
 				&nbsp;
 			</div>
-			<div className={"transition-all duration-500 overflow-y-auto fixed bg-slate-700 z-10 rounded border-2 " + animationString}> 
+			<div className={"transition-all duration-500 overflow-y-auto fixed bg-slate-700 z-10 rounded border-2 drop-down-scroll " + animationString}> 
 				{generateDropdown()}
 			</div> 
 		</div>

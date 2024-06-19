@@ -196,7 +196,7 @@ function App() {
 	}
 
 	return (
-		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden">
+		<div className="bg-slate-900 text-slate-100 min-h-screen overflow-hidden main-scroll">
 			<LoadingDialog state={state} />
 			<Toolbar AppState={state} getData={getData} />
 			<Home data={state.data} setData={sendSetData} />

@@ -40,7 +40,7 @@ function Home(props: {
 	}
 
 	return (
-		<div className="p-8 text-slate-100 overflow-y-auto max-h-[85vh]">
+		<div className="p-8 text-slate-100 overflow-y-auto h-[100vh]">
 			<div
 				className={
 					"flex columns-2 border-2 border-slate-600/[.1] min-w-fit"
