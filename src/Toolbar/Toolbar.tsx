@@ -47,8 +47,6 @@ export default function Toolbar(props: {
 	const has2FA = phoneNumber != "";
 	const retracted = useStatePair(false);
 
-	console.log("Phone Number from data: " + phoneNumber);
-
 	const state: ToolbarState = {
 		showDialog: useStatePair<ShowDialog>(ShowDialog.None),
 		phoneNumber: useStatePair(phoneNumber),
@@ -59,7 +57,6 @@ export default function Toolbar(props: {
 		/* Used as StatePair lags by one update */
 		if(state.phoneNumber.Value != phoneNumber) {
 			state.phoneNumber.Set(phoneNumber);
-			console.log("Updating Number...");
 		}
 	}, [phoneNumber]);
 

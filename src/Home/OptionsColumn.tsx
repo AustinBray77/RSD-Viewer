@@ -4,6 +4,7 @@ import { StatePair, useStatePair } from "../StatePair";
 import { HomeState, ShowHomeDialog } from "./Home";
 import HomeDialog from "./HomeDialog";
 import { DialogInput } from "../Common/Inputs";
+import { useMemo } from "react";
 
 function CopyPasswordDialog(props: { state: HomeState }): JSX.Element {
 	let {
@@ -146,6 +147,7 @@ function RemovePasswordDialog(props: {
 					let newData = [...data];
 					newData.splice(selectedAccount.Value, 1);
 
+					selectedAccount.Set(-1);
 					setData(newData);
 					dialog.Set(ShowHomeDialog.None);
 				}}
@@ -175,9 +177,9 @@ function RemovePasswordButton(props: {
 
 	const onClick = () => {
 		selectedAccount.Set(props.accountIndex);
-		console.log(
+		/*console.log(
 			`Remove Clicked for account: ${data[selectedAccount.Value].Name}`
-		);
+		);*/
 		dialog.Set(ShowHomeDialog.RemovePassword);
 	};
 
@@ -197,33 +199,25 @@ function OptionsColumn(props: {
 	} = props.state;
 	
 	const GenerateButtons = () => {
-		let output = [];
+		return data.map((account, i) => {
+			if(account.IsSpecial) return <></>;
 
-		for (let i = 0; i < data.length; i++) {
-			let account = data[i];
-			
-			if(account.IsSpecial) continue;
-			
 			let x = i;
 
-			output.push(
-				<li>
-					<StandardHomeBox className="flex justify-center">
-						<CopyPasswordButton
-							text={account.Password}
-							dialog={dialog}
-						/>
-						<ChangePasswordButton state={props.state} accountIndex={x} />
-						<RemovePasswordButton state={props.state} accountIndex={x} />
-					</StandardHomeBox>
-				</li>
-			);
-		}
-			
-		return output;
-	};//, [data]);
+			return <li>
+				<StandardHomeBox className="flex justify-center">
+					<CopyPasswordButton
+						text={account.Password}
+						dialog={dialog}
+					/>
+					<ChangePasswordButton state={props.state} accountIndex={x} />
+					<RemovePasswordButton state={props.state} accountIndex={x} />
+				</StandardHomeBox>
+			</li>
+		});
+	};
 
-	let buttonList: JSX.Element[] = GenerateButtons(); 
+	let buttonList: JSX.Element[] = useMemo(() => GenerateButtons(), [data]); 
 
 	return (
 		<div id="OptionsColumn" className="w-1/3 min-w-fit">
