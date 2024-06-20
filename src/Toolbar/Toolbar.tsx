@@ -9,6 +9,7 @@ import { GetPhoneNumberFromData } from "../Services/AccountData";
 import ImportFileDialog from "./ImportFileDialog";
 import ToolbarHeader from "./ToolbarHeader";
 import { RetractArrow } from "../Common/CommonElements";
+import { useCallback, useMemo } from "react";
 
 enum ShowDialog {
 	None,
@@ -23,7 +24,6 @@ type ToolbarState = {
 	showDialog: StatePair<ShowDialog>
 	phoneNumber: StatePair<string> 
 	tfaCode: StatePair<string> 
-	retracted: StatePair<boolean>
 }
 
 function RetractedHeader(props: { state: StatePair<boolean> }): JSX.Element {
@@ -45,27 +45,33 @@ export default function Toolbar(props: {
 
 	const phoneNumber = GetPhoneNumberFromData(data);
 	const has2FA = phoneNumber != "";
+	const retracted = useStatePair(false);
+
+	console.log("Phone Number from data: " + phoneNumber);
 
 	const state: ToolbarState = {
 		showDialog: useStatePair<ShowDialog>(ShowDialog.None),
 		phoneNumber: useStatePair(phoneNumber),
-		tfaCode: useStatePair<string>(""),
-		retracted: useStatePair<boolean>(false)
+		tfaCode: useStatePair<string>("")
 	}
 
-	if(state.phoneNumber.Value != phoneNumber) {
-		state.phoneNumber.Set(phoneNumber);
-	}
+	useCallback(() => {
+		/* Used as StatePair lags by one update */
+		if(state.phoneNumber.Value != phoneNumber) {
+			state.phoneNumber.Set(phoneNumber);
+			console.log("Updating Number...");
+		}
+	}, [phoneNumber]);
 
-	let animationClass = state.retracted.Value ? "toolbar-retracted" : "toolbar-normal";
+	let animationClass = retracted.Value ? "toolbar-retracted" : "toolbar-normal";
 
 	return (
 		<div id="Toolbar">
-			<RetractedHeader state={state.retracted} />
+			<RetractedHeader state={retracted} />
 			<div className={"transition-transform duration-1000 ease-in-out absolute top-0 left-0 right-0 z-10 " + animationClass}>
 				<ToolbarHeader has2FA={has2FA} state={state} appState={props.AppState} />
 				<div className="flex justify-center content-end">
-					<RetractArrow className="-translate-y-3" subClassName="rotate-180" onClick={() => { state.retracted.Set(true); }} />
+					<RetractArrow className="-translate-y-3" subClassName="rotate-180" onClick={() => { retracted.Set(true); }} />
 				</div>
 			</div>
 			<AddAccountDialog

@@ -1,12 +1,7 @@
-import React, { useState } from "react";
-import { AccountData } from "../Services/AccountData";
 import { ButtonLabel, DialogButton, OptionsButton } from "../Common/Buttons";
 import { StandardHomeBox, Title } from "../Common/CommonElements";
-import { Dialog } from "@mui/material";
 import { StatePair, useStatePair } from "../StatePair";
 import { HomeState, ShowHomeDialog } from "./Home";
-import { GeneralDialog } from "../Common/Dialogs";
-import { dialog } from "@tauri-apps/api";
 import HomeDialog from "./HomeDialog";
 import { DialogInput } from "../Common/Inputs";
 
@@ -200,29 +195,35 @@ function OptionsColumn(props: {
 		data,
 		dialog,
 	} = props.state;
+	
+	const GenerateButtons = () => {
+		let output = [];
 
-	let buttonList: JSX.Element[] = [];
+		for (let i = 0; i < data.length; i++) {
+			let account = data[i];
+			
+			if(account.IsSpecial) continue;
+			
+			let x = i;
 
-	for (let i = 0; i < data.length; i++) {
-		let account = data[i];
-		
-		if(account.IsSpecial) continue;
-		
-		let x = i;
+			output.push(
+				<li>
+					<StandardHomeBox className="flex justify-center">
+						<CopyPasswordButton
+							text={account.Password}
+							dialog={dialog}
+						/>
+						<ChangePasswordButton state={props.state} accountIndex={x} />
+						<RemovePasswordButton state={props.state} accountIndex={x} />
+					</StandardHomeBox>
+				</li>
+			);
+		}
+			
+		return output;
+	};//, [data]);
 
-		buttonList.push(
-			<li>
-				<StandardHomeBox className="flex justify-center">
-					<CopyPasswordButton
-						text={account.Password}
-						dialog={dialog}
-					/>
-					<ChangePasswordButton state={props.state} accountIndex={x} />
-					<RemovePasswordButton state={props.state} accountIndex={x} />
-				</StandardHomeBox>
-			</li>
-		);
-	}
+	let buttonList: JSX.Element[] = GenerateButtons(); 
 
 	return (
 		<div id="OptionsColumn" className="w-1/3 min-w-fit">

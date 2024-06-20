@@ -41,6 +41,7 @@ function Verify2FADialog(props: {
 			AddPhoneNumber(phoneNumber.Value, props.AppState);
 		} else {
 			RemovePhoneNumber(props.AppState);
+			phoneNumber.Set("");
 		}
 
 		ClearUsedValues();

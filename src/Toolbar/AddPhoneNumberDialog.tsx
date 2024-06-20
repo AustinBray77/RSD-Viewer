@@ -43,6 +43,8 @@ function AddPhoneNumberDialog(props: {
 				props.AppState.error.Set("2FA Error: " + err as string);
 			})
 	}
+	
+	console.log("Phone Number: " + phoneNumber.Value);
 
 	return (
 		<ToolbarDialog

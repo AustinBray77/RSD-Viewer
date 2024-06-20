@@ -52,8 +52,9 @@ const GetPhoneNumberFromData = (data: AccountData[]): string => {
 function AddPhoneNumber (phoneNumber: string,  AppState: AppState):void {
 	let phoneNumberAccount = new AccountData("Phone_Number", phoneNumber);
 	phoneNumberAccount.IsSpecial = true;
-	AppState.data.push(phoneNumberAccount);
-	AppState.setData(AppState.data);
+	let newData = [...AppState.data];
+	newData.push(phoneNumberAccount);
+	AppState.setData(newData);
 	AppState.error.Set("Phone number added successfully");
 }
 
