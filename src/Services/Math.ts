@@ -29,13 +29,22 @@ function CollapsableRandomArray(
 }
 
 function ArrayRange(min: number, max: number): number[] {
-	let output: number[] = [];
+	/*let output: number[] = [];
 
 	for (let i = min; i <= max; i++) {
 		output.push(i);
 	}
 
-	return output;
+	return output;*/
+	return [...Array(max - min + 1).keys()].map((i) => i + min)
 }
 
-export { CollapsableRandomArray, ArrayRange };
+function AddRangeToSet(min: number, max: number, set: Set<number>): Set<number> {
+	for (let i = min; i <= max; i++) {
+		set.add(i);
+	}
+
+	return set;
+}
+
+export { CollapsableRandomArray, ArrayRange, AddRangeToSet };

@@ -1,7 +1,7 @@
 import { ButtonLabel, DialogButton } from "../Common/Buttons";
-import { ArrayRange, CollapsableRandomArray } from "../Services/Math";
+import { AddRangeToSet, ArrayRange, CollapsableRandomArray } from "../Services/Math";
 import { AccountData, AddAccountHandler } from "../Services/AccountData";
-import { StatePair, useStatePair } from "../StatePair";
+import { useStatePair } from "../StatePair";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { DialogInput } from "../Common/Inputs";
@@ -9,46 +9,48 @@ import { AppState } from "../App";
 import { ToolTip } from "../Common/CommonElements";
 import React from "react";
 
-const GeneratePassword = (state: ToolbarState): string => {
+type PasswordParams = {
+	hasUpperCase: boolean;
+	hasNumbers: boolean;
+	hasSpecialChars: boolean;
+}
+
+const GeneratePassword = (passwordParams: PasswordParams, passwordLength: number): string => {
 	/*if (state.account.Value.Name == "") {
 		return;
 	}*/
-
-	let passwordParams = state.passwordParams.Value;
-
 	console.log("Generating pass");
 
-	let newPass: string = "";
+	let min: number;
 
-	let min =
-		!passwordParams[0] && !passwordParams[1] && !passwordParams[2]
-			? 97
-			: passwordParams[2]
-			? 33
-			: passwordParams[1]
-			? 48
-			: 65;
-
-	let max = passwordParams[2] ? 126 : 122;
-
-	let exclusions: number[] = [];
-
-	if (!passwordParams[0] && (passwordParams[2] || passwordParams[1])) {
-		exclusions = exclusions.concat(ArrayRange(65, 90));
+	if (passwordParams.hasSpecialChars) {
+		min = 33;
+	} else if(passwordParams.hasNumbers) {
+		min = 48;
+	} else if(passwordParams.hasUpperCase) {
+		min = 65;
+	} else {
+		min = 97;
 	}
 
-	if (!passwordParams[1] && passwordParams[2]) {
-		exclusions = exclusions.concat(ArrayRange(48, 57));
+	let max = passwordParams.hasSpecialChars ? 126 : 122;
+
+	let exclusions: Set<number> = new Set();
+
+	if (!passwordParams.hasUpperCase && (passwordParams.hasSpecialChars || passwordParams.hasNumbers)) {
+		exclusions = AddRangeToSet(65, 90, exclusions);
 	}
 
-	if (!passwordParams[2]) {
-		if (passwordParams[1]) {
-			exclusions = exclusions.concat(ArrayRange(58, 64));
-			exclusions = exclusions.concat(ArrayRange(91, 96));
-		}
+	if (!passwordParams.hasNumbers && passwordParams.hasSpecialChars) {
+		exclusions = AddRangeToSet(48, 57, exclusions);
+	}
 
-		if (passwordParams[0]) {
-			exclusions = exclusions.concat(ArrayRange(91, 96));
+	if (!passwordParams.hasSpecialChars) {
+		if (passwordParams.hasNumbers) {
+			exclusions = AddRangeToSet(58, 64, exclusions);
+			exclusions = AddRangeToSet(91, 96, exclusions);
+		} else if (passwordParams.hasUpperCase) {
+			exclusions = AddRangeToSet(91, 96, exclusions);
 		}
 	}
 
@@ -58,21 +60,33 @@ const GeneratePassword = (state: ToolbarState): string => {
 		min,
 		max,
 		new Set(exclusions),
-		state.passwordLength.Value
+		passwordLength
 	);
 
-	for (let i = 0; i < state.passwordLength.Value; i++) {
-		newPass += String.fromCharCode(asciiCharacters[i]);
-	}
+	let newPass = asciiCharacters.map((i) => String.fromCharCode(i)).join("");
 
 	return newPass;
 };
 
-const FlipPasswordParam = (param: number, passwordParams: StatePair<boolean[]>) => {
-	let newParams = [...passwordParams.Value];
-	newParams[param] = !newParams[param];
+/*const FlipPasswordParam = (param: number, passwordParams: StatePair<PasswordParams>) => {
+	let newParams = passwordParams.Value;
+	
+	switch(param) {
+		case 0:
+			newParams.hasUpperCase = !newParams.hasUpperCase;
+			break;
+		case 1: 
+			newParams.hasNumbers = !newParams.hasNumbers;
+			break;
+		case 2: 
+			newParams.hasSpecialChars = !newParams.hasSpecialChars;
+			break;
+	}
+
+	console.log(passwordParams.Value.hasUpperCase + " " + passwordParams.Value.hasNumbers + " " + passwordParams.Value.hasSpecialChars);
+
 	passwordParams.Set(newParams);
-};
+};*/
 
 
 function GeneratePasswordDialog(props: {
@@ -80,11 +94,11 @@ function GeneratePasswordDialog(props: {
 	AppState: AppState;
 }): JSX.Element {
 	const {
-		showDialog,
-		passwordParams,
-		passwordLength
+		showDialog
 	} = props.ToolbarState;
-	
+
+	const passwordParams = useStatePair<PasswordParams>({ hasUpperCase: true, hasNumbers: true, hasSpecialChars: true });
+	const passwordLength = useStatePair(8);
 	const inputName = useStatePair("");
 	const hoveringOnSlider = useStatePair(false);
 	const dialogRef = React.useRef<HTMLDivElement>(null);
@@ -113,9 +127,14 @@ function GeneratePasswordDialog(props: {
 							type="checkbox"
 							title="Upper Case"
 							onClick={() => {
-								FlipPasswordParam(0, passwordParams);
+								passwordParams.Set({ 
+									hasUpperCase: !passwordParams.Value.hasUpperCase, 
+									hasNumbers: passwordParams.Value.hasNumbers, 
+									hasSpecialChars: passwordParams.Value.hasSpecialChars 
+								});
+								//FlipPasswordParam(0, passwordParams);
 							}}
-							checked={passwordParams.Value[0]}
+							checked={passwordParams.Value.hasUpperCase}
 						/>
 						<label> Upper Case </label>
 						<input
@@ -123,9 +142,14 @@ function GeneratePasswordDialog(props: {
 							type="checkbox"
 							title="Numbers"
 							onClick={() => {
-								FlipPasswordParam(1, passwordParams);
+								passwordParams.Set({ 
+									hasUpperCase: passwordParams.Value.hasUpperCase, 
+									hasNumbers: !passwordParams.Value.hasNumbers, 
+									hasSpecialChars: passwordParams.Value.hasSpecialChars 
+								});
+								//FlipPasswordParam(1, passwordParams);
 							}}
-							checked={passwordParams.Value[1]}
+							checked={passwordParams.Value.hasNumbers}
 						/>
 						<label> Numbers </label>
 						<input
@@ -133,9 +157,14 @@ function GeneratePasswordDialog(props: {
 							type="checkbox"
 							title="Special Characters"
 							onClick={() => {
-								FlipPasswordParam(2, passwordParams);
+								passwordParams.Set({ 
+									hasUpperCase: passwordParams.Value.hasUpperCase, 
+									hasNumbers: passwordParams.Value.hasNumbers, 
+									hasSpecialChars: !passwordParams.Value.hasSpecialChars 
+								});
+								//FlipPasswordParam(2, passwordParams);
 							}}
-							checked={passwordParams.Value[2]}
+							checked={passwordParams.Value.hasSpecialChars}
 						/>
 						<label> Special Characters </label>
 					</div>
@@ -170,7 +199,7 @@ function GeneratePasswordDialog(props: {
 				onClick={() => {
 					if (inputName.Value == "") return;
 
-					let pass = GeneratePassword(props.ToolbarState);
+					let pass = GeneratePassword(passwordParams.Value, passwordLength.Value);
 					
 					AddAccountHandler(new AccountData(inputName.Value, pass), props.AppState);
 					
