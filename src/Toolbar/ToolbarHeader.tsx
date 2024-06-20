@@ -1,8 +1,6 @@
 import { AppState } from "../App";
-import { RetractArrow } from "../Common/CommonElements";
 import { ExportFile } from "../Services/FileHandling";
 import { Get2FACode } from "../Services/TwoFactorAuth";
-import { StatePair } from "../StatePair";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 
 function HeaderButton(props: {

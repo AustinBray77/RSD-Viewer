@@ -206,19 +206,16 @@ fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
 
 #[tauri::command]
 async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, bool>, phone_number:String) -> Result<String, String> {
+    if *debug_mode {
+        return Ok("123456".to_string());
+    }
+   
     let password = dotenv::var("SERVER_KEY").unwrap();
     let enc_phone_number = encrypt(phone_number, password.clone());
 
     let hashified_number = hashify(enc_phone_number);
 
-    let address: String;
-
-    if *debug_mode { 
-        address = String::from("http://127.0.0.1:8000");
-    } else {
-        address = dotenv::var("SERVER_ADDRESS").unwrap();
-    }
-
+    let address: String = dotenv::var("SERVER_ADDRESS").unwrap();
     let url = format!("{}/api/{}", address, hashified_number);
 
     let res = 

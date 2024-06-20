@@ -2,8 +2,6 @@ import { invoke } from "@tauri-apps/api";
 import { StatePair } from "../StatePair";
 
 function Get2FACode(phoneNumber: string, isLoading: StatePair<boolean>): Promise<string> {
-	return Promise.resolve("123456");
-
 	isLoading.Set(true);
 	
 	return invoke("send_2fa_code", { phoneNumber: phoneNumber })
