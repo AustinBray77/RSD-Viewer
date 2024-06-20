@@ -14,13 +14,13 @@ function CollapsableRandomArray(
 
 	console.log(possibleResults);
 
-	let output: number[] = [];
+	let output: number[] = Array(numberOfResults);
 
 	for (let i = 0; i < numberOfResults; i++) {
 		let rawResult: number = Math.floor(
 			Math.random() * (possibleResults.length - 1)
 		);
-		output.push(possibleResults[rawResult]);
+		output[i] = possibleResults[rawResult];
 	}
 
 	console.log(output);
