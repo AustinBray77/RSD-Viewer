@@ -104,26 +104,30 @@ function App() {
 	const [data, setData] = useState<AccountData[]>([]);
 	const [tempData, setTempData] = useState<AccountData[]>([]);
 	
+	const parseData = async (data: string, password: string): Promise<[AccountData[], string]> => {
+		state.password.Set(password);
+
+		if (data == "") {
+			return [ [], "" ];
+		}
+
+		let formattedData = AccountData.arrayFromJSON(data);
+		let phoneNumber = GetPhoneNumberFromData(formattedData);
+		let code = "";
+
+		//console.log(formattedData);
+					
+		if(phoneNumber != "") {
+			code = await Get2FACode(phoneNumber, state.isLoading);
+		}
+					
+		return [ formattedData, code ];
+	}
+
 	const getData = (password: string, isLegacy?: boolean): void => {
 		invoke("get_data", { password: password, isLegacy: isLegacy == undefined ? false : isLegacy })
 			.then(async (res): Promise<[AccountData[], string]> => {
-				state.password.Set(password);
-
-				if ((res as string) != "") {
-					let formattedData = AccountData.arrayFromJSON(res as string);
-					let phoneNumber = GetPhoneNumberFromData(formattedData);
-					let code = "";
-
-					console.log(formattedData);
-					
-					if(phoneNumber != "") {
-						code = await Get2FACode(phoneNumber, state.isLoading);
-					}
-					
-					return [ formattedData, code ];
-				}
-
-				return [ [], "" ];
+				return parseData(res as string, password);
 			})
 			.then((res: [AccountData[], string]) => {
 				if (res[1] != "") {
