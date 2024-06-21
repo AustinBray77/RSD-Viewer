@@ -12,8 +12,8 @@ function StandardHomeBox(props: {
 	);
 }
 
-function SmallIcon(props: { src: string }): JSX.Element {
-	return <img src={props.src} className="w-4 h-3" />;
+function SmallIcon(props: { src: string, className?: string }): JSX.Element {
+	return <img src={props.src} className={"w-4 h-3 " + props.className} />;
 }
 
 function DropdownFromList(props: {
@@ -86,9 +86,9 @@ function DropdownFromList(props: {
 	);
 }
 
-function Title(props: { children: string }): JSX.Element {
+function Title(props: { children: string, className?: string }): JSX.Element {
 	return <StandardHomeBox>
-			<h3 className="flex justify-center text-2xl">{props.children}</h3>
+			<h3 className={"flex justify-center text-2xl " + props.className}>{props.children}</h3>
 		</StandardHomeBox>
 }
 
@@ -114,4 +114,4 @@ function RetractArrow(props: { className?: string, subClassName?:string, onClick
 		</div>
 }
 
-export { StandardHomeBox, DropdownFromList, Title, ToolTip, RetractArrow };
+export { StandardHomeBox, DropdownFromList, Title, ToolTip, RetractArrow, SmallIcon };

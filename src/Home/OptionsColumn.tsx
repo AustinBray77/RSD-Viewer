@@ -229,4 +229,4 @@ function OptionsColumn(props: {
 	);
 }
 
-export { OptionsColumn, CopyPasswordDialog, ChangePasswordDialog, RemovePasswordDialog };
+export { OptionsColumn, CopyPasswordDialog, ChangePasswordDialog, RemovePasswordDialog, CopyPasswordButton, ChangePasswordButton, RemovePasswordButton};
