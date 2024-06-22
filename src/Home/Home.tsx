@@ -87,22 +87,8 @@ const GenerateRows = (state: HomeState) => {
     });
 };
 
-function Home(props: {
-    data: AccountData[];
-    setData: (val: AccountData[]) => void;
-}): JSX.Element {
-    const dialog = useStatePair(ShowHomeDialog.None);
-
-    let filteredData = props.data.filter((account) => !account.IsSpecial);
-
-    let state = {
-        data: props.data,
-        setData: props.setData,
-        dialog: dialog,
-        selectedAccount: useStatePair(-1),
-    };
-
-    if (filteredData.length == 0) {
+const HomeHeader = (props: { isEmpty: boolean }) => {
+    if (props.isEmpty) {
         return (
             <div className="p-8 text-slate-100 overflow-y-auto content-center flex justify-center">
                 <h1 className="text-5xl">No Accounts Yet</h1>
@@ -110,9 +96,7 @@ function Home(props: {
         );
     }
 
-    let rows = GenerateRows(state);
-
-    rows.unshift(
+    return (
         <div className="flex place-content-center">
             <div className="w-5 min-w-fit p-3">
                 <SmallIcon
@@ -137,6 +121,28 @@ function Home(props: {
             </div>
         </div>
     );
+};
+
+function Home(props: {
+    data: AccountData[];
+    setData: (val: AccountData[]) => void;
+}): JSX.Element {
+    const dialog = useStatePair(ShowHomeDialog.None);
+
+    let filteredData = props.data.filter((account) => !account.IsSpecial);
+
+    let state = {
+        data: props.data,
+        setData: props.setData,
+        dialog: dialog,
+        selectedAccount: useStatePair(-1),
+    };
+
+    let rows = useMemo(() => {
+        let output = GenerateRows(state);
+        output.unshift(<HomeHeader isEmpty={filteredData.length == 0} />);
+        return output;
+    }, [props.data]);
 
     return (
         <div className="flex justify-center">
