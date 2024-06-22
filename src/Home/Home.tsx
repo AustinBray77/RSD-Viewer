@@ -3,13 +3,13 @@ import {
     CopyPasswordDialog,
     ChangePasswordDialog,
     RemovePasswordDialog,
-    CopyPasswordButton,
-    ChangePasswordButton,
-    RemovePasswordButton,
+    OptionsButtons,
 } from "./OptionsColumn";
 import { StatePair, useStatePair } from "../StatePair";
 import { AccountData } from "../Services/AccountData";
 import { SmallIcon, StandardHomeBox, Title } from "../Common/CommonElements";
+import RowButtons from "./SideButtons";
+import AccountDisplay from "./AccountColumn";
 
 enum ShowHomeDialog {
     None,
@@ -24,56 +24,6 @@ type HomeState = {
     dialog: StatePair<ShowHomeDialog>;
     selectedAccount: StatePair<number>;
 };
-
-function RowButtons(props: { isHovering: boolean }): JSX.Element {
-    let opacity = props.isHovering ? "opacity-50" : "opacity-0";
-    let classString =
-        "self-center transition-opacity duration-300 ease-in-out " + opacity;
-
-    return (
-        <div
-            className="w-5 min-w-fit p-3 place-content-evenly"
-            onClick={() => {}}
-        >
-            <div className="grid grid-cols-1 grid-rows-2 place-content-evenly h-full">
-                <SmallIcon
-                    src="/arrow-down-light.png"
-                    className={classString + " rotate-180"}
-                />
-                <SmallIcon
-                    src="/arrow-down-light.png"
-                    className={classString}
-                />
-            </div>
-        </div>
-    );
-}
-
-function OptionsButtons(props: {
-    account: AccountData;
-    index: number;
-    state: HomeState;
-}): JSX.Element {
-    const { account, index, state } = props;
-
-    return (
-        <StandardHomeBox className="flex justify-center w-1/3 min-w-96">
-            <CopyPasswordButton text={account.Password} dialog={state.dialog} />
-            <ChangePasswordButton state={state} accountIndex={index} />
-            <RemovePasswordButton state={state} accountIndex={index} />
-        </StandardHomeBox>
-    );
-}
-
-function AccountDisplay(props: { account: AccountData }): JSX.Element {
-    return (
-        <StandardHomeBox className="w-2/3 min-w-96">
-            <div className="px-5 text-lg leading-[3.5rem]">
-                {props.account.Name}
-            </div>
-        </StandardHomeBox>
-    );
-}
 
 const HomeRow = (props: {
     account: AccountData;

@@ -1,36 +1,14 @@
 import { AccountData } from "../Services/AccountData";
-import { StandardHomeBox, Title } from "../Common/CommonElements";
-import { useMemo } from "react";
+import { StandardHomeBox } from "../Common/CommonElements";
 
-export default function AccountColumn(props: {
-	data: AccountData[];
+export default function AccountDisplay(props: {
+    account: AccountData;
 }): JSX.Element {
-	const GenerateAccountRows = (data: AccountData[]) => {
-		console.log(data);
-		
-		return data.map((account) => {
-			console.log(account);
-
-			return <li>
-				<StandardHomeBox>
-					<div className="h-[3.5rem] leading-[3.5rem] px-5">
-						{account.Name}
-					</div>
-				</StandardHomeBox>
-			</li>
-		})
-	}
-	
-	let accountList: JSX.Element[] = useMemo(() => GenerateAccountRows(props.data), [props.data]);
-
-	return (
-		<div id="AccountColumn" className="w-2/3 min-w-1/2">
-			<Title>Accounts</Title>
-			<div className="text-xl">
-				<ul>
-					{accountList}
-				</ul>
-			</div>
-		</div>
-	);
+    return (
+        <StandardHomeBox className="w-2/3 min-w-96">
+            <div className="px-5 text-lg leading-[3.5rem]">
+                {props.account.Name}
+            </div>
+        </StandardHomeBox>
+    );
 }
