@@ -189,13 +189,15 @@ function Home(props: {
     );
 
     return (
-        <div className="text-slate-100 overflow-y-auto h-screen">
-            <div className={"grid grid-cols-1 grid-flow-row w-[95vw] p-8"}>
-                {rows}
+        <div className="flex justify-center">
+            <div className="text-slate-100 overflow-y-auto h-screen">
+                <div className={"grid grid-cols-1 grid-flow-row w-[95vw] p-8"}>
+                    {rows}
+                </div>
+                <CopyPasswordDialog state={state} />
+                <ChangePasswordDialog state={state} />
+                <RemovePasswordDialog state={state} />
             </div>
-            <CopyPasswordDialog state={state} />
-            <ChangePasswordDialog state={state} />
-            <RemovePasswordDialog state={state} />
         </div>
     );
 }
