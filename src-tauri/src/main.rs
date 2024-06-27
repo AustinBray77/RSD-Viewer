@@ -22,13 +22,17 @@ fn main() {
 
 use std::fs;
 use std::fs::File;
-use std::io::prelude::*;
 use std::io::Error;
 use std::time::SystemTime;
 use dotenv::dotenv;
 
+mod api_handler;
+mod io_handler;
+
 extern crate rsd_encrypt;
 
+use api_handler::{query_api_for_code, server_decrypt,server_encrypt};
+use io_handler::{file_error,open_file, read_all_content, write_all_content};
 use rsd_encrypt::{decrypt, encrypt, hashify, legacy_decrypt};
 
 #[tauri::command]
@@ -83,13 +87,6 @@ fn get_file_path(handle: tauri::AppHandle) -> String {
 
 #[tauri::command]
 fn set_save_data(handle: tauri::AppHandle, path: String, is_legacy: bool, password: String) -> Result<(), String> {
-    /*let main_file = open_file(&handle, true);
-
-    let main_file = match main_file {
-        Ok(file) => file,
-        Err(error) => return Err(error.to_string()),
-    };*/
-
     let new_data_file = fs::OpenOptions::new().read(true).open(path);
 
     let new_data_file = match new_data_file {
@@ -122,13 +119,6 @@ fn set_save_data(handle: tauri::AppHandle, path: String, is_legacy: bool, passwo
         Ok(_) => Ok(()),
         Err(error) => Err(error.to_string()),
     }
-
-    /*let write_result = write_all_content(main_file, content.as_str());
-
-    match write_result {
-        Ok(_) => Ok(()),
-        Err(error) => Err(error.to_string()),
-    }*/
 }
 
 #[tauri::command]
@@ -175,69 +165,19 @@ fn copy_save_data(handle: tauri::AppHandle, mut path: String) -> Result<String, 
     }
 }
 
-fn file_error(error: Error) -> String {
-    "FORCED CLOSURE FILE ERROR ".to_string() + error.to_string().as_str()
-}
-
-fn open_file(handle: &tauri::AppHandle, truncate: bool) -> Result<File, Error> {
-    let path = handle
-        .path_resolver()
-        .resolve_resource("resources/psd.bin")
-        .expect("Failed to resolve file path resource");
-
-    fs::OpenOptions::new()
-        .truncate(truncate)
-        .write(true)
-        .read(true)
-        .open(path)
-}
-
-fn read_all_content(mut file: File) -> Result<String, Error> {
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
-
-    Ok(contents)
-}
-
-fn write_all_content(mut file: File, content: &str) -> Result<(), Error> {
-    file.write_all(content.as_bytes())
-}
-
-
 #[tauri::command]
 async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, bool>, phone_number:String) -> Result<String, String> {
     if *debug_mode {
         return Ok("123456".to_string());
     }
    
-    let password = dotenv::var("SERVER_KEY").unwrap();
-    let enc_phone_number = encrypt(phone_number, password.clone());
+    let enc_phone_number = server_encrypt(phone_number);
 
     let hashified_number = hashify(enc_phone_number);
 
-    let address: String = dotenv::var("SERVER_ADDRESS").unwrap();
-    let url = format!("{}/api/{}", address, hashified_number);
+    let api_result = query_api_for_code(hashified_number).await;
 
-    let res = 
-        match reqwest::Client::builder()
-        .danger_accept_invalid_certs(true)
-        .build()
-        .unwrap()
-        .get(&url)
-        .send()
-        .await
-    {
-        Ok(res) => {
-            println!("Res: {}", res.status());
-            res.text().await
-        },
-        Err(error) => { 
-            println!("Reqwest Error? {}", error.to_string());
-            return Err("Error communicating the with server, check your connection and try again.".to_string()) 
-        },
-    };
-
-    let enc_code = match res {
+    let enc_code = match api_result {
         Ok(res) => {
             println!("Res Text: {}", res);
             res
@@ -248,7 +188,7 @@ async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, b
         },
     };
 
-    match decrypt(enc_code, password) {
+    match server_decrypt(enc_code) {
         Ok(code) => Ok(code),
         Err(error) => { 
             println!("Decrypt Error?");
@@ -256,9 +196,3 @@ async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, b
         },
     }
 }
-
-/*#[tauri::command]
-fn add_phone_number(handle: tauri::AppHandle, phone_number:String) -> Result<(), String> {
-    
-    Ok(())    
-}*/
