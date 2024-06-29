@@ -1,7 +1,7 @@
 import { AppState } from "../App";
 import { ShowDialog, ToolbarState } from "../Toolbar/Toolbar";
 
-class NewAccountData {
+class AccountData {
     Name: string;
     Password: string;
     IsSpecial: boolean;
@@ -18,7 +18,7 @@ class NewAccountData {
         return this.Password == "" || this.Name == "";
     }
 
-    equals(accountData: NewAccountData) {
+    equals(accountData: AccountData) {
         return (
             this.Name == accountData.Name &&
             this.Password == accountData.Password &&
@@ -30,51 +30,27 @@ class NewAccountData {
     static fromJSONMap(
         mapObject: Map<String, String>,
         index: number
-    ): NewAccountData {
+    ): AccountData {
         let name = (mapObject.get("Name") as string) ?? "";
         let password = (mapObject.get("Password") as string) ?? "";
         let position = (mapObject.get("Position") as string) ?? index;
         let IsSpecial = mapObject.get("IsSpecial") == "true";
 
-        let account = new NewAccountData(name, password, parseInt(position));
+        let account = new AccountData(name, password, parseInt(position));
 
         account.IsSpecial = IsSpecial;
 
         return account;
     }
 
-    static arrayFromJSON(jsonString: string): NewAccountData[] {
+    static arrayFromJSON(jsonString: string): AccountData[] {
         let accountMaps: Map<String, String>[] = (
             JSON.parse(jsonString) as Object[]
         ).map((obj: Object) => {
             return new Map(Object.entries(obj));
         });
 
-        return accountMaps.map(NewAccountData.fromJSONMap);
-    }
-
-    static arrayToJSON(data: NewAccountData[]): string {
-        return JSON.stringify(data);
-    }
-}
-
-class AccountData {
-    Name: string;
-    Password: string;
-    IsSpecial: boolean;
-
-    constructor(name: string, password: string) {
-        this.Name = name;
-        this.Password = password;
-        this.IsSpecial = false;
-    }
-
-    isEmpty(): boolean {
-        return this.Password == "" || this.Name == "";
-    }
-
-    static arrayFromJSON(jsonString: string): AccountData[] {
-        return JSON.parse(jsonString);
+        return accountMaps.map(AccountData.fromJSONMap);
     }
 
     static arrayToJSON(data: AccountData[]): string {
@@ -82,7 +58,9 @@ class AccountData {
     }
 }
 
-const AddAccountHandler = (account: AccountData, app: AppState) => {
+const AddAccountHandler = (name: string, password: string, app: AppState) => {
+    let account = new AccountData(name, password, app.data.length);
+
     if (account.isEmpty()) {
         return;
     }
@@ -107,7 +85,11 @@ const GetPhoneNumberFromData = (data: AccountData[]): string => {
 };
 
 function AddPhoneNumber(phoneNumber: string, AppState: AppState): void {
-    let phoneNumberAccount = new AccountData("Phone_Number", phoneNumber);
+    let phoneNumberAccount = new AccountData(
+        "Phone_Number",
+        phoneNumber,
+        AppState.data.length
+    );
     phoneNumberAccount.IsSpecial = true;
     let newData = [...AppState.data];
     newData.push(phoneNumberAccount);
@@ -126,7 +108,6 @@ function RemovePhoneNumber(AppState: AppState): void {
 
 export {
     AccountData,
-    NewAccountData,
     AddAccountHandler,
     GetPhoneNumberFromData,
     AddPhoneNumber,
