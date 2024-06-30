@@ -62,19 +62,19 @@ class AccountData {
     }
 }
 
-const PushAccountToData = (account: AccountData, app: AppState) => {
+function PushAccountToData(account: AccountData, app: AppState): void {
     let newData = [...app.data];
 
     newData.push(account);
 
     app.setData(newData);
-};
+}
 
-const AddAccountHandler = (
+function AddAccountHandler(
     name: string,
     password: string,
     AppState: AppState
-) => {
+): void {
     let account = new AccountData(name, password, AppState.data.length);
 
     if (account.isEmpty()) {
@@ -84,9 +84,9 @@ const AddAccountHandler = (
     console.log("Adding Account...");
 
     PushAccountToData(account, AppState);
-};
+}
 
-const GetPhoneNumberFromData = (data: AccountData[]): string => {
+function GetPhoneNumberFromData(data: AccountData[]): string {
     for (let i = 0; i < data.length; i++) {
         if (data[i].IsSpecial && data[i].Name == "Phone_Number") {
             return data[i].Password;
@@ -94,7 +94,7 @@ const GetPhoneNumberFromData = (data: AccountData[]): string => {
     }
 
     return "";
-};
+}
 
 function AddPhoneNumber(phoneNumber: string, AppState: AppState): void {
     if (GetPhoneNumberFromData(AppState.data) != "") {
