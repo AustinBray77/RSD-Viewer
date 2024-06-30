@@ -1,5 +1,13 @@
-import assert from "assert";
-import { AccountData } from "../Services/AccountData";
+import {
+    AccountData,
+    AddPhoneNumber,
+    RemovePhoneNumber,
+} from "../Services/AccountData";
+import { AppState } from "../App";
+import { useStatePair } from "../StatePair";
+import { useState } from "react";
+import { screen, render } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 /* Depreicated code */
 class DepAccountData {
@@ -27,7 +35,7 @@ class DepAccountData {
 }
 
 describe("Account Stringify Tests", () => {
-    test("Stringify and Back", () => {
+    test("if stringify and destringy are inverse functions", () => {
         let newAccounts: AccountData[] = [
             new AccountData("Test", "Test", 0),
             new AccountData("Another Test Wow", "Herey", 1),
@@ -46,7 +54,7 @@ describe("Account Stringify Tests", () => {
         }
     });
 
-    test("Old Accounts to New Accounts", () => {
+    test("if Old Accounts transfer to New Accounts", () => {
         let oldAccounts: DepAccountData[] = [
             new DepAccountData("Test", "Test"),
             new DepAccountData("Another Test Wow", "Herey"),
@@ -74,3 +82,71 @@ describe("Account Stringify Tests", () => {
         }
     });
 });
+
+describe("Phone Number Tests", () => {
+    it("should render phone number after add", () => {
+        render(<AddPhoneNumberComponent />);
+
+        expect(
+            screen.getByText("Phone_Number:+1234567890")
+        ).toBeInTheDocument();
+    });
+
+    it("should have length 0 after phone number is removed", () => {
+        render(<RemovePHoneNumberComponent />);
+
+        expect(screen.getByText("Length:0")).toBeInTheDocument();
+    });
+});
+
+const AddPhoneNumberComponent = (): JSX.Element => {
+    const [data, setData] = useState<AccountData[]>([]);
+
+    const state: AppState = {
+        error: useStatePair<string>(""),
+        password: useStatePair<string>(""),
+        tfaCode: useStatePair<string>(""),
+        setData: setData,
+        data: data,
+        isLoading: useStatePair<boolean>(false),
+        //tooltip: useStatePair<string>("")
+    };
+
+    if (data.length == 0) {
+        AddPhoneNumber("+1234567890", state);
+    }
+
+    return (
+        <div>
+            {data.map((account, index) => (
+                <div key={index}>
+                    {account.Name}:{account.Password}
+                </div>
+            ))}
+        </div>
+    );
+};
+
+const RemovePHoneNumberComponent = (): JSX.Element => {
+    let phnAccount = new AccountData("Phone_Number", "+1234567890", 0);
+
+    phnAccount.IsSpecial = true;
+
+    const [data, setData] = useState<AccountData[]>([phnAccount]);
+
+    const state: AppState = {
+        error: useStatePair<string>(""),
+        password: useStatePair<string>(""),
+        tfaCode: useStatePair<string>(""),
+        setData: setData,
+        data: data,
+        isLoading: useStatePair<boolean>(false),
+        //tooltip: useStatePair<string>("")
+    };
+
+    if (data.length != 0) {
+        RemovePhoneNumber(state);
+    }
+
+    return <div>Length:{data.length}</div>;
+};
