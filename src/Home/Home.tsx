@@ -21,7 +21,6 @@ enum ShowHomeDialog {
 
 type HomeState = {
     data: AccountData[];
-    setData: (val: AccountData[]) => void;
     dialog: StatePair<ShowHomeDialog>;
     selectedAccount: StatePair<number>;
 };
@@ -146,7 +145,7 @@ const HomeHeader = (props: { isEmpty: boolean }) => {
 };
 
 function Home(props: { AppState: AppState }): JSX.Element {
-    const { data, setData } = props.AppState;
+    const { data } = props.AppState;
     const dialog = useStatePair(ShowHomeDialog.None);
     const swapIndexs = useStatePair<[number, number]>([-1, -1]);
 
@@ -154,7 +153,6 @@ function Home(props: { AppState: AppState }): JSX.Element {
 
     let state = {
         data: data,
-        setData: setData,
         dialog: dialog,
         selectedAccount: useStatePair(-1),
     };
@@ -172,8 +170,8 @@ function Home(props: { AppState: AppState }): JSX.Element {
                     {rows}
                 </div>
                 <CopyPasswordDialog state={state} />
-                <ChangePasswordDialog state={state} />
-                <RemovePasswordDialog state={state} />
+                <ChangePasswordDialog state={state} AppState={props.AppState} />
+                <RemovePasswordDialog state={state} AppState={props.AppState} />
             </div>
         </div>
     );

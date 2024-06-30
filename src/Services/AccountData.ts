@@ -129,6 +129,22 @@ function AddPhoneNumber(phoneNumber: string, AppState: AppState): void {
     PushAccountToData(phoneNumberAccount, AppState);
 }
 
+function RemoveAccount(index: number, AppState: AppState): void {
+    let newData = [...AppState.data];
+
+    newData.splice(index, 1);
+
+    AppState.setData(newData);
+}
+
+function UpdatePassword(index: number, password: string, AppState: AppState) {
+    let newData = [...AppState.data];
+
+    newData[index].Password = password;
+
+    AppState.setData(newData);
+}
+
 function RemovePhoneNumber(AppState: AppState): void {
     let isNotPhoneNumber = (account: AccountData) => {
         return !account.IsSpecial || account.Name != "Phone_Number";
@@ -167,6 +183,8 @@ function SwapAccounts(
 export {
     AccountData,
     AddAccountHandler,
+    RemoveAccount,
+    UpdatePassword,
     GetPhoneNumberFromData,
     AddPhoneNumber,
     RemovePhoneNumber,

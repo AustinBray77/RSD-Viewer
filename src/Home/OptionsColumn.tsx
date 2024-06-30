@@ -5,7 +5,12 @@ import { HomeState, ShowHomeDialog } from "./Home";
 import HomeDialog from "./HomeDialog";
 import { DialogInput } from "../Common/Inputs";
 import { useMemo } from "react";
-import { AccountData } from "../Services/AccountData";
+import {
+    AccountData,
+    RemoveAccount,
+    UpdatePassword,
+} from "../Services/AccountData";
+import { AppState } from "../App";
 
 function CopyPasswordDialog(props: { state: HomeState }): JSX.Element {
     let { dialog } = props.state;
@@ -40,8 +45,11 @@ function CopyPasswordButton(props: {
     return <OptionsButton onClick={onClick}>Copy</OptionsButton>;
 }
 
-function ChangePasswordDialog(props: { state: HomeState }): JSX.Element {
-    let { data, setData, dialog, selectedAccount } = props.state;
+function ChangePasswordDialog(props: {
+    state: HomeState;
+    AppState: AppState;
+}): JSX.Element {
+    let { data, dialog, selectedAccount } = props.state;
 
     const password = useStatePair("");
     const confPassword = useStatePair("");
@@ -74,11 +82,19 @@ function ChangePasswordDialog(props: { state: HomeState }): JSX.Element {
                     className="my-5"
                     required={true}
                     type="password"
+                    bounds={[
+                        [
+                            password.Value != confPassword.Value,
+                            "Passwords do not match",
+                        ],
+                    ]}
                 />
             </div>
             <DialogButton
                 className={
-                    password.Value == "" || confPassword.Value == ""
+                    password.Value == "" ||
+                    confPassword.Value == "" ||
+                    password.Value != confPassword.Value
                         ? " cursor-not-allowed opacity-50"
                         : ""
                 }
@@ -91,10 +107,12 @@ function ChangePasswordDialog(props: { state: HomeState }): JSX.Element {
                         return;
                     }
 
-                    let newData = [...data];
-                    newData[selectedAccount.Value].Password = password.Value;
+                    UpdatePassword(
+                        selectedAccount.Value,
+                        password.Value,
+                        props.AppState
+                    );
 
-                    setData(newData);
                     password.Set("");
                     confPassword.Set("");
                     dialog.Set(ShowHomeDialog.None);
@@ -120,8 +138,11 @@ function ChangePasswordButton(props: {
     return <OptionsButton onClick={onClick}>Change</OptionsButton>;
 }
 
-function RemovePasswordDialog(props: { state: HomeState }): JSX.Element {
-    let { data, dialog, selectedAccount, setData } = props.state;
+function RemovePasswordDialog(props: {
+    state: HomeState;
+    AppState: AppState;
+}): JSX.Element {
+    let { data, dialog, selectedAccount } = props.state;
 
     if (selectedAccount.Value == -1 || data.length == 0) {
         return <></>;
@@ -143,11 +164,8 @@ function RemovePasswordDialog(props: { state: HomeState }): JSX.Element {
             <div className="my-5" />
             <DialogButton
                 onClick={() => {
-                    let newData = [...data];
-                    newData.splice(selectedAccount.Value, 1);
-
+                    RemoveAccount(selectedAccount.Value, props.AppState);
                     selectedAccount.Set(-1);
-                    setData(newData);
                     dialog.Set(ShowHomeDialog.None);
                 }}
             >
