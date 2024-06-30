@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
     CopyPasswordDialog,
     ChangePasswordDialog,
@@ -32,8 +32,9 @@ const HomeRow = (props: {
     state: HomeState;
     length: number;
     AppState: AppState;
+    swapIndex: StatePair<[number, number]>;
 }) => {
-    const { account, index, state, length } = props;
+    const { account, index, state, length, swapIndex } = props;
     const isHovering = useStatePair(false);
 
     let borderString = "border-x-2 border-slate-600/[.1]";
@@ -46,9 +47,17 @@ const HomeRow = (props: {
         borderString += " border-b-2";
     }
 
+    let animationString = "";
+
+    if (swapIndex.Value[0] == index) {
+        animationString = "swap-down-animation";
+    } else if (swapIndex.Value[1] == index) {
+        animationString = "swap-up-animation";
+    }
+
     return (
         <div
-            className="flex place-content-center"
+            className={"flex place-content-center " + animationString}
             onMouseEnter={() => isHovering.Set(true)}
             onMouseLeave={() => isHovering.Set(false)}
         >
@@ -56,6 +65,7 @@ const HomeRow = (props: {
                 isHovering={isHovering.Value}
                 accountIndex={index}
                 AppState={props.AppState}
+                swapIndex={props.swapIndex}
             />
             <div
                 className={
@@ -76,7 +86,11 @@ const HomeRow = (props: {
     );
 };
 
-const GenerateRows = (state: HomeState, AppState: AppState) => {
+const GenerateRows = (
+    state: HomeState,
+    AppState: AppState,
+    swapIndex: StatePair<[number, number]>
+) => {
     const { data } = state;
 
     return data.map((account, index) => {
@@ -89,6 +103,7 @@ const GenerateRows = (state: HomeState, AppState: AppState) => {
                 state={state}
                 length={data.length}
                 AppState={AppState}
+                swapIndex={swapIndex}
             />
         );
     });
@@ -133,6 +148,7 @@ const HomeHeader = (props: { isEmpty: boolean }) => {
 function Home(props: { AppState: AppState }): JSX.Element {
     const { data, setData } = props.AppState;
     const dialog = useStatePair(ShowHomeDialog.None);
+    const swapIndexs = useStatePair<[number, number]>([-1, -1]);
 
     let filteredData = data.filter((account) => !account.IsSpecial);
 
@@ -144,10 +160,10 @@ function Home(props: { AppState: AppState }): JSX.Element {
     };
 
     let rows = useMemo(() => {
-        let output = GenerateRows(state, props.AppState);
+        let output = GenerateRows(state, props.AppState, swapIndexs);
         output.unshift(<HomeHeader isEmpty={filteredData.length == 0} />);
         return output;
-    }, [data]);
+    }, [data.length, swapIndexs.Value]);
 
     return (
         <div className="flex justify-center">

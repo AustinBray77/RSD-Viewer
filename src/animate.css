@@ -5,3 +5,31 @@
 .toolbar-retracted {
     transform: translateY(-120%);
 }
+
+.swap-up-animation {
+    animation: moveUp 0.75s ease-in-out;
+}
+
+.swap-down-animation {
+    animation: moveDown 0.75s ease-in-out;
+}
+
+@keyframes moveUp {
+    from {
+        transform: translateY(0%);
+    }
+
+    to {
+        transform: translateY(-100%);
+    }
+}
+
+@keyframes moveDown {
+    from {
+        transform: translateY(0%);
+    }
+
+    to {
+        transform: translateY(100%);
+    }
+}
