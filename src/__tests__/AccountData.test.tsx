@@ -5,7 +5,7 @@ import {
 } from "../Services/AccountData";
 import { AppState } from "../App";
 import { useStatePair } from "../StatePair";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { screen, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
@@ -83,24 +83,56 @@ describe("Account Stringify Tests", () => {
     });
 });
 
-describe("Phone Number Tests", () => {
+describe("AddPhoneNumber", () => {
     it("should render phone number after add", () => {
-        render(<AddPhoneNumberComponent />);
+        render(<AddPhoneNumberComponent baseData={[]} />);
 
         expect(
             screen.getByText("Phone_Number:+1234567890")
         ).toBeInTheDocument();
     });
 
+    it("should not add multiple phone numbers", () => {
+        render(
+            <AddPhoneNumberComponent
+                baseData={[
+                    new AccountData("Phone_Number", "+1234567890", 0, true),
+                ]}
+            />
+        );
+
+        expect(screen.getByText("Length:1")).toBeInTheDocument();
+    });
+});
+
+describe("RemovePhoneNumber", () => {
+    it("should not remove non-special phone number account", () => {
+        render(
+            <RemovePhoneNumberComponent
+                baseData={[new AccountData("Phone_Number", "+1234567890", 0)]}
+            />
+        );
+
+        expect(screen.getByText("Length:1")).toBeInTheDocument();
+    });
+
     it("should have length 0 after phone number is removed", () => {
-        render(<RemovePHoneNumberComponent />);
+        render(
+            <RemovePhoneNumberComponent
+                baseData={[
+                    new AccountData("Phone_Number", "+1234567890", 0, true),
+                ]}
+            />
+        );
 
         expect(screen.getByText("Length:0")).toBeInTheDocument();
     });
 });
 
-const AddPhoneNumberComponent = (): JSX.Element => {
-    const [data, setData] = useState<AccountData[]>([]);
+const AddPhoneNumberComponent = (props: {
+    baseData: AccountData[];
+}): JSX.Element => {
+    const [data, setData] = useState<AccountData[]>(props.baseData);
 
     const state: AppState = {
         error: useStatePair<string>(""),
@@ -112,9 +144,9 @@ const AddPhoneNumberComponent = (): JSX.Element => {
         //tooltip: useStatePair<string>("")
     };
 
-    if (data.length == 0) {
+    useEffect(() => {
         AddPhoneNumber("+1234567890", state);
-    }
+    }, []);
 
     return (
         <div>
@@ -123,16 +155,15 @@ const AddPhoneNumberComponent = (): JSX.Element => {
                     {account.Name}:{account.Password}
                 </div>
             ))}
+            <div>Length:{data.length}</div>
         </div>
     );
 };
 
-const RemovePHoneNumberComponent = (): JSX.Element => {
-    let phnAccount = new AccountData("Phone_Number", "+1234567890", 0);
-
-    phnAccount.IsSpecial = true;
-
-    const [data, setData] = useState<AccountData[]>([phnAccount]);
+const RemovePhoneNumberComponent = (props: {
+    baseData: AccountData[];
+}): JSX.Element => {
+    const [data, setData] = useState<AccountData[]>(props.baseData);
 
     const state: AppState = {
         error: useStatePair<string>(""),
@@ -144,9 +175,9 @@ const RemovePHoneNumberComponent = (): JSX.Element => {
         //tooltip: useStatePair<string>("")
     };
 
-    if (data.length != 0) {
+    useEffect(() => {
         RemovePhoneNumber(state);
-    }
+    }, []);
 
     return <div>Length:{data.length}</div>;
 };

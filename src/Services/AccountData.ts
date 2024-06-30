@@ -1,5 +1,4 @@
 import { AppState } from "../App";
-import { ShowDialog, ToolbarState } from "../Toolbar/Toolbar";
 
 class AccountData {
     Name: string;
@@ -7,10 +6,15 @@ class AccountData {
     IsSpecial: boolean;
     Position: number;
 
-    constructor(name: string, password: string, position: number) {
+    constructor(
+        name: string,
+        password: string,
+        position: number,
+        isSpecial?: boolean
+    ) {
         this.Name = name;
         this.Password = password;
-        this.IsSpecial = false;
+        this.IsSpecial = isSpecial ?? false;
         this.Position = position;
     }
 
@@ -58,8 +62,20 @@ class AccountData {
     }
 }
 
-const AddAccountHandler = (name: string, password: string, app: AppState) => {
-    let account = new AccountData(name, password, app.data.length);
+const PushAccountToData = (account: AccountData, app: AppState) => {
+    let newData = [...app.data];
+
+    newData.push(account);
+
+    app.setData(newData);
+};
+
+const AddAccountHandler = (
+    name: string,
+    password: string,
+    AppState: AppState
+) => {
+    let account = new AccountData(name, password, AppState.data.length);
 
     if (account.isEmpty()) {
         return;
@@ -67,11 +83,7 @@ const AddAccountHandler = (name: string, password: string, app: AppState) => {
 
     console.log("Adding Account...");
 
-    let newData = [...app.data];
-
-    newData.push(account);
-
-    app.setData(newData);
+    PushAccountToData(account, AppState);
 };
 
 const GetPhoneNumberFromData = (data: AccountData[]): string => {
@@ -85,25 +97,28 @@ const GetPhoneNumberFromData = (data: AccountData[]): string => {
 };
 
 function AddPhoneNumber(phoneNumber: string, AppState: AppState): void {
+    if (GetPhoneNumberFromData(AppState.data) != "") {
+        return;
+    }
+
     let phoneNumberAccount = new AccountData(
         "Phone_Number",
         phoneNumber,
-        AppState.data.length
+        AppState.data.length,
+        true
     );
-    phoneNumberAccount.IsSpecial = true;
-    let newData = [...AppState.data];
-    newData.push(phoneNumberAccount);
-    AppState.setData(newData);
-    AppState.error.Set("Phone number added successfully");
+
+    PushAccountToData(phoneNumberAccount, AppState);
 }
 
 function RemovePhoneNumber(AppState: AppState): void {
-    let newData = AppState.data.filter((account) => {
-        return !(account.IsSpecial && account.Name == "Phone_Number");
-    });
+    let isNotPhoneNumber = (account: AccountData) => {
+        return !account.IsSpecial || account.Name != "Phone_Number";
+    };
+
+    let newData = AppState.data.filter(isNotPhoneNumber);
 
     AppState.setData(newData);
-    AppState.error.Set("Phone number removed successfully");
 }
 
 export {
