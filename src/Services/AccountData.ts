@@ -64,7 +64,19 @@ class AccountData {
     }
 
     static arrayToJSON(data: AccountData[]): string {
-        return JSON.stringify(data);
+        let numberOfSwaps = Math.random() * (data.length - 1);
+        let randomizedData = [...data];
+
+        for (let i = 0; i < numberOfSwaps; i++) {
+            let index1 = Math.floor(Math.random() * (data.length - 1));
+            let index2 = Math.floor(Math.random() * (data.length - 1));
+
+            let temp = randomizedData[index1];
+            randomizedData[index1] = randomizedData[index2];
+            randomizedData[index2] = temp;
+        }
+
+        return JSON.stringify(randomizedData);
     }
 }
 
