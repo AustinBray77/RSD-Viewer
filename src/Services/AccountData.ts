@@ -121,10 +121,33 @@ function RemovePhoneNumber(AppState: AppState): void {
     AppState.setData(newData);
 }
 
+function SwapAccounts(
+    index1: number,
+    index2: number,
+    AppState: AppState
+): void {
+    if (
+        index1 < 0 ||
+        index2 < 0 ||
+        index1 >= AppState.data.length ||
+        index2 >= AppState.data.length
+    )
+        return;
+
+    let newData = [...AppState.data];
+
+    let temp = newData[index1];
+    newData[index1] = newData[index2];
+    newData[index2] = temp;
+
+    AppState.setData(newData);
+}
+
 export {
     AccountData,
     AddAccountHandler,
     GetPhoneNumberFromData,
     AddPhoneNumber,
     RemovePhoneNumber,
+    SwapAccounts,
 };

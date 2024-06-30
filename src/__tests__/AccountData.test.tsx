@@ -2,6 +2,7 @@ import {
     AccountData,
     AddPhoneNumber,
     RemovePhoneNumber,
+    SwapAccounts,
 } from "../Services/AccountData";
 import { AppState } from "../App";
 import { useStatePair } from "../StatePair";
@@ -129,6 +130,56 @@ describe("RemovePhoneNumber", () => {
     });
 });
 
+describe("SwapAccounts", () => {
+    it("should swap accounts", () => {
+        render(
+            <SwapAccountsComponent
+                index1={0}
+                index2={1}
+                baseData={[
+                    new AccountData("Test1", "Test1", 0),
+                    new AccountData("Test2", "Test2", 1),
+                ]}
+            />
+        );
+
+        expect(screen.getByText("Account[0]:Test2")).toBeInTheDocument();
+        expect(screen.getByText("Account[1]:Test1")).toBeInTheDocument();
+    });
+
+    it("should not swap accounts if index1 is out of bounds", () => {
+        render(
+            <SwapAccountsComponent
+                index1={2}
+                index2={1}
+                baseData={[
+                    new AccountData("Test1", "Test1", 0),
+                    new AccountData("Test2", "Test2", 1),
+                ]}
+            />
+        );
+
+        expect(screen.getByText("Account[0]:Test1")).toBeInTheDocument();
+        expect(screen.getByText("Account[1]:Test2")).toBeInTheDocument();
+    });
+
+    it("should not swap accounts if index2 is out of bounds", () => {
+        render(
+            <SwapAccountsComponent
+                index1={0}
+                index2={2}
+                baseData={[
+                    new AccountData("Test1", "Test1", 0),
+                    new AccountData("Test2", "Test2", 1),
+                ]}
+            />
+        );
+
+        expect(screen.getByText("Account[0]:Test1")).toBeInTheDocument();
+        expect(screen.getByText("Account[1]:Test2")).toBeInTheDocument();
+    });
+});
+
 const AddPhoneNumberComponent = (props: {
     baseData: AccountData[];
 }): JSX.Element => {
@@ -180,4 +231,36 @@ const RemovePhoneNumberComponent = (props: {
     }, []);
 
     return <div>Length:{data.length}</div>;
+};
+
+const SwapAccountsComponent = (props: {
+    index1: number;
+    index2: number;
+    baseData: AccountData[];
+}): JSX.Element => {
+    const [data, setData] = useState<AccountData[]>(props.baseData);
+
+    const state: AppState = {
+        error: useStatePair<string>(""),
+        password: useStatePair<string>(""),
+        tfaCode: useStatePair<string>(""),
+        setData: setData,
+        data: data,
+        isLoading: useStatePair<boolean>(false),
+        //tooltip: useStatePair<string>("")
+    };
+
+    useEffect(() => {
+        SwapAccounts(props.index1, props.index2, state);
+    }, []);
+
+    return (
+        <div>
+            {data.map((account, index) => (
+                <div key={index}>
+                    Account[{index}]:{account.Name}
+                </div>
+            ))}
+        </div>
+    );
 };
