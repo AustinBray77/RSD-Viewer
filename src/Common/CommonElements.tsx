@@ -17,8 +17,18 @@ function StandardHomeBox(props: {
     );
 }
 
-function SmallIcon(props: { src: string; className?: string }): JSX.Element {
-    return <img src={props.src} className={"w-4 h-3 " + props.className} />;
+function SmallIcon(props: {
+    src: string;
+    className?: string;
+    onClick?: React.MouseEventHandler<HTMLImageElement>;
+}): JSX.Element {
+    return (
+        <img
+            src={props.src}
+            className={"w-4 h-3 " + props.className}
+            onClick={props.onClick}
+        />
+    );
 }
 
 function DropdownFromList(props: {

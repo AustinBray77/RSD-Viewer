@@ -82,6 +82,30 @@ describe("Account Stringify Tests", () => {
             }
         }
     });
+
+    it("should load out of order data into order", () => {
+        let accounts = [
+            new AccountData("Test", "Test", 3),
+            new AccountData("Another Test Wow", "Herey", 1),
+            new AccountData("Yes its real", "big boi", 0),
+            new AccountData("", "", 2),
+        ];
+
+        let reloadedAccounts = AccountData.arrayFromJSON(
+            AccountData.arrayToJSON(accounts)
+        );
+
+        for (let i: number = 0; i < reloadedAccounts.length; i++) {
+            if (reloadedAccounts[i].Position != i) {
+                console.log(accounts[i]);
+                throw (
+                    "Account " +
+                    i.toString() +
+                    " was not in the correct position"
+                );
+            }
+        }
+    });
 });
 
 describe("AddPhoneNumber", () => {
@@ -143,8 +167,8 @@ describe("SwapAccounts", () => {
             />
         );
 
-        expect(screen.getByText("Account[0]:Test2")).toBeInTheDocument();
-        expect(screen.getByText("Account[1]:Test1")).toBeInTheDocument();
+        expect(screen.getByText("Account[0]:Test2:0")).toBeInTheDocument();
+        expect(screen.getByText("Account[1]:Test1:1")).toBeInTheDocument();
     });
 
     it("should not swap accounts if index1 is out of bounds", () => {
@@ -159,8 +183,8 @@ describe("SwapAccounts", () => {
             />
         );
 
-        expect(screen.getByText("Account[0]:Test1")).toBeInTheDocument();
-        expect(screen.getByText("Account[1]:Test2")).toBeInTheDocument();
+        expect(screen.getByText("Account[0]:Test1:0")).toBeInTheDocument();
+        expect(screen.getByText("Account[1]:Test2:1")).toBeInTheDocument();
     });
 
     it("should not swap accounts if index2 is out of bounds", () => {
@@ -175,8 +199,8 @@ describe("SwapAccounts", () => {
             />
         );
 
-        expect(screen.getByText("Account[0]:Test1")).toBeInTheDocument();
-        expect(screen.getByText("Account[1]:Test2")).toBeInTheDocument();
+        expect(screen.getByText("Account[0]:Test1:0")).toBeInTheDocument();
+        expect(screen.getByText("Account[1]:Test2:1")).toBeInTheDocument();
     });
 });
 
@@ -258,7 +282,7 @@ const SwapAccountsComponent = (props: {
         <div>
             {data.map((account, index) => (
                 <div key={index}>
-                    Account[{index}]:{account.Name}
+                    Account[{index}]:{account.Name}:{account.Position}
                 </div>
             ))}
         </div>

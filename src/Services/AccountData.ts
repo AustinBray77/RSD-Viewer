@@ -47,6 +47,10 @@ class AccountData {
         return account;
     }
 
+    static sortByPosition(accounts: AccountData[]): AccountData[] {
+        return accounts.sort((a, b) => a.Position - b.Position);
+    }
+
     static arrayFromJSON(jsonString: string): AccountData[] {
         let accountMaps: Map<String, String>[] = (
             JSON.parse(jsonString) as Object[]
@@ -54,7 +58,9 @@ class AccountData {
             return new Map(Object.entries(obj));
         });
 
-        return accountMaps.map(AccountData.fromJSONMap);
+        let unsortedAccounts = accountMaps.map(AccountData.fromJSONMap);
+
+        return AccountData.sortByPosition(unsortedAccounts);
     }
 
     static arrayToJSON(data: AccountData[]): string {
@@ -139,6 +145,9 @@ function SwapAccounts(
     let temp = newData[index1];
     newData[index1] = newData[index2];
     newData[index2] = temp;
+
+    newData[index1].Position = index1;
+    newData[index2].Position = index2;
 
     AppState.setData(newData);
 }
