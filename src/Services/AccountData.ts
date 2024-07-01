@@ -1,4 +1,5 @@
 import { AppState } from "../App";
+import { SortOrder } from "./Sorting";
 
 class AccountData {
     Name: string;
@@ -47,8 +48,29 @@ class AccountData {
         return account;
     }
 
-    static sortByPosition(accounts: AccountData[]): AccountData[] {
-        return accounts.sort((a, b) => a.Position - b.Position);
+    static sortByPosition(
+        accounts: AccountData[],
+        sortOrder: SortOrder
+    ): AccountData[] {
+        return accounts.sort((a, b) => (a.Position - b.Position) * sortOrder);
+    }
+
+    static sortByName(
+        accounts: AccountData[],
+        sortOrder: SortOrder
+    ): AccountData[] {
+        return accounts.sort((a, b) => {
+            let aLowerName = a.Name.toLowerCase();
+            let bLowerName = b.Name.toLowerCase();
+
+            if (aLowerName < bLowerName) {
+                return -1 * sortOrder;
+            } else if (aLowerName > bLowerName) {
+                return 1 * sortOrder;
+            } else {
+                return 0;
+            }
+        });
     }
 
     static arrayFromJSON(jsonString: string): AccountData[] {
@@ -60,7 +82,10 @@ class AccountData {
 
         let unsortedAccounts = accountMaps.map(AccountData.fromJSONMap);
 
-        return AccountData.sortByPosition(unsortedAccounts);
+        return AccountData.sortByPosition(
+            unsortedAccounts,
+            SortOrder.Ascending
+        );
     }
 
     static arrayToJSON(data: AccountData[]): string {

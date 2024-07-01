@@ -11,6 +11,7 @@ import { useStatePair } from "../StatePair";
 import { useEffect, useState } from "react";
 import { screen, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { SortOrder } from "../Services/Sorting";
 
 /* Depreicated code */
 class DepAccountData {
@@ -306,6 +307,90 @@ describe("UpdatePassword", () => {
 
         expect(screen.getByText("Test1:Test1:0")).toBeInTheDocument();
         expect(screen.getByText("Test2:Test2:1")).toBeInTheDocument();
+    });
+});
+
+describe("SortByPosition", () => {
+    it("should order by ascending when ascending is passed in", () => {
+        let accounts = [
+            new AccountData("Test1", "Test1", 2),
+            new AccountData("Test2", "Test2", 0),
+            new AccountData("Test3", "Test3", 1),
+        ];
+
+        let sortedAccounts = AccountData.sortByPosition(
+            accounts,
+            SortOrder.Ascending
+        );
+
+        for (let i = 0; i < sortedAccounts.length; i++) {
+            expect(sortedAccounts[i].Position).toBe(i);
+        }
+    });
+
+    it("should order by descending when descending is passed in", () => {
+        let accounts = [
+            new AccountData("Test1", "Test1", 0),
+            new AccountData("Test2", "Test2", 2),
+            new AccountData("Test3", "Test3", 1),
+        ];
+
+        let sortedAccounts = AccountData.sortByPosition(
+            accounts,
+            SortOrder.Descending
+        );
+
+        for (let i = 0; i < sortedAccounts.length; i++) {
+            expect(sortedAccounts[i].Position).toBe(2 - i);
+        }
+    });
+});
+
+describe("SortByName", () => {
+    it("should order by ascending when ascending is passed in", () => {
+        let accounts = [
+            new AccountData("13141est1", "Test1", 0),
+            new AccountData("AsafeawfTest", "Test3", 1),
+            new AccountData("abtfasffeade", "Test2", 2),
+        ];
+
+        let expectedResult = [
+            new AccountData("13141est1", "Test1", 0),
+            new AccountData("abtfasffeade", "Test2", 2),
+            new AccountData("AsafeawfTest", "Test3", 1),
+        ];
+
+        let sortedAccounts = AccountData.sortByName(
+            accounts,
+            SortOrder.Ascending
+        );
+
+        for (let i = 0; i < sortedAccounts.length; i++) {
+            expect(sortedAccounts[i].equals(expectedResult[i])).toBe(true);
+        }
+    });
+
+    it("should order by descending when descending is passed in", () => {
+        let accounts = [
+            new AccountData("13141est1", "Test1", 0),
+            new AccountData("AsafeawfTest", "Test3", 1),
+            new AccountData("abtfasffeade", "Test2", 2),
+        ];
+
+        let expectedResult = [
+            new AccountData("AsafeawfTest", "Test3", 1),
+            new AccountData("abtfasffeade", "Test2", 2),
+            new AccountData("13141est1", "Test1", 0),
+        ];
+
+        let sortedAccounts = AccountData.sortByName(
+            accounts,
+            SortOrder.Descending
+        );
+
+        for (let i = 0; i < sortedAccounts.length; i++) {
+            expect(sortedAccounts[i].equals(expectedResult[i])).toBe(true);
+        }
     });
 });
 
