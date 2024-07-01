@@ -132,7 +132,19 @@ function AddPhoneNumber(phoneNumber: string, AppState: AppState): void {
 function RemoveAccount(index: number, AppState: AppState): void {
     let newData = [...AppState.data];
 
+    if (index >= newData.length || index < 0) {
+        return;
+    }
+
     newData.splice(index, 1);
+
+    newData = newData.map((account, index) => {
+        if (account.Position > index) {
+            account.Position -= 1;
+        }
+
+        return account;
+    });
 
     AppState.setData(newData);
 }
@@ -140,19 +152,29 @@ function RemoveAccount(index: number, AppState: AppState): void {
 function UpdatePassword(index: number, password: string, AppState: AppState) {
     let newData = [...AppState.data];
 
+    if (index >= newData.length || index < 0) {
+        return;
+    }
+
     newData[index].Password = password;
 
     AppState.setData(newData);
 }
 
 function RemovePhoneNumber(AppState: AppState): void {
-    let isNotPhoneNumber = (account: AccountData) => {
-        return !account.IsSpecial || account.Name != "Phone_Number";
-    };
+    let phoneNumberIndex = AppState.data.reduce((prev, curr) => {
+        if (prev != -1) {
+            return prev;
+        }
 
-    let newData = AppState.data.filter(isNotPhoneNumber);
+        if (curr.IsSpecial && curr.Name == "Phone_Number") {
+            return curr.Position;
+        }
 
-    AppState.setData(newData);
+        return -1;
+    }, -1);
+
+    RemoveAccount(phoneNumberIndex, AppState);
 }
 
 function SwapAccounts(

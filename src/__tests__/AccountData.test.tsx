@@ -1,8 +1,10 @@
 import {
     AccountData,
     AddPhoneNumber,
+    RemoveAccount,
     RemovePhoneNumber,
     SwapAccounts,
+    UpdatePassword,
 } from "../Services/AccountData";
 import { AppState } from "../App";
 import { useStatePair } from "../StatePair";
@@ -110,19 +112,29 @@ describe("Account Stringify Tests", () => {
 
 describe("AddPhoneNumber", () => {
     it("should render phone number after add", () => {
-        render(<AddPhoneNumberComponent baseData={[]} />);
+        render(
+            <TestComponent
+                baseData={[]}
+                startFunction={(state) => {
+                    AddPhoneNumber("+1234567890", state);
+                }}
+            />
+        );
 
         expect(
-            screen.getByText("Phone_Number:+1234567890")
+            screen.getByText("Phone_Number:+1234567890:0")
         ).toBeInTheDocument();
     });
 
     it("should not add multiple phone numbers", () => {
         render(
-            <AddPhoneNumberComponent
+            <TestComponent
                 baseData={[
                     new AccountData("Phone_Number", "+1234567890", 0, true),
                 ]}
+                startFunction={(state) => {
+                    AddPhoneNumber("+1234567890", state);
+                }}
             />
         );
 
@@ -133,8 +145,11 @@ describe("AddPhoneNumber", () => {
 describe("RemovePhoneNumber", () => {
     it("should not remove non-special phone number account", () => {
         render(
-            <RemovePhoneNumberComponent
+            <TestComponent
                 baseData={[new AccountData("Phone_Number", "+1234567890", 0)]}
+                startFunction={(state) => {
+                    RemovePhoneNumber(state);
+                }}
             />
         );
 
@@ -143,10 +158,13 @@ describe("RemovePhoneNumber", () => {
 
     it("should have length 0 after phone number is removed", () => {
         render(
-            <RemovePhoneNumberComponent
+            <TestComponent
                 baseData={[
                     new AccountData("Phone_Number", "+1234567890", 0, true),
                 ]}
+                startFunction={(state) => {
+                    RemovePhoneNumber(state);
+                }}
             />
         );
 
@@ -157,55 +175,143 @@ describe("RemovePhoneNumber", () => {
 describe("SwapAccounts", () => {
     it("should swap accounts", () => {
         render(
-            <SwapAccountsComponent
-                index1={0}
-                index2={1}
+            <TestComponent
                 baseData={[
                     new AccountData("Test1", "Test1", 0),
                     new AccountData("Test2", "Test2", 1),
                 ]}
+                startFunction={(state) => {
+                    SwapAccounts(0, 1, state);
+                }}
             />
         );
 
-        expect(screen.getByText("Account[0]:Test2:0")).toBeInTheDocument();
-        expect(screen.getByText("Account[1]:Test1:1")).toBeInTheDocument();
+        expect(screen.getByText("Test2:Test2:0")).toBeInTheDocument();
+        expect(screen.getByText("Test1:Test1:1")).toBeInTheDocument();
     });
 
     it("should not swap accounts if index1 is out of bounds", () => {
         render(
-            <SwapAccountsComponent
-                index1={2}
-                index2={1}
+            <TestComponent
                 baseData={[
                     new AccountData("Test1", "Test1", 0),
                     new AccountData("Test2", "Test2", 1),
                 ]}
+                startFunction={(state) => {
+                    SwapAccounts(-1, 1, state);
+                }}
             />
         );
 
-        expect(screen.getByText("Account[0]:Test1:0")).toBeInTheDocument();
-        expect(screen.getByText("Account[1]:Test2:1")).toBeInTheDocument();
+        expect(screen.getByText("Test1:Test1:0")).toBeInTheDocument();
+        expect(screen.getByText("Test2:Test2:1")).toBeInTheDocument();
     });
 
     it("should not swap accounts if index2 is out of bounds", () => {
         render(
-            <SwapAccountsComponent
-                index1={0}
-                index2={2}
+            <TestComponent
                 baseData={[
                     new AccountData("Test1", "Test1", 0),
                     new AccountData("Test2", "Test2", 1),
                 ]}
+                startFunction={(state) => {
+                    SwapAccounts(1, 4, state);
+                }}
             />
         );
 
-        expect(screen.getByText("Account[0]:Test1:0")).toBeInTheDocument();
-        expect(screen.getByText("Account[1]:Test2:1")).toBeInTheDocument();
+        expect(screen.getByText("Test1:Test1:0")).toBeInTheDocument();
+        expect(screen.getByText("Test2:Test2:1")).toBeInTheDocument();
     });
 });
 
-const AddPhoneNumberComponent = (props: {
+describe("RemoveAccount", () => {
+    it("should remove account at the given index", () => {
+        render(
+            <TestComponent
+                baseData={[
+                    new AccountData("Test1", "Test1", 0),
+                    new AccountData("Test2", "Test2", 1),
+                ]}
+                startFunction={(state) => {
+                    RemoveAccount(0, state);
+                }}
+            />
+        );
+
+        expect(screen.getByText("Test2:Test2:0")).toBeInTheDocument();
+    });
+
+    it("should not remove account if index is out of bounds", () => {
+        render(
+            <TestComponent
+                baseData={[new AccountData("Test1", "Test1", 0)]}
+                startFunction={(state) => {
+                    RemoveAccount(1, state);
+                }}
+            />
+        );
+
+        expect(screen.getByText("Test1:Test1:0")).toBeInTheDocument();
+    });
+
+    it("should not remove account if index is negative", () => {
+        render(
+            <TestComponent
+                baseData={[new AccountData("Test1", "Test1", 0)]}
+                startFunction={(state) => {
+                    RemoveAccount(-1, state);
+                }}
+            />
+        );
+
+        expect(screen.getByText("Test1:Test1:0")).toBeInTheDocument();
+    });
+});
+
+describe("UpdatePassword", () => {
+    it("should update password at the given index", () => {
+        render(
+            <TestComponent
+                baseData={[
+                    new AccountData("Test1", "Test1", 0),
+                    new AccountData("Test2", "Test2", 1),
+                    new AccountData("Test3", "Test3", 2),
+                ]}
+                startFunction={(state) => {
+                    UpdatePassword(0, "Updated", state);
+                    UpdatePassword(1, "AlsoUpdated", state);
+                }}
+            />
+        );
+
+        expect(screen.getByText("Test1:Updated:0")).toBeInTheDocument();
+        expect(screen.getByText("Test2:AlsoUpdated:1")).toBeInTheDocument();
+        expect(screen.getByText("Test3:Test3:2")).toBeInTheDocument();
+    });
+
+    it("should not update if index is out of bounds", () => {
+        render(
+            <TestComponent
+                baseData={[
+                    new AccountData("Test1", "Test1", 0),
+                    new AccountData("Test2", "Test2", 1),
+                ]}
+                startFunction={(state) => {
+                    UpdatePassword(-1, "Updated", state);
+                    UpdatePassword(2, "AlsoUpdated", state);
+                }}
+            />
+        );
+
+        expect(screen.getByText("Test1:Test1:0")).toBeInTheDocument();
+        expect(screen.getByText("Test2:Test2:1")).toBeInTheDocument();
+    });
+});
+
+const TestComponent = (props: {
     baseData: AccountData[];
+    startFunction: (state: AppState) => void;
 }): JSX.Element => {
     const [data, setData] = useState<AccountData[]>(props.baseData);
 
@@ -220,71 +326,17 @@ const AddPhoneNumberComponent = (props: {
     };
 
     useEffect(() => {
-        AddPhoneNumber("+1234567890", state);
+        props.startFunction(state);
     }, []);
 
     return (
         <div>
             {data.map((account, index) => (
                 <div key={index}>
-                    {account.Name}:{account.Password}
+                    {account.Name}:{account.Password}:{account.Position}
                 </div>
             ))}
             <div>Length:{data.length}</div>
-        </div>
-    );
-};
-
-const RemovePhoneNumberComponent = (props: {
-    baseData: AccountData[];
-}): JSX.Element => {
-    const [data, setData] = useState<AccountData[]>(props.baseData);
-
-    const state: AppState = {
-        error: useStatePair<string>(""),
-        password: useStatePair<string>(""),
-        tfaCode: useStatePair<string>(""),
-        setData: setData,
-        data: data,
-        isLoading: useStatePair<boolean>(false),
-        //tooltip: useStatePair<string>("")
-    };
-
-    useEffect(() => {
-        RemovePhoneNumber(state);
-    }, []);
-
-    return <div>Length:{data.length}</div>;
-};
-
-const SwapAccountsComponent = (props: {
-    index1: number;
-    index2: number;
-    baseData: AccountData[];
-}): JSX.Element => {
-    const [data, setData] = useState<AccountData[]>(props.baseData);
-
-    const state: AppState = {
-        error: useStatePair<string>(""),
-        password: useStatePair<string>(""),
-        tfaCode: useStatePair<string>(""),
-        setData: setData,
-        data: data,
-        isLoading: useStatePair<boolean>(false),
-        //tooltip: useStatePair<string>("")
-    };
-
-    useEffect(() => {
-        SwapAccounts(props.index1, props.index2, state);
-    }, []);
-
-    return (
-        <div>
-            {data.map((account, index) => (
-                <div key={index}>
-                    Account[{index}]:{account.Name}:{account.Position}
-                </div>
-            ))}
         </div>
     );
 };
