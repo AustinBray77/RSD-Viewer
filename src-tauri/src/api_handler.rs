@@ -1,7 +1,7 @@
-use reqwest::Response;
+use reqwest::{header::{HeaderMap, HeaderValue}, Response};
 use rsd_encrypt::{encrypt, decrypt};
 
-pub async fn send_api_request(path: String) -> Result<Response, String> {
+pub async fn send_api_request(path: &str, headers: HeaderMap) -> Result<Response, String> {
     let address: String = dotenv::var("SERVER_ADDRESS").unwrap();
     let url = format!("{}/api/{}", address, path);
     
@@ -10,6 +10,7 @@ pub async fn send_api_request(path: String) -> Result<Response, String> {
         .build()
         .unwrap()
         .get(&url)
+        .headers(headers)
         .send()
         .await;
 
@@ -26,7 +27,14 @@ pub async fn send_api_request(path: String) -> Result<Response, String> {
 }
 
 pub async fn query_api_for_code(hashified_number: String) -> Result<String, String> {
-    let api_result = send_api_request(hashified_number).await;
+    let api_key = dotenv::var("SERVER_KEY").unwrap();
+
+    let mut headers = HeaderMap::new();
+
+    headers.append("api-key", HeaderValue::from_str(&api_key).unwrap());
+    headers.append("phone-number", HeaderValue::from_str(&hashified_number).unwrap());
+    
+    let api_result = send_api_request("send-tfa-code", headers).await;
 
     let api_response = match api_result {
         Ok(res) => res,
