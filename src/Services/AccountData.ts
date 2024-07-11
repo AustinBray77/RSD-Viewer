@@ -33,19 +33,15 @@ class AccountData {
     }
 
     static fromJSONMap(
-        mapObject: Map<String, String>,
+        mapObject: Map<String, unknown>,
         index: number
     ): AccountData {
         let name = (mapObject.get("Name") as string) ?? "";
         let password = (mapObject.get("Password") as string) ?? "";
         let position = (mapObject.get("Position") as string) ?? index;
-        let IsSpecial = mapObject.get("IsSpecial") == "true";
+        let IsSpecial = mapObject.get("IsSpecial") as boolean;
 
-        let account = new AccountData(name, password, parseInt(position));
-
-        account.IsSpecial = IsSpecial;
-
-        return account;
+        return new AccountData(name, password, parseInt(position), IsSpecial);
     }
 
     static sortByPosition(
@@ -74,7 +70,7 @@ class AccountData {
     }
 
     static arrayFromJSON(jsonString: string): AccountData[] {
-        let accountMaps: Map<String, String>[] = (
+        let accountMaps: Map<String, unknown>[] = (
             JSON.parse(jsonString) as Object[]
         ).map((obj: Object) => {
             return new Map(Object.entries(obj));

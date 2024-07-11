@@ -41,9 +41,9 @@ class DepAccountData {
 describe("Account Stringify Tests", () => {
     test("if stringify and destringy are inverse functions", () => {
         let newAccounts: AccountData[] = [
-            new AccountData("Test", "Test", 0),
+            new AccountData("Test", "Test", 0, true),
             new AccountData("Another Test Wow", "Herey", 1),
-            new AccountData("Yes its real", "big boi", 2),
+            new AccountData("Yes its real", "big boi", 2, false),
             new AccountData("", "", 3),
         ];
 
