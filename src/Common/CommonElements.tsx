@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useMousePosition from "../Services/WindowData";
+import { ColorScheme, generateClasses } from "./Scheme";
 
 function StandardHomeBox(props: {
     children: JSX.Element[] | JSX.Element | string;
@@ -31,19 +32,33 @@ function SmallIcon(props: {
     );
 }
 
+const DropdownLight: ColorScheme = {
+    background: "slate-700",
+    text: "text-slate-100",
+    border: {
+        color: "slate-700",
+        focColor: "slate-600",
+        thickness: "2",
+    },
+    hidden: "slate-800",
+};
+
 function DropdownFromList(props: {
     items: string[];
-    icons: string[];
+    icons?: string[];
     startingIndex: number;
     onChange: (index: number) => void;
     className: string;
+    scheme?: ColorScheme;
 }): JSX.Element {
     const [isOpen, setIsOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(props.startingIndex);
 
+    const scheme = props.scheme == undefined ? DropdownLight : props.scheme;
+
     function getDropdownFromItem(
         item: string,
-        icon: string,
+        icon: string | undefined,
         index: number,
         onClick: (index: number) => void,
         needsSpacing: boolean,
@@ -57,7 +72,7 @@ function DropdownFromList(props: {
                 className={"flex items-center " + style}
             >
                 {needsSpacing ? <div className="w-4 h-3"></div> : ""}
-                <SmallIcon src={icon} />
+                {icon == undefined ? <></> : <SmallIcon src={icon} />}
                 &nbsp;
                 <div>{item}</div>
             </div>
@@ -71,7 +86,7 @@ function DropdownFromList(props: {
             dropdownItems.push(
                 getDropdownFromItem(
                     props.items[i],
-                    props.icons[i],
+                    props.icons == undefined ? undefined : props.icons[i],
                     i,
                     (index: number) => {
                         if (!isOpen) return;
@@ -81,7 +96,7 @@ function DropdownFromList(props: {
                         props.onChange(index);
                     },
                     true,
-                    "border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700"
+                    `border-2 rounded ` + generateClasses(scheme)
                 )
             );
         }
@@ -91,12 +106,15 @@ function DropdownFromList(props: {
 
     let animationString = isOpen
         ? "h-20 border-slate-800/[0.50]"
-        : "h-0 border-slate-700";
+        : `h-0 ${scheme.background}`;
 
     return (
         <div className={props.className}>
             <div
-                className="flex h-7 focus:outline-none bg-slate-700 border-2 rounded focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700 items-center"
+                className={
+                    `flex h-7 focus:outline-none rounded items-center ` +
+                    generateClasses(scheme)
+                }
                 onClick={() => {
                     setIsOpen(!isOpen);
                 }}
@@ -106,9 +124,11 @@ function DropdownFromList(props: {
                 &nbsp;
                 {getDropdownFromItem(
                     props.items[currentIndex],
-                    props.icons[currentIndex],
+                    props.icons == undefined
+                        ? undefined
+                        : props.icons[currentIndex],
                     currentIndex,
-                    (index: number) => {},
+                    (_: number) => {},
                     false,
                     ""
                 )}
@@ -116,7 +136,7 @@ function DropdownFromList(props: {
             </div>
             <div
                 className={
-                    "transition-all duration-500 overflow-y-auto fixed bg-slate-700 z-10 rounded border-2 drop-down-scroll " +
+                    `transition-all duration-500 overflow-y-auto fixed ${scheme.background} z-10 rounded border-2 drop-down-scroll ` +
                     animationString
                 }
             >

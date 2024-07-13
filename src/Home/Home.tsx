@@ -7,7 +7,7 @@ import {
 } from "./OptionsColumn";
 import { StatePair, useStatePair } from "../StatePair";
 import { AccountData } from "../Services/AccountData";
-import { SmallIcon, Title } from "../Common/CommonElements";
+import { DropdownFromList, SmallIcon, Title } from "../Common/CommonElements";
 import RowButtons from "./SideButtons";
 import AccountDisplay from "./AccountColumn";
 import { AppState } from "../App";
@@ -144,6 +144,19 @@ const HomeHeader = (props: { isEmpty: boolean }) => {
     );
 };
 
+function SortButtons(props: { AppState: AppState }): JSX.Element {
+    return (
+        <div className="flex justify-center">
+            <DropdownFromList
+                items={["Default", "Account Name"]}
+                startingIndex={0}
+                onChange={(index) => {}}
+                className="w-36"
+            />
+        </div>
+    );
+}
+
 function Home(props: { AppState: AppState }): JSX.Element {
     const { data } = props.AppState;
     const dialog = useStatePair(ShowHomeDialog.None);
@@ -165,7 +178,8 @@ function Home(props: { AppState: AppState }): JSX.Element {
 
     return (
         <div className="flex justify-center">
-            <div className="text-slate-100 overflow-y-auto h-screen">
+            <div className="text-slate-100 overflow-y-auto h-screen pt-[2em]">
+                <SortButtons AppState={props.AppState} />
                 <div className={"grid grid-cols-1 grid-flow-row w-[95vw] p-8"}>
                     {rows}
                 </div>
