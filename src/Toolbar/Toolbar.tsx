@@ -69,7 +69,7 @@ export default function Toolbar(props: {
             <RetractedHeader state={retracted} />
             <div
                 className={
-                    "transition-transform duration-1000 ease-in-out absolute top-0 left-0 right-0 z-10 " +
+                    "transition-transform duration-1000 ease-in-out absolute top-0 left-0 right-0 z-20 " +
                     animationClass
                 }
             >

@@ -32,15 +32,53 @@ function SmallIcon(props: {
     );
 }
 
-const DropdownLight: ColorScheme = {
-    background: "slate-700",
-    text: "text-slate-100",
-    border: {
-        color: "slate-700",
-        focColor: "slate-600",
-        thickness: "2",
+const DropdownLight: DropdownScheme = {
+    buttonScheme: {
+        background: "slate-700",
+        text: "text-slate-100",
+        border: {
+            color: "slate-700",
+            focColor: "slate-600",
+            thickness: "2",
+        },
     },
-    hidden: "slate-800",
+    dropdownScheme: {
+        background: "slate-700",
+        text: "text-slate-100",
+        border: {
+            color: "slate-800/[0.50]",
+            focColor: "slate-600",
+            thickness: "2",
+        },
+        hidden: "slate-700",
+    },
+};
+
+const DropdownDark: DropdownScheme = {
+    buttonScheme: {
+        background: "slate-500",
+        text: "text-slate-100",
+        border: {
+            color: "slate-600",
+            focColor: "slate-600/[0.50]",
+            thickness: "2",
+        },
+    },
+    dropdownScheme: {
+        background: "slate-500",
+        text: "text-slate-100",
+        border: {
+            color: "slate-800/[0.50]",
+            focColor: "slate-600",
+            thickness: "2",
+        },
+        hidden: "slate-500",
+    },
+};
+
+type DropdownScheme = {
+    buttonScheme: ColorScheme;
+    dropdownScheme: ColorScheme;
 };
 
 function DropdownFromList(props: {
@@ -49,7 +87,7 @@ function DropdownFromList(props: {
     startingIndex: number;
     onChange: (index: number) => void;
     className: string;
-    scheme?: ColorScheme;
+    scheme?: DropdownScheme;
 }): JSX.Element {
     const [isOpen, setIsOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(props.startingIndex);
@@ -96,7 +134,7 @@ function DropdownFromList(props: {
                         props.onChange(index);
                     },
                     true,
-                    `border-2 rounded ` + generateClasses(scheme)
+                    `rounded border-2 border-${scheme.dropdownScheme.background} hover:border-slate-600/[0.50] focus:border-slate-600 bg-${scheme.dropdownScheme.background}`
                 )
             );
         }
@@ -105,15 +143,17 @@ function DropdownFromList(props: {
     }
 
     let animationString = isOpen
-        ? "h-20 border-slate-800/[0.50]"
-        : `h-0 ${scheme.background}`;
+        ? `h-20 border-${scheme.dropdownScheme.border.color}`
+        : `h-0 border-${
+              scheme.dropdownScheme.hidden ?? scheme.dropdownScheme.border.color
+          }`;
 
     return (
         <div className={props.className}>
             <div
                 className={
-                    `flex h-7 focus:outline-none rounded items-center ` +
-                    generateClasses(scheme)
+                    "flex h-7 focus:outline-none rounded items-center " +
+                    generateClasses(scheme.buttonScheme)
                 }
                 onClick={() => {
                     setIsOpen(!isOpen);
@@ -136,7 +176,7 @@ function DropdownFromList(props: {
             </div>
             <div
                 className={
-                    `transition-all duration-500 overflow-y-auto fixed ${scheme.background} z-10 rounded border-2 drop-down-scroll ` +
+                    `transition-all duration-500 overflow-y-auto fixed bg-${scheme.dropdownScheme.background} z-10 rounded border-${scheme.dropdownScheme.border.thickness} drop-down-scroll ` +
                     animationString
                 }
             >
@@ -205,6 +245,8 @@ function RetractArrow(props: {
 export {
     StandardHomeBox,
     DropdownFromList,
+    DropdownDark,
+    DropdownLight,
     Title,
     ToolTip,
     RetractArrow,

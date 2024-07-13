@@ -7,7 +7,12 @@ import {
 } from "./OptionsColumn";
 import { StatePair, useStatePair } from "../StatePair";
 import { AccountData } from "../Services/AccountData";
-import { DropdownFromList, SmallIcon, Title } from "../Common/CommonElements";
+import {
+    DropdownDark,
+    DropdownFromList,
+    SmallIcon,
+    Title,
+} from "../Common/CommonElements";
 import RowButtons from "./SideButtons";
 import AccountDisplay from "./AccountColumn";
 import { AppState } from "../App";
@@ -152,6 +157,7 @@ function SortButtons(props: { AppState: AppState }): JSX.Element {
                 startingIndex={0}
                 onChange={(index) => {}}
                 className="w-36"
+                scheme={DropdownDark}
             />
         </div>
     );
