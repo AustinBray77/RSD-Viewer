@@ -1,6 +1,7 @@
 type Border = {
     color: string;
     focColor: string;
+    hovColor: string;
     thickness: string;
 };
 
@@ -11,8 +12,14 @@ type ColorScheme = {
     hidden?: string;
 };
 
-function generateClasses(scheme: ColorScheme): string {
-    return `bg-${scheme.background} ${scheme.text} border-${scheme.border.color} focus:border-${scheme.border.focColor} hover:border-${scheme.border.focColor}/[.50] border-${scheme.border.thickness}`;
+function generateBorder(border: Border) {
+    return `${border.thickness} ${border.color} ${border.focColor} ${border.hovColor}`;
 }
 
-export { ColorScheme, generateClasses };
+function generateScheme(scheme: ColorScheme): string {
+    return `${scheme.background} ${scheme.text} ${generateBorder(
+        scheme.border
+    )}`;
+}
+
+export { ColorScheme, generateScheme };

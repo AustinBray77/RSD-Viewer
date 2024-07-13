@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useMousePosition from "../Services/WindowData";
-import { ColorScheme, generateClasses } from "./Scheme";
+import { ColorScheme, generateScheme } from "./Scheme";
 
 function StandardHomeBox(props: {
     children: JSX.Element[] | JSX.Element | string;
@@ -34,45 +34,49 @@ function SmallIcon(props: {
 
 const DropdownLight: DropdownScheme = {
     buttonScheme: {
-        background: "slate-700",
-        text: "text-slate-100",
+        background: "bg-slate-700",
+        text: "",
         border: {
-            color: "slate-700",
-            focColor: "slate-600",
-            thickness: "2",
+            color: "border-slate-700",
+            focColor: "focus:border-slate-600",
+            hovColor: "hover:border-slate-600/[.50]",
+            thickness: "border-2",
         },
     },
     dropdownScheme: {
-        background: "slate-700",
-        text: "text-slate-100",
+        background: "bg-slate-700",
+        text: "",
         border: {
-            color: "slate-800/[0.50]",
-            focColor: "slate-600",
-            thickness: "2",
+            color: "border-slate-800/[.50]",
+            focColor: "focus:border-slate-600",
+            hovColor: "hover:border-slate-600/[.50]",
+            thickness: "border-2",
         },
-        hidden: "slate-700",
+        hidden: "border-slate-700",
     },
 };
 
 const DropdownDark: DropdownScheme = {
     buttonScheme: {
-        background: "slate-500",
-        text: "text-slate-100",
+        background: "bg-slate-900",
+        text: "",
         border: {
-            color: "slate-600",
-            focColor: "slate-600/[0.50]",
-            thickness: "2",
+            color: "border-slate-600",
+            focColor: "focus:border-slate-600",
+            hovColor: "hover:border-slate-600/[.50]",
+            thickness: "border-2",
         },
     },
     dropdownScheme: {
-        background: "slate-500",
-        text: "text-slate-100",
+        background: "border-slate-900",
+        text: "",
         border: {
-            color: "slate-800/[0.50]",
-            focColor: "slate-600",
-            thickness: "2",
+            color: "border-slate-800/[.50]",
+            focColor: "focus:border-slate-600",
+            thickness: "border-2",
+            hovColor: "hover:border-slate-600/[.50]",
         },
-        hidden: "slate-500",
+        hidden: "border-slate-900",
     },
 };
 
@@ -134,7 +138,7 @@ function DropdownFromList(props: {
                         props.onChange(index);
                     },
                     true,
-                    `rounded border-2 border-${scheme.dropdownScheme.background} hover:border-slate-600/[0.50] focus:border-slate-600 bg-${scheme.dropdownScheme.background}`
+                    `rounded border-2 ${scheme.dropdownScheme.background} hover:border-slate-600/[.50] focus:border-slate-600 ${scheme.dropdownScheme.background}`
                 )
             );
         }
@@ -143,8 +147,8 @@ function DropdownFromList(props: {
     }
 
     let animationString = isOpen
-        ? `h-20 border-${scheme.dropdownScheme.border.color}`
-        : `h-0 border-${
+        ? `h-20 ${scheme.dropdownScheme.border.color}`
+        : `h-0 ${
               scheme.dropdownScheme.hidden ?? scheme.dropdownScheme.border.color
           }`;
 
@@ -153,7 +157,7 @@ function DropdownFromList(props: {
             <div
                 className={
                     "flex h-7 focus:outline-none rounded items-center " +
-                    generateClasses(scheme.buttonScheme)
+                    generateScheme(scheme.buttonScheme)
                 }
                 onClick={() => {
                     setIsOpen(!isOpen);
@@ -176,7 +180,7 @@ function DropdownFromList(props: {
             </div>
             <div
                 className={
-                    `transition-all duration-500 overflow-y-auto fixed bg-${scheme.dropdownScheme.background} z-10 rounded border-${scheme.dropdownScheme.border.thickness} drop-down-scroll ` +
+                    `transition-all duration-500 overflow-y-auto fixed ${scheme.dropdownScheme.background} z-10 rounded ${scheme.dropdownScheme.border.thickness} drop-down-scroll ` +
                     animationString
                 }
             >
