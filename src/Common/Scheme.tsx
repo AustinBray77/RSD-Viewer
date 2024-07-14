@@ -22,4 +22,4 @@ function generateScheme(scheme: ColorScheme): string {
     )}`;
 }
 
-export { ColorScheme, generateScheme };
+export { ColorScheme, generateScheme, Border, generateBorder };

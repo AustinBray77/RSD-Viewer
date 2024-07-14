@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { EstimateTextWidth, useMousePosition } from "../Services/WindowData";
-import { ColorScheme, generateScheme } from "./Scheme";
+import { Border, ColorScheme, generateBorder, generateScheme } from "./Scheme";
 
 function StandardHomeBox(props: {
     children: JSX.Element[] | JSX.Element | string;
@@ -54,6 +54,12 @@ const DropdownLight: DropdownScheme = {
         },
         hidden: "border-slate-700",
     },
+    itemBorders: {
+        color: "border-slate-700",
+        thickness: "border-2",
+        focColor: "focus:border-slate-600",
+        hovColor: "hover:border-slate-600",
+    },
 };
 
 const DropdownDark: DropdownScheme = {
@@ -61,28 +67,35 @@ const DropdownDark: DropdownScheme = {
         background: "bg-slate-900",
         text: "",
         border: {
-            color: "border-slate-600",
-            focColor: "focus:border-slate-600",
+            color: "border-slate-700/[0.50]",
+            focColor: "focus:border-slate-600/[.50]",
             hovColor: "hover:border-slate-600/[.50]",
             thickness: "border-2",
         },
     },
     dropdownScheme: {
-        background: "border-slate-900",
+        background: "bg-slate-900",
         text: "",
         border: {
-            color: "border-slate-800/[.50]",
+            color: "border-slate-800",
             focColor: "focus:border-slate-600",
             thickness: "border-2",
-            hovColor: "hover:border-slate-600/[.50]",
+            hovColor: "hover:border-slate-600",
         },
         hidden: "border-slate-900",
+    },
+    itemBorders: {
+        color: "border-slate-900",
+        thickness: "border-2",
+        focColor: "focus:border-slate-800",
+        hovColor: "hover:border-slate-800",
     },
 };
 
 type DropdownScheme = {
     buttonScheme: ColorScheme;
     dropdownScheme: ColorScheme;
+    itemBorders: Border;
 };
 
 function DropdownFromList(props: {
@@ -110,11 +123,11 @@ function DropdownFromList(props: {
         width += paddingOffset;
 
         if (props.icons != undefined) {
-            width += 1;
+            width += 2;
         }
 
         return width;
-    }, [props.items.length]);
+    }, [props.items]);
 
     function getDropdownFromItem(
         item: string,
@@ -157,7 +170,7 @@ function DropdownFromList(props: {
                         props.onChange(index);
                     },
                     true,
-                    `rounded border-2 ${scheme.dropdownScheme.background} hover:border-slate-600/[.50] focus:border-slate-600 ${scheme.dropdownScheme.background}`
+                    "rounded " + generateBorder(scheme.itemBorders)
                 )
             );
         }
