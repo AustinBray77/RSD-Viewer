@@ -74,7 +74,7 @@ function AddPhoneNumberDialog(props: {
                         onChange={(index: number) => {
                             setCountryCode(countryCodes[index]);
                         }}
-                        className="w-20 mr-4"
+                        className="mr-4"
                     />
                     <DialogInput value={inputtedNumber} required={true} />
                 </div>

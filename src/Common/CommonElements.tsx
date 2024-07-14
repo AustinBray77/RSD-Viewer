@@ -1,5 +1,5 @@
-import { useState } from "react";
-import useMousePosition from "../Services/WindowData";
+import { useMemo, useState } from "react";
+import { EstimateTextWidth, useMousePosition } from "../Services/WindowData";
 import { ColorScheme, generateScheme } from "./Scheme";
 
 function StandardHomeBox(props: {
@@ -90,13 +90,31 @@ function DropdownFromList(props: {
     icons?: string[];
     startingIndex: number;
     onChange: (index: number) => void;
-    className: string;
+    className?: string;
     scheme?: DropdownScheme;
 }): JSX.Element {
     const [isOpen, setIsOpen] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(props.startingIndex);
 
     const scheme = props.scheme == undefined ? DropdownLight : props.scheme;
+
+    let width = useMemo(() => {
+        let itemLengths = props.items.map((item) =>
+            EstimateTextWidth(item, "rem")
+        );
+
+        let width = Math.max(...itemLengths);
+
+        let paddingOffset = 1;
+
+        width += paddingOffset;
+
+        if (props.icons != undefined) {
+            width += 1;
+        }
+
+        return width;
+    }, [props.items.length]);
 
     function getDropdownFromItem(
         item: string,
@@ -112,6 +130,7 @@ function DropdownFromList(props: {
                     onClick(index);
                 }}
                 className={"flex items-center " + style}
+                //style={{ width: width + "rem" }}
             >
                 {needsSpacing ? <div className="w-4 h-3"></div> : ""}
                 {icon == undefined ? <></> : <SmallIcon src={icon} />}
@@ -162,6 +181,7 @@ function DropdownFromList(props: {
                 onClick={() => {
                     setIsOpen(!isOpen);
                 }}
+                style={{ width: width + "rem" }}
             >
                 &nbsp;
                 <img className="w-3 h-3" src="/arrow-down-light.png" />
@@ -180,9 +200,10 @@ function DropdownFromList(props: {
             </div>
             <div
                 className={
-                    `transition-all duration-500 overflow-y-auto fixed ${scheme.dropdownScheme.background} z-10 rounded ${scheme.dropdownScheme.border.thickness} drop-down-scroll ` +
+                    `transition-all duration-500 overflow-y-auto overflow-x-hidden fixed ${scheme.dropdownScheme.background} z-10 rounded ${scheme.dropdownScheme.border.thickness} drop-down-scroll ` +
                     animationString
                 }
+                style={{ width: width + "rem" }}
             >
                 {generateDropdown()}
             </div>

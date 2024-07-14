@@ -156,7 +156,6 @@ function SortButtons(props: { AppState: AppState }): JSX.Element {
                 items={["Default", "Account Name"]}
                 startingIndex={0}
                 onChange={(index) => {}}
-                className="w-36"
                 scheme={DropdownDark}
             />
         </div>
