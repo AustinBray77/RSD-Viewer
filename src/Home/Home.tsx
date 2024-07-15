@@ -97,8 +97,10 @@ const GenerateRows = (
     swapIndex: StatePair<[number, number]>,
     sortedData: AccountData[]
 ) => {
-    return sortedData.map((account, index) => {
+    return sortedData.map((account) => {
         if (account.IsSpecial) return <></>;
+
+        let index = account.Position;
 
         return (
             <HomeRow

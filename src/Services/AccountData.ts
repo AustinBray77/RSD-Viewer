@@ -48,14 +48,16 @@ class AccountData {
         accounts: AccountData[],
         sortOrder: SortOrder
     ): AccountData[] {
-        return accounts.sort((a, b) => (a.Position - b.Position) * sortOrder);
+        return accounts.toSorted(
+            (a, b) => (a.Position - b.Position) * sortOrder
+        );
     }
 
     static sortByName(
         accounts: AccountData[],
         sortOrder: SortOrder
     ): AccountData[] {
-        return accounts.sort((a, b) => {
+        return accounts.toSorted((a, b) => {
             let aLowerName = a.Name.toLowerCase();
             let bLowerName = b.Name.toLowerCase();
 
