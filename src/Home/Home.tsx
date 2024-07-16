@@ -16,6 +16,7 @@ import {
 import RowButtons from "./SideButtons";
 import AccountDisplay from "./AccountColumn";
 import { AppState } from "../App";
+import { SortOrder } from "../Services/Sorting";
 
 enum ShowHomeDialog {
     None,
@@ -93,19 +94,20 @@ const HomeRow = (props: {
 const GenerateRows = (
     state: HomeState,
     AppState: AppState,
-    swapIndex: StatePair<[number, number]>
+    swapIndex: StatePair<[number, number]>,
+    sortedData: AccountData[]
 ) => {
-    const { data } = state;
-
-    return data.map((account, index) => {
+    return sortedData.map((account) => {
         if (account.IsSpecial) return <></>;
+
+        let index = account.Position;
 
         return (
             <HomeRow
                 account={account}
                 index={index}
                 state={state}
-                length={data.length}
+                length={sortedData.length}
                 AppState={AppState}
                 swapIndex={swapIndex}
             />
@@ -149,23 +151,58 @@ const HomeHeader = (props: { isEmpty: boolean }) => {
     );
 };
 
-function SortButtons(props: { AppState: AppState }): JSX.Element {
+function SortButtons(props: {
+    AppState: AppState;
+    sortType: StatePair<SortType>;
+    sortOrder: StatePair<SortOrder>;
+}): JSX.Element {
+    let sortItems = [SortType.Default, SortType.Name];
+    let sortNames = sortItems.map((item) => item as string);
+
     return (
         <div className="flex justify-center">
             <DropdownFromList
-                items={["Default", "Account Name"]}
+                items={sortNames}
                 startingIndex={0}
-                onChange={(index) => {}}
+                onChange={(index) => {
+                    props.sortType.Set(sortItems[index]);
+                }}
                 scheme={DropdownDark}
+                className="self-center"
             />
+            <div
+                className={
+                    "rounded border-2 border-slate-700/[.50] hover:border-slate-600/[.50] p-2 self-center ml-4"
+                }
+                onClick={() => {
+                    props.sortOrder.Set(props.sortOrder.Value * -1);
+                }}
+            >
+                <SmallIcon
+                    src="/arrow-down-light.png"
+                    className={
+                        "transition-all duration-500 " +
+                        (props.sortOrder.Value == SortOrder.Descending
+                            ? "rotate-0"
+                            : "rotate-180")
+                    }
+                />
+            </div>
         </div>
     );
+}
+
+enum SortType {
+    Default = "Default",
+    Name = "Account Name",
 }
 
 function Home(props: { AppState: AppState }): JSX.Element {
     const { data } = props.AppState;
     const dialog = useStatePair(ShowHomeDialog.None);
     const swapIndexs = useStatePair<[number, number]>([-1, -1]);
+    const sortType = useStatePair<SortType>(SortType.Default);
+    const sortOrder = useStatePair<SortOrder>(SortOrder.Ascending);
 
     let filteredData = data.filter((account) => !account.IsSpecial);
 
@@ -175,16 +212,34 @@ function Home(props: { AppState: AppState }): JSX.Element {
         selectedAccount: useStatePair(-1),
     };
 
+    const ApplySort = (data: AccountData[]): AccountData[] => {
+        switch (sortType.Value) {
+            case SortType.Default:
+                return AccountData.sortByPosition(data, sortOrder.Value);
+            case SortType.Name:
+                return AccountData.sortByName(data, sortOrder.Value);
+        }
+    };
+
     let rows = useMemo(() => {
-        let output = GenerateRows(state, props.AppState, swapIndexs);
+        let output = GenerateRows(
+            state,
+            props.AppState,
+            swapIndexs,
+            ApplySort(props.AppState.data)
+        );
         output.unshift(<HomeHeader isEmpty={filteredData.length == 0} />);
         return output;
-    }, [data.length, swapIndexs.Value]);
+    }, [data.length, swapIndexs.Value, sortType.Value, sortOrder.Value]);
 
     return (
         <div className="flex justify-center">
             <div className="text-slate-100 overflow-y-auto h-screen pt-[2em]">
-                <SortButtons AppState={props.AppState} />
+                <SortButtons
+                    AppState={props.AppState}
+                    sortType={sortType}
+                    sortOrder={sortOrder}
+                />
                 <div className={"grid grid-cols-1 grid-flow-row w-[95vw] p-8"}>
                     {rows}
                 </div>
