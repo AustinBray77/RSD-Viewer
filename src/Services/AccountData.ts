@@ -101,6 +101,50 @@ class AccountData {
     }
 }
 
+class AccountIndexer {
+    private Data: Map<string, Map<string, number>>;
+
+    constructor(data: AccountData[]) {
+        this.Data = new Map<string, Map<string, number>>();
+
+        data.forEach((account) => {
+            this.IndexAccount(account);
+        });
+    }
+
+    IndexAccount(account: AccountData) {
+        let subStringMap = AccountIndexer.GenerateSubStringMap(
+            account.Name.toLowerCase()
+        );
+
+        this.Data.set(account.Name, subStringMap);
+    }
+
+    UnIndexAccount(account: AccountData) {
+        this.Data.delete(account.Name);
+    }
+
+    GetIndexedAccount(account: AccountData): Map<string, number> {
+        return this.Data.get(account.Name) ?? new Map<string, number>();
+    }
+
+    static GenerateSubStringMap(str: string): Map<string, number> {
+        let subStringMap = new Map<string, number>();
+
+        for (let i = 0; i < str.length; i++) {
+            for (let j = i + 1; j <= str.length; j++) {
+                let subString = str.substring(i, j);
+
+                if (!subStringMap.has(subString)) {
+                    subStringMap.set(subString, i);
+                }
+            }
+        }
+
+        return subStringMap;
+    }
+}
+
 function PushAccountToData(account: AccountData, app: AppState): void {
     let newData = [...app.data];
 
@@ -225,6 +269,7 @@ function SwapAccounts(
 
 export {
     AccountData,
+    AccountIndexer,
     AddAccountHandler,
     RemoveAccount,
     UpdatePassword,
