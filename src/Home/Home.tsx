@@ -34,12 +34,13 @@ type HomeState = {
 const HomeRow = (props: {
     account: AccountData;
     index: number;
+    sortFilterIndex: number;
     state: HomeState;
     length: number;
     AppState: AppState;
     swapIndex: StatePair<[number, number]>;
 }) => {
-    const { account, index, state, length, swapIndex } = props;
+    const { account, index, sortFilterIndex, state, length, swapIndex } = props;
     const isHovering = useStatePair(false);
 
     let borderString = "border-x-2 border-slate-600/[.1]";
@@ -48,7 +49,7 @@ const HomeRow = (props: {
         borderString += " border-x-slate-400";
     }
 
-    if (index == length - 1) {
+    if (sortFilterIndex == length - 1) {
         borderString += " border-b-2";
     }
 
@@ -97,7 +98,7 @@ const GenerateRows = (
     swapIndex: StatePair<[number, number]>,
     sortedData: AccountData[]
 ) => {
-    return sortedData.map((account) => {
+    return sortedData.map((account, softFilterIndex) => {
         if (account.IsSpecial) return <></>;
 
         let index = account.Position;
@@ -106,6 +107,7 @@ const GenerateRows = (
             <HomeRow
                 account={account}
                 index={index}
+                sortFilterIndex={softFilterIndex}
                 state={state}
                 length={sortedData.length}
                 AppState={AppState}

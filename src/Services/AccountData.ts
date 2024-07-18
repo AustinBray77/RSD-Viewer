@@ -1,4 +1,4 @@
-import { AppState } from "../App";
+import { App, AppState } from "../App";
 import { SortOrder } from "./Sorting";
 
 class AccountData {
@@ -119,6 +119,9 @@ class AccountIndexer {
             account.Name.toLowerCase()
         );
 
+        console.log(account.Name);
+        console.log(subStringMap);
+
         this.Data.set(account.Name, subStringMap);
     }
 
@@ -169,6 +172,7 @@ function AddAccountHandler(
     console.log("Adding Account...");
 
     PushAccountToData(account, AppState);
+    AppState.indexedData.IndexAccount(account);
 }
 
 function GetPhoneNumberFromData(data: AccountData[]): string {
@@ -202,6 +206,8 @@ function RemoveAccount(index: number, AppState: AppState): void {
     if (index >= newData.length || index < 0) {
         return;
     }
+
+    AppState.indexedData.UnIndexAccount(newData[index]);
 
     newData.splice(index, 1);
 
