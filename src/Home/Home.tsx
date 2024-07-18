@@ -17,6 +17,7 @@ import RowButtons from "./SideButtons";
 import AccountDisplay from "./AccountColumn";
 import { AppState } from "../App";
 import { SortOrder } from "../Services/Sorting";
+import { DialogInput } from "../Common/Inputs";
 
 enum ShowHomeDialog {
     None,
@@ -157,6 +158,7 @@ function SortButtons(props: {
     AppState: AppState;
     sortType: StatePair<SortType>;
     sortOrder: StatePair<SortOrder>;
+    search: StatePair<string>;
 }): JSX.Element {
     let sortItems = [SortType.Default, SortType.Name];
     let sortNames = sortItems.map((item) => item as string);
@@ -190,6 +192,7 @@ function SortButtons(props: {
                     }
                 />
             </div>
+            <DialogInput value={props.search} className="ml-4 bg-slate-900" />
         </div>
     );
 }
@@ -205,6 +208,7 @@ function Home(props: { AppState: AppState }): JSX.Element {
     const swapIndexs = useStatePair<[number, number]>([-1, -1]);
     const sortType = useStatePair<SortType>(SortType.Default);
     const sortOrder = useStatePair<SortOrder>(SortOrder.Ascending);
+    const search = useStatePair<string>("");
 
     let filteredData = data.filter((account) => !account.IsSpecial);
 
@@ -223,16 +227,32 @@ function Home(props: { AppState: AppState }): JSX.Element {
         }
     };
 
+    const ApplySearch = (data: AccountData[]): AccountData[] => {
+        if (search.Value == "") return data;
+
+        return data.filter((account) => {
+            return props.AppState.indexedData.Value.GetIndexedAccount(
+                account
+            ).has(search.Value);
+        });
+    };
+
     let rows = useMemo(() => {
         let output = GenerateRows(
             state,
             props.AppState,
             swapIndexs,
-            ApplySort(props.AppState.data)
+            ApplySearch(ApplySort(props.AppState.data))
         );
         output.unshift(<HomeHeader isEmpty={filteredData.length == 0} />);
         return output;
-    }, [data.length, swapIndexs.Value, sortType.Value, sortOrder.Value]);
+    }, [
+        data.length,
+        swapIndexs.Value,
+        sortType.Value,
+        sortOrder.Value,
+        search.Value,
+    ]);
 
     return (
         <div className="flex justify-center">
@@ -241,6 +261,7 @@ function Home(props: { AppState: AppState }): JSX.Element {
                     AppState={props.AppState}
                     sortType={sortType}
                     sortOrder={sortOrder}
+                    search={search}
                 />
                 <div className={"grid grid-cols-1 grid-flow-row w-[95vw] p-8"}>
                     {rows}

@@ -172,7 +172,10 @@ function AddAccountHandler(
     console.log("Adding Account...");
 
     PushAccountToData(account, AppState);
-    AppState.indexedData.IndexAccount(account);
+
+    let newIndex = AppState.indexedData.Value;
+    newIndex.IndexAccount(account);
+    AppState.indexedData.Set(newIndex);
 }
 
 function GetPhoneNumberFromData(data: AccountData[]): string {
@@ -207,7 +210,9 @@ function RemoveAccount(index: number, AppState: AppState): void {
         return;
     }
 
-    AppState.indexedData.UnIndexAccount(newData[index]);
+    let newIndex = AppState.indexedData.Value;
+    newIndex.UnIndexAccount(newData[index]);
+    AppState.indexedData.Set(newIndex);
 
     newData.splice(index, 1);
 

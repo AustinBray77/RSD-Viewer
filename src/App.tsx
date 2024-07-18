@@ -19,7 +19,7 @@ type AppState = {
     tfaCode: StatePair<string>;
     setData: (val: AccountData[]) => void;
     data: AccountData[];
-    indexedData: AccountIndexer;
+    indexedData: StatePair<AccountIndexer>;
     isLoading: StatePair<boolean>;
     //tooltip: StatePair<string>
 };
@@ -151,7 +151,7 @@ function App() {
                     setTempData(res[0]);
                 } else {
                     setData(res[0]);
-                    state.indexedData = new AccountIndexer(res[0]);
+                    state.indexedData.Set(new AccountIndexer(res[0]));
                 }
             })
             .catch((err: any) => {
@@ -178,7 +178,7 @@ function App() {
         tfaCode: useStatePair<string>(""),
         setData: sendSetData,
         data: data,
-        indexedData: new AccountIndexer([]),
+        indexedData: useStatePair<AccountIndexer>(new AccountIndexer([])),
         isLoading: useStatePair<boolean>(false),
         //tooltip: useStatePair<string>("")
     };
@@ -207,7 +207,7 @@ function App() {
                 state={state}
                 onSuccess={() => {
                     setData(tempData);
-                    state.indexedData = new AccountIndexer(tempData);
+                    state.indexedData.Set(new AccountIndexer(tempData));
                     setTempData([]);
                     console.log("Success");
                 }}
