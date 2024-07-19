@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import {
     CopyPasswordDialog,
     ChangePasswordDialog,
@@ -242,13 +242,22 @@ function Home(props: { AppState: AppState }): JSX.Element {
     };
 
     const ApplySearch = (data: AccountData[]): AccountData[] => {
-        if (search.Value == "") return data;
+        if (search.Value == "" || data.length == 0) return data;
 
-        return data.filter((account) => {
-            return props.AppState.indexedData.Value.GetIndexedAccount(
-                account
-            ).has(search.Value);
+        let indexedVals = data.map((account): [AccountData, number] => {
+            let searchPosition =
+                props.AppState.indexedData.Value.GetIndexedAccount(account).get(
+                    search.Value
+                ) ?? -1;
+
+            return [account, searchPosition];
         });
+
+        indexedVals.sort((a, b) => a[1] - b[1]);
+
+        let filtered = indexedVals.filter((val) => val[1] != -1);
+
+        return filtered.map((val) => val[0]);
     };
 
     let rows = useMemo(() => {
