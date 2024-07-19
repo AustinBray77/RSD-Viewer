@@ -8,8 +8,10 @@ function RowButtons(props: {
     swapIndex: StatePair<[number, number]>;
     accountIndex: number;
     AppState: AppState;
+    enabled?: boolean;
 }): JSX.Element {
-    let opacity = props.isHovering ? "opacity-50" : "opacity-0";
+    let opacity =
+        props.isHovering && props.enabled ? "opacity-50" : "opacity-0";
     let classString =
         "self-center transition-opacity duration-300 ease-in-out " + opacity;
 
@@ -20,7 +22,7 @@ function RowButtons(props: {
                     src="/arrow-down-light.png"
                     className={classString + " rotate-180"}
                     onClick={() => {
-                        if (props.accountIndex == 0) return;
+                        if (props.accountIndex == 0 || !props.enabled) return;
 
                         SwapAccounts(
                             props.accountIndex,

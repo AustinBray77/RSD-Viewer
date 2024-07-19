@@ -40,6 +40,7 @@ const HomeRow = (props: {
     length: number;
     AppState: AppState;
     swapIndex: StatePair<[number, number]>;
+    showSideButtons: boolean;
 }) => {
     const { account, index, sortFilterIndex, state, length, swapIndex } = props;
     const isHovering = useStatePair(false);
@@ -73,6 +74,7 @@ const HomeRow = (props: {
                 accountIndex={index}
                 AppState={props.AppState}
                 swapIndex={props.swapIndex}
+                enabled={props.showSideButtons}
             />
             <div
                 className={
@@ -97,7 +99,8 @@ const GenerateRows = (
     state: HomeState,
     AppState: AppState,
     swapIndex: StatePair<[number, number]>,
-    sortedData: AccountData[]
+    sortedData: AccountData[],
+    showSideButtons: boolean
 ) => {
     return sortedData.map((account, softFilterIndex) => {
         if (account.IsSpecial) return <></>;
@@ -113,6 +116,7 @@ const GenerateRows = (
                 length={sortedData.length}
                 AppState={AppState}
                 swapIndex={swapIndex}
+                showSideButtons={showSideButtons}
             />
         );
     });
@@ -265,7 +269,9 @@ function Home(props: { AppState: AppState }): JSX.Element {
             state,
             props.AppState,
             swapIndexs,
-            ApplySearch(ApplySort(props.AppState.data))
+            ApplySearch(ApplySort(props.AppState.data)),
+            sortOrder.Value == SortOrder.Ascending &&
+                sortType.Value == SortType.Default
         );
         output.unshift(<HomeHeader isEmpty={filteredData.length == 0} />);
         return output;
@@ -278,8 +284,8 @@ function Home(props: { AppState: AppState }): JSX.Element {
     ]);
 
     return (
-        <div className="flex justify-center">
-            <div className="text-slate-100 overflow-y-auto h-screen pt-[2em]">
+        <div className="flex justify-center overflow-y-auto">
+            <div className="text-slate-100 h-screen pt-[2em] pl-[0.5em]">
                 <SortButtons
                     AppState={props.AppState}
                     sortType={sortType}
