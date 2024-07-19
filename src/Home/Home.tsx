@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
     CopyPasswordDialog,
     ChangePasswordDialog,
@@ -7,17 +7,12 @@ import {
 } from "./OptionsColumn";
 import { StatePair, useStatePair } from "../StatePair";
 import { AccountData } from "../Services/AccountData";
-import {
-    DropdownDark,
-    DropdownFromList,
-    SmallIcon,
-    Title,
-} from "../Common/CommonElements";
+import { SmallIcon, Title } from "../Common/CommonElements";
 import RowButtons from "./SideButtons";
 import AccountDisplay from "./AccountColumn";
 import { AppState } from "../App";
 import { SortOrder } from "../Services/Sorting";
-import { DialogInput } from "../Common/Inputs";
+import { DialogInput, DropdownDark, DropdownFromList } from "../Common/Inputs";
 
 enum ShowHomeDialog {
     None,
@@ -163,6 +158,8 @@ function SortButtons(props: {
     let sortItems = [SortType.Default, SortType.Name];
     let sortNames = sortItems.map((item) => item as string);
 
+    const dropDownRef = useRef<HTMLDivElement>(null);
+
     return (
         <div className="flex justify-center">
             <DropdownFromList
@@ -173,6 +170,7 @@ function SortButtons(props: {
                 }}
                 scheme={DropdownDark}
                 className="self-center"
+                innerRef={dropDownRef}
             />
             <div
                 className={
@@ -192,7 +190,17 @@ function SortButtons(props: {
                     }
                 />
             </div>
-            <DialogInput value={props.search} className="ml-4 bg-slate-900" />
+            <DialogInput
+                value={props.search}
+                className="ml-4 bg-slate-900 self-center"
+                style={{
+                    width:
+                        (dropDownRef.current != null
+                            ? dropDownRef.current?.offsetWidth
+                            : 0
+                        ).toString() + "px",
+                }}
+            />
         </div>
     );
 }

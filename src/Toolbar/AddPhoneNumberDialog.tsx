@@ -2,10 +2,9 @@ import { ButtonLabel, DialogButton } from "../Common/Buttons";
 import ToolbarDialog from "./ToolbarDialog";
 import { ShowDialog, ToolbarState } from "./Toolbar";
 import { AppState } from "../App";
-import { DropdownFromList } from "../Common/CommonElements";
 import { useState } from "react";
 import { Get2FACode } from "../Services/TwoFactorAuth";
-import { DialogInput } from "../Common/Inputs";
+import { DialogInput, DropdownFromList } from "../Common/Inputs";
 import { useStatePair } from "../StatePair";
 
 function AddPhoneNumberDialog(props: {
