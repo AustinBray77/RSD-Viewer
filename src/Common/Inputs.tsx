@@ -4,6 +4,28 @@ import { StatePair } from "../StatePair";
 import { SmallIcon } from "./CommonElements";
 import { Border, ColorScheme, generateBorder, generateScheme } from "./Scheme";
 
+const InputLight: ColorScheme = {
+    background: "bg-slate-700",
+    text: "text-slate-500",
+    border: {
+        color: "border-slate-700",
+        focColor: "focus:border-slate-600",
+        hovColor: "hover:border-slate-600/[.50]",
+        thickness: "border-2",
+    },
+};
+
+const InputDark: ColorScheme = {
+    background: "bg-slate-900",
+    text: "",
+    border: {
+        color: "border-slate-700/[0.50]",
+        focColor: "focus:border-slate-600/[.50]",
+        hovColor: "hover:border-slate-600/[.50]",
+        thickness: "border-2",
+    },
+};
+
 function DialogInput(props: {
     label?: string;
     value: StatePair<string>;
@@ -13,8 +35,10 @@ function DialogInput(props: {
     bounds?: [[boolean, string]];
     required?: boolean;
     style?: React.CSSProperties;
+    scheme?: ColorScheme;
 }): JSX.Element {
     const type = props.type == undefined ? "text" : props.type;
+    const scheme = props.scheme ?? InputLight;
 
     let bounds: [boolean, string][] =
         props.bounds ?? Array<[boolean, string]>(0);
@@ -51,10 +75,10 @@ function DialogInput(props: {
                           }
                 }
                 className={
-                    "transition-border duration-500 ease-in-out outline-none bg-slate-700 border-2 rounded h-7 " +
+                    `transition-border duration-500 ease-in-out outline-none ${scheme.background} rounded h-7 ` +
                     (isViolating
-                        ? "border-rose-500"
-                        : "focus:border-slate-600 hover:border-slate-600/[.50] border-slate-700")
+                        ? `border-rose-500 ${scheme.border.thickness}`
+                        : generateBorder(scheme.border))
                 }
             />
             <br />
@@ -267,4 +291,11 @@ function DropdownFromList(props: {
     );
 }
 
-export { DialogInput, DropdownFromList, DropdownDark, DropdownLight };
+export {
+    DialogInput,
+    DropdownFromList,
+    DropdownDark,
+    DropdownLight,
+    InputLight,
+    InputDark,
+};

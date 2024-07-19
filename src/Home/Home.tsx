@@ -12,7 +12,12 @@ import RowButtons from "./SideButtons";
 import AccountDisplay from "./AccountColumn";
 import { AppState } from "../App";
 import { SortOrder } from "../Services/Sorting";
-import { DialogInput, DropdownDark, DropdownFromList } from "../Common/Inputs";
+import {
+    DialogInput,
+    DropdownDark,
+    DropdownFromList,
+    InputDark,
+} from "../Common/Inputs";
 
 enum ShowHomeDialog {
     None,
@@ -192,7 +197,7 @@ function SortButtons(props: {
             </div>
             <DialogInput
                 value={props.search}
-                className="ml-4 bg-slate-900 self-center"
+                className="ml-4 self-center"
                 style={{
                     width:
                         (dropDownRef.current != null
@@ -200,6 +205,7 @@ function SortButtons(props: {
                             : 0
                         ).toString() + "px",
                 }}
+                scheme={InputDark}
             />
         </div>
     );
