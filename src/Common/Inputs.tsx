@@ -252,7 +252,7 @@ function DropdownFromList(props: {
           }`;
 
     return (
-        <div className={props.className} ref={props.innerRef}>
+        <div className={"" + props.className} ref={props.innerRef}>
             <div
                 className={
                     "flex h-7 focus:outline-none rounded items-center " +
@@ -280,7 +280,7 @@ function DropdownFromList(props: {
             </div>
             <div
                 className={
-                    `transition-all duration-500 overflow-y-auto overflow-x-hidden fixed ${scheme.dropdownScheme.background} z-10 rounded ${scheme.dropdownScheme.border.thickness} drop-down-scroll ` +
+                    `transition-all duration-500 absolute overflow-y-auto overflow-x-hidden ${scheme.dropdownScheme.background} z-10 rounded ${scheme.dropdownScheme.border.thickness} drop-down-scroll ` +
                     animationString
                 }
                 style={{ width: width + "rem" }}
