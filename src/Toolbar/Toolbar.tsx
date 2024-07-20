@@ -30,7 +30,7 @@ function RetractedHeader(props: { state: StatePair<boolean> }): JSX.Element {
     return (
         <div className="pb-3 flex justify-center content-end absolute top-0 left-0 right-0">
             <RetractArrow
-                className="z-0"
+                className="z-10"
                 onClick={() => {
                     props.state.Set(false);
                 }}

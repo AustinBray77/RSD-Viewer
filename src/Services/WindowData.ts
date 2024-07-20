@@ -30,4 +30,10 @@ function EstimateTextWidth(text: string, format?: string): number {
     }
 }
 
-export { useMousePosition, EstimateTextWidth };
+function ElementIsOverflowing<T extends HTMLElement>(ref: T | null): boolean {
+    if (ref == null) return false;
+
+    return ref.clientHeight < ref.scrollHeight;
+}
+
+export { useMousePosition, EstimateTextWidth, ElementIsOverflowing };

@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
     CopyPasswordDialog,
     ChangePasswordDialog,
@@ -18,6 +18,7 @@ import {
     DropdownFromList,
     InputDark,
 } from "../Common/Inputs";
+import { ElementIsOverflowing } from "../Services/WindowData";
 
 enum ShowHomeDialog {
     None,
@@ -227,6 +228,14 @@ function Home(props: { AppState: AppState }): JSX.Element {
     const sortType = useStatePair<SortType>(SortType.Default);
     const sortOrder = useStatePair<SortOrder>(SortOrder.Ascending);
     const search = useStatePair<string>("");
+    const homeRef = useRef<HTMLDivElement>(null);
+    const isOverflowing = useStatePair<boolean>(false);
+
+    console.log(
+        "Client Height: %d, Scroll Height: %d",
+        homeRef.current?.clientHeight,
+        homeRef.current?.scrollHeight
+    );
 
     let filteredData = data.filter((account) => !account.IsSpecial);
 
@@ -264,28 +273,47 @@ function Home(props: { AppState: AppState }): JSX.Element {
         return filtered.map((val) => val[0]);
     };
 
-    let rows = useMemo(() => {
+    const RowCreate = () => {
         let output = GenerateRows(
             state,
             props.AppState,
             swapIndexs,
             ApplySearch(ApplySort(props.AppState.data)),
-            sortOrder.Value == SortOrder.Ascending &&
-                sortType.Value == SortType.Default
+            showSideButtons
         );
         output.unshift(<HomeHeader isEmpty={filteredData.length == 0} />);
         return output;
-    }, [
-        data.length,
-        swapIndexs.Value,
-        sortType.Value,
-        sortOrder.Value,
-        search.Value,
-    ]);
+    };
+
+    let showSideButtons =
+        sortOrder.Value == SortOrder.Ascending &&
+        sortType.Value == SortType.Default &&
+        search.Value == "";
+
+    let rows = useMemo(
+        () => RowCreate(),
+        [
+            data.length,
+            swapIndexs.Value,
+            sortType.Value,
+            sortOrder.Value,
+            search.Value,
+        ]
+    );
+
+    useEffect(() => {
+        isOverflowing.Set(ElementIsOverflowing(homeRef.current));
+    }, [rows]);
+
+    let scrollPaddingString = isOverflowing.Value ? "pl-2" : "";
 
     return (
-        <div className="flex justify-center overflow-y-auto">
-            <div className="text-slate-100 h-screen pt-[2em] pl-[0.5em]">
+        <div
+            className={"justify-center overflow-y-auto " + scrollPaddingString}
+            ref={homeRef}
+            id="home"
+        >
+            <div className="text-slate-100 h-screen pt-[2em]">
                 <SortButtons
                     AppState={props.AppState}
                     sortType={sortType}
