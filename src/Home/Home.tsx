@@ -228,14 +228,6 @@ function Home(props: { AppState: AppState }): JSX.Element {
     const sortType = useStatePair<SortType>(SortType.Default);
     const sortOrder = useStatePair<SortOrder>(SortOrder.Ascending);
     const search = useStatePair<string>("");
-    const homeRef = useRef<HTMLDivElement>(null);
-    const isOverflowing = useStatePair<boolean>(false);
-
-    console.log(
-        "Client Height: %d, Scroll Height: %d",
-        homeRef.current?.clientHeight,
-        homeRef.current?.scrollHeight
-    );
 
     let filteredData = data.filter((account) => !account.IsSpecial);
 
@@ -301,17 +293,11 @@ function Home(props: { AppState: AppState }): JSX.Element {
         ]
     );
 
-    useEffect(() => {
-        isOverflowing.Set(ElementIsOverflowing(homeRef.current));
-    }, [rows]);
-
-    let scrollPaddingString = isOverflowing.Value ? "pl-2" : "";
-
     return (
         <div
-            className={"justify-center overflow-y-auto " + scrollPaddingString}
-            ref={homeRef}
+            className="justify-center overflow-y-auto pl-2"
             id="home"
+            style={{ scrollbarGutter: "stable" }}
         >
             <div className="text-slate-100 h-screen pt-[2em]">
                 <SortButtons
