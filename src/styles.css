@@ -42,3 +42,8 @@
 *::-webkit-scrollbar-thumb:active {
     background-color: #cbd5e1;
 }
+
+.gutter-stable {
+    padding-left: 0.5em;
+    scrollbar-gutter: stable;
+}

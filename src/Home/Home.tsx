@@ -266,6 +266,11 @@ function Home(props: { AppState: AppState }): JSX.Element {
     };
 
     const RowCreate = () => {
+        let showSideButtons =
+            sortOrder.Value == SortOrder.Ascending &&
+            sortType.Value == SortType.Default &&
+            search.Value == "";
+
         let output = GenerateRows(
             state,
             props.AppState,
@@ -273,14 +278,11 @@ function Home(props: { AppState: AppState }): JSX.Element {
             ApplySearch(ApplySort(props.AppState.data)),
             showSideButtons
         );
+
         output.unshift(<HomeHeader isEmpty={filteredData.length == 0} />);
+
         return output;
     };
-
-    let showSideButtons =
-        sortOrder.Value == SortOrder.Ascending &&
-        sortType.Value == SortType.Default &&
-        search.Value == "";
 
     let rows = useMemo(
         () => RowCreate(),
@@ -294,11 +296,7 @@ function Home(props: { AppState: AppState }): JSX.Element {
     );
 
     return (
-        <div
-            className="justify-center overflow-y-auto pl-2"
-            id="home"
-            style={{ scrollbarGutter: "stable" }}
-        >
+        <div className="justify-center overflow-y-auto gutter-stable" id="home">
             <div className="text-slate-100 h-screen pt-[2em]">
                 <SortButtons
                     AppState={props.AppState}
