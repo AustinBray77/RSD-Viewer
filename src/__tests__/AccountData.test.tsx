@@ -1,5 +1,6 @@
 import {
     AccountData,
+    AccountIndexer,
     AddPhoneNumber,
     RemoveAccount,
     RemovePhoneNumber,
@@ -407,6 +408,7 @@ const TestComponent = (props: {
         setData: setData,
         data: data,
         isLoading: useStatePair<boolean>(false),
+        indexedData: useStatePair<AccountIndexer>(new AccountIndexer([]))
         //tooltip: useStatePair<string>("")
     };
 

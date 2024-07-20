@@ -49,7 +49,7 @@ class AccountData {
         sortOrder: SortOrder
     ): AccountData[] {
         return accounts.toSorted(
-            (a, b) => (a.Position - b.Position) * sortOrder
+            (a: AccountData, b: AccountData) => (a.Position - b.Position) * sortOrder
         );
     }
 
@@ -57,7 +57,7 @@ class AccountData {
         accounts: AccountData[],
         sortOrder: SortOrder
     ): AccountData[] {
-        return accounts.toSorted((a, b) => {
+        return accounts.toSorted((a: AccountData, b: AccountData) => {
             let aLowerName = a.Name.toLowerCase();
             let bLowerName = b.Name.toLowerCase();
 
