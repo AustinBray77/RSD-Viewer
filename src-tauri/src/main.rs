@@ -20,7 +20,7 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-use std::fs;
+use std::fs::{self, OpenOptions};
 use std::fs::File;
 use std::io::Error;
 use std::time::SystemTime;
@@ -37,7 +37,7 @@ use rsd_encrypt::{decrypt, encrypt, hashify, legacy_decrypt};
 
 #[tauri::command]
 fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String> {
-    let file = open_file(&handle, false);
+    let file = open_file(&handle, OpenOptions::new().read(true));
 
     let file: File = match file {
         Ok(file) => file,
@@ -60,16 +60,23 @@ fn save_data(handle: tauri::AppHandle, data: String, password: String) -> Result
     let content: String = data;
 
     let encrypted_content = encrypt(content, password);
-    let file: Result<File, Error> = open_file(&handle, true);
+    let file: Result<File, Error> = open_file(&handle, OpenOptions::new().write(true).truncate(true));
+
+    println!("Encrypted Content: {}", encrypted_content);
 
     let file: File = match file {
         Ok(file) => file,
         Err(error) => return Err(file_error(error)),
     };
 
+    println!("Writing all...");
+
     match write_all_content(file, encrypted_content.as_str()) {
         Ok(_) => Ok(()),
-        Err(error) => Err(error.to_string()),
+        Err(error) => {
+            println!("Error: {}", error.to_string());
+            Err(error.to_string())
+        },
     }
 }
 
@@ -115,15 +122,12 @@ fn set_save_data(handle: tauri::AppHandle, path: String, is_legacy: bool, passwo
         };
     }
 
-    match save_data(handle, decrypted_content.clone(), password) {
-        Ok(_) => Ok(()),
-        Err(error) => Err(error.to_string()),
-    }
+    save_data(handle, decrypted_content.clone(), password)
 }
 
 #[tauri::command]
 fn copy_save_data(handle: tauri::AppHandle, mut path: String) -> Result<String, String> {
-    let main_file = open_file(&handle, false);
+    let main_file = open_file(&handle, OpenOptions::new().read(true));
 
     let main_file = match main_file {
         Ok(file) => file,
