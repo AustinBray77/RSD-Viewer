@@ -1,17 +1,16 @@
 //extern crate embed_resource;
-use dotenv::dotenv;
+
+mod src;
+use src::environment;
 
 fn main() {
-    dotenv().ok();
+    let platform = environment::ENV_VARS.BUILD_PLATFORM.clone();
 
-    let platform = dotenv::var("BUILD_PLATFORM").unwrap();
+    println!("Building for platform: {:?}", platform);
 
-    println!("Building for platform: {}", platform);
-
-    if platform == "windows"
-    {
-
-        let mut windows = tauri_build::WindowsAttributes::new();
+    match platform {
+        environment::BuildPlatform::Windows => {
+            let mut windows = tauri_build::WindowsAttributes::new();
 
         windows = windows.app_manifest(
            r#"
@@ -30,7 +29,10 @@ fn main() {
         let attributes = tauri_build::Attributes::new().windows_attributes(windows);
 
         tauri_build::try_build(attributes).expect("failed to build");
-    } else {
-        tauri_build::build();
+        },
+        environment::BuildPlatform::Linux => {
+            tauri_build::build();
+        }
+        
     }
 }

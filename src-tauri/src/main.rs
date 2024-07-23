@@ -2,9 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    dotenv().ok();
-    
-    let debug_mode = dotenv::var("DEBUG_MODE").unwrap() == "TRUE";
+    let debug_mode = environment::ENV_VARS.DEBUG_MODE;
 
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
@@ -24,10 +22,10 @@ use std::fs::{self, OpenOptions};
 use std::fs::File;
 use std::io::Error;
 use std::time::SystemTime;
-use dotenv::dotenv;
 
 mod api_handler;
 mod io_handler;
+mod environment;
 
 extern crate rsd_encrypt;
 
