@@ -4,7 +4,7 @@ use rsd_encrypt::{encrypt, decrypt};
 use crate::environment;
 
 pub async fn send_api_request(path: &str, headers: HeaderMap) -> Result<Response, String> {
-    let address: String = environment::ENV_VARS.SERVER_ADDRESS.clone().to_string();
+    let address: String = environment::ENV_VARS.SERVER_ADDRESS.to_string();
     let url = format!("{}/api/{}", address, path);
     
     let result = reqwest::Client::builder()
@@ -29,7 +29,7 @@ pub async fn send_api_request(path: &str, headers: HeaderMap) -> Result<Response
 }
 
 pub async fn query_api_for_code(hashified_number: String) -> Result<String, String> {
-    let api_key = environment::ENV_VARS.SERVER_KEY.clone();
+    let api_key = environment::ENV_VARS.SERVER_KEY;
 
     let mut headers = HeaderMap::new();
 
@@ -52,12 +52,12 @@ pub async fn query_api_for_code(hashified_number: String) -> Result<String, Stri
 }
 
 pub fn server_encrypt(data: String) -> String {
-    let password = environment::ENV_VARS.SERVER_KEY.clone().to_string();
+    let password = environment::ENV_VARS.SERVER_KEY.to_string();
     encrypt(data, password)
 }
 
 pub fn server_decrypt(data: String) -> Result<String, String> {
-    let password = environment::ENV_VARS.SERVER_KEY.clone().to_string();
+    let password = environment::ENV_VARS.SERVER_KEY.to_string();
     let decrypt_result = decrypt(data, password);
 
     match decrypt_result {
