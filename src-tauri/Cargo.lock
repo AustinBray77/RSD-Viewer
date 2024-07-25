@@ -2762,8 +2762,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "rsd-password-manager"
-version = "1.0.0"
+name = "rsd-viewer"
+version = "1.0.1"
 dependencies = [
  "dotenv",
  "json",
