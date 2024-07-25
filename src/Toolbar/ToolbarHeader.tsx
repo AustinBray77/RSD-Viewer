@@ -48,9 +48,8 @@ function ToolbarHeader(props: {
         <div className="px-8 py-5 bg-slate-700 flex content-center flex-wrap">
             <div className="block p-3" id="Title">
                 <h1 className="text-2xl">RSD Password Manager</h1>
-                <br />
                 <div className="text-slate-500 text-sm">
-                    By: Austin Bray | v1.0.0
+                    By: Austin Bray | v1.0.1
                 </div>
             </div>
             <HeaderButton

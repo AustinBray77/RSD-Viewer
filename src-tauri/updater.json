@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "notes": "See the assets to download this version and install.",
     "pub_date": "2024-07-24T510:38:57Z",
     "platforms": {
@@ -8,7 +8,7 @@
             "url": "https://github.com/AustinBray77/RSD-Viewer/releases/download/v1.0.0/.."
         },
         "windows-x86_64": {
-            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSUnlQb05JbFBWaG4zZG5aMFhkNG5Tb3IvSi94cWI4VkxST1hFencyNGFlNHltaDdXRit4RThIVzJ5OXhrMUJ5QkRiK21waDVoZEdrVVAvZDZnMjl3THlYMzF3Z1Z2UlFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzIxOTM4Nzk3CWZpbGU6cnNkLXZpZXdlcl8xLjAuMV94NjRfZW4tVVMubXNpLnppcAp2VGZRZW5vQWd2U2lXaFQrYThWc1pGMXF6Zkt0WjdNaW1pcEhPeTZEZXBjbXlHTFRHOEd1WmlBOG1JaCtIMm5FcFdkd3p3Nnk0TjFwS204c2J3bmJDdz09Cg==",
+            "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSUnlQb05JbFBWaGkzOGlaRTljamJ3eWgrcXRCZTQ5OStVTy9PbjB6SzE0MnhaakwzcUdXU3E3cjhGcm8xM0tRUWRGZjJxNlFONi9wRkF0am5mQzBYeThCRVpicjViZndnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzIxOTQ2Mjc0CWZpbGU6cnNkLXZpZXdlcl8xLjAuMV94NjRfZW4tVVMubXNpLnppcAp0SUN2SG5QMzlWMW5sREEyVGpGSEJOMHR3RGtFUjFMK3I5VGwwVmFEMklpeUI4YUV6dWVhMFA4RW5jVTFiMEdJamN4R3pLUHhTWlRMQkF1VWtqcmxCZz09Cg==",
             "url": "https://github.com/AustinBray77/RSD-Viewer/releases/download/test/rsd-viewer_1.0.1_x64_en-US.msi.zip"
         }
     }
