@@ -255,7 +255,7 @@ function DropdownFromList(props: {
         <div className={"" + props.className} ref={props.innerRef}>
             <div
                 className={
-                    "flex h-7 focus:outline-none rounded items-center " +
+                    "flex h-7 focus:outline-none rounded items-center transition-all duration-500 " +
                     generateScheme(scheme.buttonScheme)
                 }
                 onClick={() => {

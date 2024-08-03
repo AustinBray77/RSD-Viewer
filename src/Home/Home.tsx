@@ -179,12 +179,12 @@ function SortButtons(props: {
                     props.sortType.Set(sortItems[index]);
                 }}
                 scheme={DropdownDark}
-                className="self-center"
+                className="self-center relative"
                 innerRef={dropDownRef}
             />
             <div
                 className={
-                    "rounded border-2 border-slate-700/[.50] hover:border-slate-600/[.50] p-2 self-center ml-4"
+                    "rounded border-2 border-slate-700/[.50] hover:border-slate-600/[.50] p-2 self-center ml-4 transition-all duration-500"
                 }
                 onClick={() => {
                     props.sortOrder.Set(props.sortOrder.Value * -1);
