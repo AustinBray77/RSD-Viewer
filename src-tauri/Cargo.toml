@@ -1,5 +1,5 @@
 [package]
-name = "rsd-viewer"
+name = "RSD-Viewer"
 version = "1.0.0"
 description = "RSD-Viewer: An app made for securely managing passwords offline"
 authors = ["Austin Bray"]

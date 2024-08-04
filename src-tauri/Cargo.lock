@@ -3,6 +3,18 @@
 version = 3
 
 [[package]]
+name = "RSD-Viewer"
+version = "1.0.0"
+dependencies = [
+ "dotenv",
+ "json",
+ "reqwest 0.12.5",
+ "rsd-encrypt",
+ "tauri",
+ "tauri-build",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.22.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2759,18 +2771,6 @@ version = "0.1.0"
 source = "git+https://github.com/AustinBray77/RSD-Encryptor.git#c4f5f827dca539cb5ebac85ccc0630cb172a49b5"
 dependencies = [
  "magic-crypt",
-]
-
-[[package]]
-name = "rsd-viewer"
-version = "1.0.0"
-dependencies = [
- "dotenv",
- "json",
- "reqwest 0.12.5",
- "rsd-encrypt",
- "tauri",
- "tauri-build",
 ]
 
 [[package]]

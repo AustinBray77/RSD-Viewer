@@ -1,4 +1,4 @@
-use reqwest::{header::{HeaderMap, HeaderValue}, Response};
+use reqwest::{header::{HeaderMap, HeaderValue}, Response, StatusCode};
 use rsd_encrypt::{encrypt, decrypt};
 
 use crate::environment;
@@ -42,6 +42,10 @@ pub async fn query_api_for_code(hashified_number: String) -> Result<String, Stri
         Ok(res) => res,
         Err(error) => return Err(error),
     };
+
+    if api_response.status() != StatusCode::OK {
+        return Err("Error communicating with the server, check your connection and try again...".to_string());
+    }
 
     let code = match api_response.text().await {
         Ok(text) => text,
