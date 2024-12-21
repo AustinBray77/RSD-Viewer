@@ -18,19 +18,21 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-use std::fs::{self, OpenOptions};
 use std::fs::File;
+use std::fs::{self, OpenOptions};
 use std::io::Error;
 use std::time::SystemTime;
 
 mod api_handler;
-mod io_handler;
 mod environment;
+mod into_string_result;
+mod io_handler;
 
 extern crate rsd_encrypt;
 
-use api_handler::{query_api_for_code, server_decrypt,server_encrypt};
-use io_handler::{file_error,open_file, read_all_content, write_all_content};
+use api_handler::{query_api_for_code, server_decrypt, server_encrypt};
+use into_string_result::IntoStringResult;
+use io_handler::{file_error, open_file, read_all_content, write_all_content};
 use rsd_encrypt::{decrypt, encrypt, hashify, legacy_decrypt};
 
 #[tauri::command]
@@ -49,7 +51,10 @@ fn get_data(handle: tauri::AppHandle, password: String) -> Result<String, String
 
     return match decrypt(encrypted_content, password) {
         Ok(content) => Ok(content),
-        Err(error) => Err(format!("Password is likely incorrect: {}", error.to_string())),
+        Err(error) => Err(format!(
+            "Password is likely incorrect: {}",
+            error.to_string()
+        )),
     };
 }
 
@@ -58,14 +63,12 @@ fn save_data(handle: tauri::AppHandle, data: String, password: String) -> Result
     let content: String = data;
 
     let encrypted_content = encrypt(content, password);
-    let file: Result<File, Error> = open_file(&handle, OpenOptions::new().write(true).truncate(true));
+    let file: Result<File, Error> =
+        open_file(&handle, OpenOptions::new().write(true).truncate(true));
 
     println!("Encrypted Content: {}", encrypted_content);
 
-    let file: File = match file {
-        Ok(file) => file,
-        Err(error) => return Err(file_error(error)),
-    };
+    let file: File = file.map_err(|err| file_error(err))?;
 
     println!("Writing all...");
 
@@ -74,7 +77,7 @@ fn save_data(handle: tauri::AppHandle, data: String, password: String) -> Result
         Err(error) => {
             println!("Error: {}", error.to_string());
             Err(error.to_string())
-        },
+        }
     }
 }
 
@@ -91,32 +94,40 @@ fn get_file_path(handle: tauri::AppHandle) -> String {
 }
 
 #[tauri::command]
-fn set_save_data(handle: tauri::AppHandle, path: String, is_legacy: bool, password: String) -> Result<(), String> {
-    let new_data_file = fs::OpenOptions::new().read(true).open(path);
+fn set_save_data(
+    handle: tauri::AppHandle,
+    path: String,
+    is_legacy: bool,
+    password: String,
+) -> Result<(), String> {
+    let new_data_file = fs::OpenOptions::new()
+        .read(true)
+        .open(path)
+        .error_to_string()?;
 
-    let new_data_file = match new_data_file {
-        Ok(file) => file,
-        Err(error) => return Err(error.to_string()),
-    };
-
-    let content = read_all_content(new_data_file);
-
-    let content = match content {
-        Ok(content) => content,
-        Err(error) => return Err(error.to_string()),
-    };
+    let content = read_all_content(new_data_file).error_to_string()?;
 
     let decrypted_content: String;
 
     if is_legacy {
         decrypted_content = match legacy_decrypt(content.clone(), password.clone()) {
             Ok(content) => content,
-            Err(error) => return Err(format!("Passwords likely do not match: {}", error.to_string())),
+            Err(error) => {
+                return Err(format!(
+                    "Passwords likely do not match: {}",
+                    error.to_string()
+                ))
+            }
         };
     } else {
         decrypted_content = match decrypt(content.clone(), password.clone()) {
             Ok(content) => content,
-            Err(error) => return Err(format!("Passwords likely do not match: {}", error.to_string())),
+            Err(error) => {
+                return Err(format!(
+                    "Passwords likely do not match: {}",
+                    error.to_string()
+                ))
+            }
         };
     }
 
@@ -125,26 +136,15 @@ fn set_save_data(handle: tauri::AppHandle, path: String, is_legacy: bool, passwo
 
 #[tauri::command]
 fn copy_save_data(handle: tauri::AppHandle, mut path: String) -> Result<String, String> {
-    let main_file = open_file(&handle, OpenOptions::new().read(true));
+    let main_file = open_file(&handle, OpenOptions::new().read(true)).error_to_string()?;
 
-    let main_file = match main_file {
-        Ok(file) => file,
-        Err(error) => return Err(error.to_string()),
-    };
+    let content = read_all_content(main_file).error_to_string()?;
 
-    let content = read_all_content(main_file);
+    let time = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .error_to_string()?;
 
-    let content = match content {
-        Ok(content) => content,
-        Err(error) => return Err(error.to_string()),
-    };
-
-    let unique_file_name = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH);
-
-    let unique_file_name = match unique_file_name {
-        Ok(duration) => format!("{}{}{}", "\\psd-", duration.as_secs(), ".bin"),
-        Err(error) => return Err(error.to_string()),
-    };
+    let unique_file_name = format!("{}{}{}", "\\psd-", time.as_secs(), ".bin");
 
     path += unique_file_name.as_str();
 
@@ -152,12 +152,8 @@ fn copy_save_data(handle: tauri::AppHandle, mut path: String) -> Result<String, 
         .truncate(true)
         .write(true)
         .create_new(true)
-        .open(path.clone());
-
-    let new_data_file = match new_data_file {
-        Ok(file) => file,
-        Err(error) => return Err(error.to_string()),
-    };
+        .open(path.clone())
+        .error_to_string()?;
 
     let write_result = write_all_content(new_data_file, content.as_str());
 
@@ -168,11 +164,15 @@ fn copy_save_data(handle: tauri::AppHandle, mut path: String) -> Result<String, 
 }
 
 #[tauri::command]
-async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, bool>, phone_number:String) -> Result<String, String> {
+async fn send_2fa_code(
+    _handle: tauri::AppHandle,
+    debug_mode: tauri::State<'_, bool>,
+    phone_number: String,
+) -> Result<String, String> {
     if *debug_mode {
         return Ok("123456".to_string());
     }
-   
+
     let enc_phone_number = server_encrypt(phone_number);
 
     let hashified_number = hashify(enc_phone_number);
@@ -183,18 +183,18 @@ async fn send_2fa_code(_handle: tauri::AppHandle, debug_mode: tauri::State<'_, b
         Ok(res) => {
             println!("Res Text: {}", res);
             res
-        },
-        Err(error) => { 
+        }
+        Err(error) => {
             println!("Enc_code Error?");
-            return Err(error.to_string()) 
-        },
+            return Err(error.to_string());
+        }
     };
 
     match server_decrypt(enc_code) {
         Ok(code) => Ok(code),
-        Err(error) => { 
+        Err(error) => {
             println!("Decrypt Error?");
-            Err(error.to_string()) 
-        },
+            Err(error.to_string())
+        }
     }
 }

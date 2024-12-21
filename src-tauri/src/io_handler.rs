@@ -1,4 +1,7 @@
-use std::{fs::{File, OpenOptions}, io::{Error, Read, Write}};
+use std::{
+    fs::{File, OpenOptions},
+    io::{Error, Read, Write},
+};
 
 pub fn file_error(error: Error) -> String {
     "FORCED CLOSURE FILE ERROR ".to_string() + error.to_string().as_str()

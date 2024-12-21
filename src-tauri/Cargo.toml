@@ -20,6 +20,7 @@ rsd-encrypt = { version = "0.1.0", git = "https://github.com/AustinBray77/RSD-En
 json = "0.12.4"
 reqwest = "0.12.4"
 dotenv = "0.15.0"
+anyhow = "1.0.94"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
